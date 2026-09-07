@@ -1,0 +1,7 @@
+﻿services:
+  gruppe11-beredskap:
+    image: gruppe11-beredskap
+    build:
+      context: .
+      dockerfile: gruppe11-beredskap/Dockerfile
+
