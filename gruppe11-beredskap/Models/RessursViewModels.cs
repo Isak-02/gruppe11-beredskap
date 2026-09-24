@@ -2,18 +2,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace gruppe11_beredskap.Models;
 
+//melde inn ressurs side og eventeulle feilmeldinger b
 public class RessursViewModel
 {
     [Required(ErrorMessage = "Du må velge type ressurs")]
-    [Display(Name = "Ressurs")]
+    [Display(Name = "Type ressurs")]
     public string TypeRessurs { get; set; }
 
     [Display(Name = "Spesifiser annen type")]
     public string? AnnenType { get; set; }
 
-    [Required(ErrorMessage = "Geografisk område må fylles ut")]
     [Display(Name = "Geografisk område")]
-    public string GeografiskOmrade { get; set; }
+    public string? GeografiskOmrade { get; set; }
 
     [Required]
     [Display(Name = "Tidspunkt/frist")]
@@ -25,7 +25,9 @@ public class RessursViewModel
 
     public string Status { get; set; } = "Tilgjengelig";
 
-    // Klargjort for kart integrasjon senere
+    [Required(ErrorMessage = "Du må klikke på kartet for å velge sted")]
     public double? Latitude { get; set; }
+
+    [Required(ErrorMessage = "Du må klikke på kartet for å velge sted")]
     public double? Longitude { get; set; }
 }
