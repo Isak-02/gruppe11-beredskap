@@ -31,6 +31,8 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+var marker;
+
         // Handle map click event
         map.on('click', function(e) {
             // Get clicked position
@@ -41,8 +43,13 @@
             document.getElementById('latitude').value = lat;
             document.getElementById('longitude').value = lng;
 
-            // Add marker to the map
-            L.marker([lat, lng]).addTo(map);
-        });
+            // Add marker to the map, remove previous marker when a new is placed
+            if (marker) {
+                map.removeLayer(marker);
+                }
+
+            marker = L.marker([lat, lng]).addTo(map);
+            
+            });
     </script>
 }
