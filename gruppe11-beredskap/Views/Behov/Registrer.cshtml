@@ -1,0 +1,63 @@
+@model gruppe11_beredskap.Models.BehovViewModel
+@{
+    ViewData["Title"] = "Registrer behov";
+}
+
+<h1>Registrer behov</h1>
+
+<form asp-action="Registrer" method="post" class="row g-3">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="col-md-6">
+        <label asp-for="TypeBehov" class="form-label"></label>
+        <select asp-for="TypeBehov" class="form-select">
+            <option value="">Velg type</option>
+            <option>Transport</option>
+            <option>Droneobservasjon</option>
+            <option>Strøm/aggregat</option>
+            <option>Snørydding</option>
+            <option>Sand/grus</option>
+            <option>Maskiner</option>
+            <option>Evakuering</option>
+            <option>Samband</option>
+            <option>Mannskap</option>
+            <option>Lokaler</option>
+        </select>
+        <span asp-validation-for="TypeBehov" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="GeografiskOmrade" class="form-label"></label>
+        <input asp-for="GeografiskOmrade" class="form-control" />
+        <span asp-validation-for="GeografiskOmrade" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Tidspunkt" class="form-label"></label>
+        <input asp-for="Tidspunkt" class="form-control" type="datetime-local" />
+        <span asp-validation-for="Tidspunkt" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Prioritet" class="form-label"></label>
+        <select asp-for="Prioritet" class="form-select">
+            <option value="">Velg prioritet</option>
+            <option>Lav</option>
+            <option>Middels</option>
+            <option>Høy</option>
+            <option>Kritisk</option>
+            <option>Akutt</option>
+        </select>
+        <span asp-validation-for="Prioritet" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Kontaktpunkt" class="form-label"></label>
+        <input asp-for="Kontaktpunkt" class="form-control" />
+        <span asp-validation-for="Kontaktpunkt" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Registrer behov</button>
+    </div>
+</form>

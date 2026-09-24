@@ -1,0 +1,70 @@
+@model gruppe11_beredskap.Models.RessursViewModel
+@{
+    ViewData["Title"] = "Registrer ressurs";
+}
+
+<h1>Registrer ressurs</h1>
+
+<form asp-action="Registrer" method="post" class="row g-3">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="col-md-6">
+        <label asp-for="TypeRessurs" class="form-label"></label>
+        <select asp-for="TypeRessurs" class="form-select" id="typeRessursSelect" onchange="toggleAnnetFelt()">
+            <option value="">Velg type</option>
+            <option>Drone og droneoperatør</option>
+            <option>ATV</option>
+            <option>Traktor</option>
+            <option>Gravemaskin</option>
+            <option>Hjullaster</option>
+            <option>Skogsmaskin</option>
+            <option>Snøskuter</option>
+            <option>Lastebil</option>
+            <option>Sand/grus</option>
+            <option>Aggregat</option>
+            <option>Lokaler</option>
+            <option>Sambandsutstyr</option>
+            <option>Båt</option>
+            <option>Mannskap/frivillige</option>
+            <option value="Annet">Annet</option>
+        </select>
+        <span asp-validation-for="TypeRessurs" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6" id="annetFeltWrapper" style="display: none;">
+        <label asp-for="AnnenType" class="form-label">Spesifiser type</label>
+        <input asp-for="AnnenType" class="form-control" placeholder="Skriv inn type ressurs" />
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="GeografiskOmrade" class="form-label"></label>
+        <input asp-for="GeografiskOmrade" class="form-control" />
+        <span asp-validation-for="GeografiskOmrade" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Tidspunkt" class="form-label"></label>
+        <input asp-for="Tidspunkt" class="form-control" type="datetime-local" />
+        <span asp-validation-for="Tidspunkt" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Kontaktpunkt" class="form-label"></label>
+        <input asp-for="Kontaktpunkt" class="form-control" />
+        <span asp-validation-for="Kontaktpunkt" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Registrer ressurs</button>
+    </div>
+</form>
+
+<script>
+    function toggleAnnetFelt() {
+        var select = document.getElementById("typeRessursSelect");
+        var wrapper = document.getElementById("annetFeltWrapper");
+        wrapper.style.display = select.value === "Annet" ? "block" : "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", toggleAnnetFelt);
+</script>
