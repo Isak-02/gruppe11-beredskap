@@ -1,0 +1,38 @@
+@model List<gruppe11_beredskap.Models.RessursViewModel>
+@{
+    ViewData["Title"] = "Oversikt over ressurser";
+}
+
+<h1>Registrerte ressurser</h1>
+<a asp-action="Registrer" class="btn btn-outline-primary mb-3">+ Registrer ny ressurs</a>
+
+@if (!Model.Any())
+{
+    <p>Ingen ressurser registrert ennå.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Område</th>
+            <th>Tidspunkt</th>
+            <th>Kontaktpunkt</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var ressurs in Model)
+        {
+            <tr>
+                <td>@ressurs.TypeRessurs</td>
+                <td>@ressurs.GeografiskOmrade</td>
+                <td>@ressurs.Tidspunkt.ToString("g")</td>
+                <td>@ressurs.Kontaktpunkt</td>
+                <td>@ressurs.Status</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

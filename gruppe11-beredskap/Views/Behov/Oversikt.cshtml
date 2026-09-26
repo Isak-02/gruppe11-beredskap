@@ -1,0 +1,40 @@
+@model List<gruppe11_beredskap.Models.BehovViewModel>
+@{
+    ViewData["Title"] = "Oversikt over behov";
+}
+
+<h1>Registrerte behov</h1>
+<a asp-action="Registrer" class="btn btn-outline-primary mb-3">+ Registrer nytt behov</a>
+
+@if (!Model.Any())
+{
+    <p>Ingen behov registrert ennå.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Område</th>
+            <th>Tidspunkt</th>
+            <th>Prioritet</th>
+            <th>Kontaktpunkt</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var behov in Model)
+        {
+            <tr>
+                <td>@behov.TypeBehov</td>
+                <td>@behov.GeografiskOmrade</td>
+                <td>@behov.Tidspunkt.ToString("g")</td>
+                <td>@behov.Prioritet</td>
+                <td>@behov.Kontaktpunkt</td>
+                <td>@behov.Status</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
