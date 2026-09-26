@@ -82,4 +82,3 @@ Prosjektet er under utvikling.
 ## Lisens
 
 Se LICENSE-filen for mer informasjon.
-
