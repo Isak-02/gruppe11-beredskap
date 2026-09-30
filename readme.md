@@ -71,9 +71,9 @@ Automatiske tester med xUnit, i prosjektet `gruppe11-beredskap.Tests`. Kjørt me
 
 | Test | Hva den sjekker | Resultat |
 
-| `Index_ReturnsViewResult` | Forsiden (`Home/Index`) returnerer en side | Bestått |
-| `CorrectMap_Get_ReturnsViewResult` | Kartskjemaet (`CorrectMap`) vises når siden åpnes | Bestått |
-| `CorrectMap_Post_WithValidModel_ReturnsCorrectionOverview` | Når skjemaet sendes inn med breddegrad, lengdegrad og beskrivelse, vises siden `CorrectionOverview` | Bestått |
+| `Registrer_Get_ReturnsViewResult` | GET `Registrer` på `RessursController` returnerer en side (skjemaet) | Bestått |
+| `Registrer_Post_WithValidModel_RedirectsToOversikt` | POST `Registrer` med gyldig modell (type, tidspunkt og kontaktpunkt) sender brukeren videre til `Oversikt` | Bestått |
+| `Oversikt_ReturnsViewResult` | GET `Oversikt` returnerer oversikten over registrerte ressurser | Bestått |
 
 Resultat av kjøringen: 3 bestått, 0 feilet, 0 hoppet over.
 
