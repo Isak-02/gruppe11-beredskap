@@ -4,7 +4,7 @@
 
 Dette prosjektet utvikles som en del av IS-20X Case 2026
 
-Målet er å utvikle en webbasert løsning som støtter kriseberedskap og samhandler i Totalforsvaret. Løsningen gjør det mulig for offentlige aktører å registere behov for bistand, samtidig som privatpersoner, organisasjoner og bedrifter kan registere tilgjengelige ressurser.
+Målet er å utvikle en webbasert løsning som støtter kriseberedskap og samhandler i Totalforsvaret. Løsningen gjør det mulig for offentlige aktører å registrere behov for bistand, samtidig som privatpersoner, organisasjoner og bedrifter kan registrere tilgjengelige ressurser.
 
 ## Funksjonalitet 
 
