@@ -28,7 +28,8 @@
 
     <div class="col-md-6">
         <label asp-for="Tidspunkt" class="form-label"></label>
-        <input asp-for="Tidspunkt" class="form-control" type="datetime-local" />
+        <input asp-for="Tidspunkt" class="form-control" type="datetime-local" 
+               asp-format="{0:yyyy-MM-ddTHH:mm}" step="60" />
         <span asp-validation-for="Tidspunkt" class="text-danger"></span>
     </div>
 
