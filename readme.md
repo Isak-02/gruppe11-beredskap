@@ -65,6 +65,18 @@ http://localhost:8080
 
 - Data lagres i lister i minnet og forsvinner når appen starter på nytt. Det er ingen database.
 
+## Testing
+
+Automatiske tester med xUnit, i prosjektet `gruppe11-beredskap.Tests`. Kjørt med `dotnet test` 30. september 2026.
+
+| Test | Hva den sjekker | Resultat |
+
+| `Index_ReturnsViewResult` | Forsiden (`Home/Index`) returnerer en side | Bestått |
+| `CorrectMap_Get_ReturnsViewResult` | Kartskjemaet (`CorrectMap`) vises når siden åpnes | Bestått |
+| `CorrectMap_Post_WithValidModel_ReturnsCorrectionOverview` | Når skjemaet sendes inn med breddegrad, lengdegrad og beskrivelse, vises siden `CorrectionOverview` | Bestått |
+
+Resultat av kjøringen: 3 bestått, 0 feilet, 0 hoppet over.
+
 ## Bruk av KI
 
 KI ble brukt som hjelp fra idé til koding. All kode er lest og tilpasset av gruppa.
