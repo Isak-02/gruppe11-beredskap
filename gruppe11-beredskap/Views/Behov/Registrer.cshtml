@@ -27,12 +27,6 @@
     </div>
 
     <div class="col-md-6">
-        <label asp-for="GeografiskOmrade" class="form-label"></label>
-        <input asp-for="GeografiskOmrade" class="form-control" />
-        <span asp-validation-for="GeografiskOmrade" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-6">
         <label asp-for="Tidspunkt" class="form-label"></label>
         <input asp-for="Tidspunkt" class="form-control" type="datetime-local" />
         <span asp-validation-for="Tidspunkt" class="text-danger"></span>
@@ -58,6 +52,46 @@
     </div>
 
     <div class="col-12">
+        <label class="form-label">Geografisk område — klikk på kartet for å velge sted</label>
+        <div id="map" style="height: 400px;"></div>
+        <input type="hidden" asp-for="Latitude" id="latitude" />
+        <input type="hidden" asp-for="Longitude" id="longitude" />
+        <input type="hidden" asp-for="GeografiskOmrade" id="geografiskOmrade" />
+        <p id="valgtStedTekst" class="text-muted mt-2">Ingen posisjon valgt ennå</p>
+        <span asp-validation-for="Latitude" class="text-danger d-block"></span>
+    </div>
+
+    <div class="col-12">
         <button type="submit" class="btn btn-primary">Registrer behov</button>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        var map = L.map('map').setView([58.1467, 7.9956], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var marker;
+
+        map.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+            document.getElementById('geografiskOmrade').value = lat.toFixed(5) + ", " + lng.toFixed(5);
+
+            document.getElementById('valgtStedTekst').textContent = "Valgt posisjon: " + lat.toFixed(5) + ", " + lng.toFixed(5);
+            document.getElementById('valgtStedTekst').classList.remove('text-muted');
+            document.getElementById('valgtStedTekst').classList.add('text-success');
+
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker([lat, lng]).addTo(map);
+        });
+    </script>
+}
