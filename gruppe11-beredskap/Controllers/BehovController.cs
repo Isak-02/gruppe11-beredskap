@@ -12,7 +12,10 @@ public class BehovController : Controller
     [HttpGet]
     public IActionResult Registrer()
     {
-        return View(new BehovViewModel());
+        return View(new BehovViewModel
+        {
+            Tidspunkt = DateTime.Now
+        });
     }
 
     [HttpPost]
