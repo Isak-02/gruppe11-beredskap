@@ -87,6 +87,7 @@ KI ble brukt som hjelp fra idé til koding. All kode er lest og tilpasset av gru
 - Foreslå skjema, validering og hvordan kartklikk kan fylle skjulte felt
 - Finne mangler i oppgaven
 - Få tilbakemeldinger
+- Opprette klasser
 
 ### Verktøy
 
