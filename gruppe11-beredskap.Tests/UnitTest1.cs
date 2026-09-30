@@ -4,44 +4,44 @@ using gruppe11_beredskap.Models;
 
 namespace gruppe11_beredskap.Tests;
 
-public class HomeControllerTests
+public class RessursControllerTests
 {
     [Fact]
-    public void Index_ReturnsViewResult()
+    public void Registrer_Get_ReturnsViewResult()
     {
-        var controller = new HomeController();
+        var controller = new RessursController();
 
-        var result = controller.Index();
+        var result = controller.Registrer();
 
         Assert.IsType<ViewResult>(result);
     }
 
     [Fact]
-    public void CorrectMap_Get_ReturnsViewResult()
+    public void Registrer_Post_WithValidModel_RedirectsToOversikt()
     {
-        var controller = new HomeController();
+        var controller = new RessursController();
 
-        var result = controller.CorrectMap();
-
-        Assert.IsType<ViewResult>(result);
-    }
-
-    [Fact]
-    public void CorrectMap_Post_WithValidModel_ReturnsCorrectionOverview()
-    {
-        var controller = new HomeController();
-
-        var model = new PositionModel
+        var model = new RessursViewModel
         {
-            Latitude = "58.1467",
-            Longitude = "7.9956",
-            Description = "Test position"
+            TypeRessurs = "Mat",
+            Tidspunkt = DateTime.Now,
+            Kontaktpunkt = "Testperson"
         };
 
-        var result = controller.CorrectMap(model);
+        var result = controller.Registrer(model);
 
-        var viewResult = Assert.IsType<ViewResult>(result);
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
 
-        Assert.Equal("CorrectionOverview", viewResult.ViewName);
+        Assert.Equal("Oversikt", redirectResult.ActionName);
+    }
+
+    [Fact]
+    public void Oversikt_ReturnsViewResult()
+    {
+        var controller = new RessursController();
+
+        var result = controller.Oversikt();
+
+        Assert.IsType<ViewResult>(result);
     }
 }
