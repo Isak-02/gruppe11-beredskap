@@ -36,6 +36,23 @@ public class RessursControllerTests
     }
 
     [Fact]
+    public void Registrer_Post_KjøretøyUtenDrivstoff_ReturnsViewResult()
+    {
+        var controller = new RessursController();
+
+        var model = new RessursViewModel
+        {
+            TypeRessurs = "Lastebil",
+            Tidspunkt = DateTime.Now,
+            Kontaktpunkt = "Testperson"
+        };
+
+        var result = controller.Registrer(model);
+
+        Assert.IsType<ViewResult>(result);
+    }
+
+    [Fact]
     public void Oversikt_ReturnsViewResult()
     {
         var controller = new RessursController();
