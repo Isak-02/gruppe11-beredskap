@@ -20,6 +20,7 @@
             <option>Skogsmaskin</option>
             <option>Snøskuter</option>
             <option>Lastebil</option>
+            <option>Henger</option>
             <option>Sand/grus</option>
             <option>Aggregat</option>
             <option>Lokaler</option>
@@ -45,6 +46,12 @@
             <option>Elektrisk</option>
         </select>
         <span asp-validation-for="Drivstofftype" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6" id="lastekapasitetFeltWrapper" style="display: none;">
+        <label asp-for="Lastekapasitet" class="form-label"></label>
+        <input asp-for="Lastekapasitet" class="form-control" type="number" min="0.01" step="0.01"/>
+        <span asp-validation-for="Lastekapasitet" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
@@ -80,6 +87,7 @@
             var select = document.getElementById("typeRessursSelect");
             var wrapper = document.getElementById("annetFeltWrapper");
             var drivstoffWrapper = document.getElementById("drivstoffFeltWrapper");
+            var lastekapasitetWrapper = document.getElementById("lastekapasitetFeltWrapper");
 
             wrapper.style.display = select.value === "Annet" ? "block" : "none";
 
@@ -101,6 +109,22 @@
 
             if (!trengerDrivstoff) {
                 document.getElementById("Drivstofftype").value = "";
+            }
+
+            var ressurserMedLastekapasitet = [
+                "Henger",
+                "Traktor",
+                "Gravemaskin",
+                "Hjullaster",
+                "Skogsmaskin",
+                "Lastebil"
+            ];
+
+            var trengerLastekapasitet = ressurserMedLastekapasitet.includes(select.value);
+            lastekapasitetWrapper.style.display = trengerLastekapasitet ? "block" : "none";
+
+            if (!trengerLastekapasitet) {
+                document.getElementById("Lastekapasitet").value = "";
             }
         }
 

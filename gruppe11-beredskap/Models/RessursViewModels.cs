@@ -14,6 +14,9 @@ public class RessursViewModel
 
     [Display(Name = "Drivstofftype")] public string? Drivstofftype { get; set; }
 
+    [Display(Name = "Lastekapasitet (tonn)")]
+    public decimal? Lastekapasitet { get; set; }
+
     [Display(Name = "Geografisk område")] public string? GeografiskOmrade { get; set; }
 
     [Required]
