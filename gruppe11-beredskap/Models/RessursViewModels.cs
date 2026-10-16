@@ -5,6 +5,8 @@ namespace gruppe11_beredskap.Models;
 //melde inn ressurs side og eventeulle feilmeldinger b
 public class RessursViewModel
 {
+    public int Id { get; set; }
+
     [Required(ErrorMessage = "Du må velge type ressurs")]
     [Display(Name = "Type ressurs")]
     public string TypeRessurs { get; set; }

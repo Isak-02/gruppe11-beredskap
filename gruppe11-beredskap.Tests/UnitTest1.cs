@@ -36,6 +36,25 @@ public class RessursControllerTests
     }
 
     [Fact]
+    public void Registrer_Post_GirRessursEtId()
+    {
+        var controller = new RessursController();
+
+        var model = new RessursViewModel
+        {
+            TypeRessurs = "Gravemaskin",
+            Drivstofftype = "Diesel",
+            Lastekapasitet = 2,
+            Tidspunkt = DateTime.Now,
+            Kontaktpunkt = "Testperson"
+        };
+
+        controller.Registrer(model);
+
+        Assert.True(model.Id > 0);
+    }
+
+    [Fact]
     public void Registrer_Post_KjøretøyUtenDrivstoff_ReturnsViewResult()
     {
         var controller = new RessursController();

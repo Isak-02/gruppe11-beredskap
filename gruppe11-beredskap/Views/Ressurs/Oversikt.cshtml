@@ -15,6 +15,7 @@ else
     <table class="table table-striped">
         <thead>
         <tr>
+            <th>ID</th>
             <th>Type</th>
             <th>Drivstofftype</th>
             <th>Lastekapasitet</th>
@@ -28,6 +29,7 @@ else
         @foreach (var ressurs in Model)
         {
             <tr>
+                <td>@ressurs.Id.ToString("D4")</td>
                 <td>@ressurs.TypeRessurs</td>
                 <td>@(ressurs.Drivstofftype ?? "-")</td>
                 <td>@(ressurs.Lastekapasitet.HasValue ? $"{ressurs.Lastekapasitet} tonn" : "-")</td>

@@ -8,6 +8,7 @@ public class RessursController : Controller
 {
     // Midlertidig lagring blir erstattet med database senere i semesteret
     private static readonly List<RessursViewModel> _ressursListe = new();
+    private static int nesteId = 1;
 
     [HttpGet]
     public IActionResult Registrer()
@@ -62,6 +63,8 @@ public class RessursController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
+        model.Id = nesteId;
+        nesteId++;
         _ressursListe.Add(model);
         return RedirectToAction(nameof(Oversikt));
     }
