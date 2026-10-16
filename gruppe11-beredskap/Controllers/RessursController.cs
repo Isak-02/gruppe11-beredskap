@@ -41,6 +41,24 @@ public class RessursController : Controller
                 "Du må velge drivstofftype for denne ressursen");
         }
 
+        var ressurserMedLastekapasitet = new[]
+        {
+            "Henger",
+            "Traktor",
+            "Gravemaskin",
+            "Hjullaster",
+            "Skogsmaskin",
+            "Lastebil"
+        };
+
+        if (ressurserMedLastekapasitet.Contains(model.TypeRessurs) &&
+            (!model.Lastekapasitet.HasValue || model.Lastekapasitet <= 0))
+        {
+            ModelState.AddModelError(
+                nameof(model.Lastekapasitet),
+                "Du må skrive inn en lastekapasitet som er større enn 0");
+        }
+
         if (!ModelState.IsValid)
             return View(model);
 
