@@ -12,8 +12,9 @@ public class RessursViewModel
     [Display(Name = "Spesifiser annen type")]
     public string? AnnenType { get; set; }
 
-    [Display(Name = "Geografisk område")]
-    public string? GeografiskOmrade { get; set; }
+    [Display(Name = "Drivstofftype")] public string? Drivstofftype { get; set; }
+
+    [Display(Name = "Geografisk område")] public string? GeografiskOmrade { get; set; }
 
     [Required]
     [Display(Name = "Tidspunkt/frist")]

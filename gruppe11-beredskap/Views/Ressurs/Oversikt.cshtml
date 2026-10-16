@@ -16,6 +16,7 @@ else
         <thead>
         <tr>
             <th>Type</th>
+            <th>Drivstofftype</th>
             <th>Område</th>
             <th>Tidspunkt</th>
             <th>Kontaktpunkt</th>
@@ -27,6 +28,7 @@ else
         {
             <tr>
                 <td>@ressurs.TypeRessurs</td>
+                <td>@(ressurs.Drivstofftype ?? "-")</td>
                 <td>@ressurs.GeografiskOmrade</td>
                 <td>@ressurs.Tidspunkt.ToString("g")</td>
                 <td>@ressurs.Kontaktpunkt</td>

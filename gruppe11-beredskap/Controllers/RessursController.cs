@@ -19,6 +19,28 @@ public class RessursController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Registrer(RessursViewModel model)
     {
+        var kjøretøyOgMaskiner = new[]
+        {
+            "Drone og droneoperatør",
+            "ATV",
+            "Traktor",
+            "Gravemaskin",
+            "Hjullaster",
+            "Skogsmaskin",
+            "Snøskuter",
+            "Lastebil",
+            "Aggregat",
+            "Båt"
+        };
+
+        if (kjøretøyOgMaskiner.Contains(model.TypeRessurs) &&
+            string.IsNullOrWhiteSpace(model.Drivstofftype))
+        {
+            ModelState.AddModelError(
+                nameof(model.Drivstofftype),
+                "Du må velge drivstofftype for denne ressursen");
+        }
+
         if (!ModelState.IsValid)
             return View(model);
 
