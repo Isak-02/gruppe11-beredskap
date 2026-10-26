@@ -1,14 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
+using gruppe11_beredskap.DataAccess.Repositories;
 using gruppe11_beredskap.Models;
+using gruppe11_beredskap.Models.Entities;
 
 namespace gruppe11_beredskap.Controllers;
 
-//håndtere innmeldinger av ressurser 
+// Håndterer innmelding og visning av ressurser. Lagrer i MariaDB via repository.
 public class RessursController : Controller
 {
-    // Midlertidig lagring blir erstattet med database senere i semesteret
-    private static readonly List<RessursViewModel> _ressursListe = new();
-    private static int nesteId = 1;
+    private readonly IRessursRepository _repo;
+
+    public RessursController(IRessursRepository repo)
+    {
+        _repo = repo;
+    }
 
     [HttpGet]
     public IActionResult Registrer()
@@ -18,7 +23,7 @@ public class RessursController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Registrer(RessursViewModel model)
+    public async Task<IActionResult> Registrer(RessursViewModel model)
     {
         var kjøretøyOgMaskiner = new[]
         {
@@ -63,15 +68,46 @@ public class RessursController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        model.Id = nesteId;
-        nesteId++;
-        _ressursListe.Add(model);
+        // Fra view-modell til databaseentitet
+        var ressurs = new Ressurs
+        {
+            TypeRessurs = model.TypeRessurs,
+            AnnenType = model.AnnenType,
+            Drivstofftype = model.Drivstofftype,
+            Lastekapasitet = model.Lastekapasitet,
+            GeografiskOmrade = model.GeografiskOmrade,
+            Tidspunkt = model.Tidspunkt,
+            Kontaktpunkt = model.Kontaktpunkt,
+            Status = model.Status,
+            Latitude = model.Latitude!.Value,
+            Longitude = model.Longitude!.Value
+        };
+
+        await _repo.AddAsync(ressurs);
         return RedirectToAction(nameof(Oversikt));
     }
 
     [HttpGet]
-    public IActionResult Oversikt()
+    public async Task<IActionResult> Oversikt()
     {
-        return View(_ressursListe);
+        var ressurser = await _repo.GetAllAsync();
+
+        // Fra entitet tilbake til view-modell, slik at oversikten fungerer som før
+        var visning = ressurser.Select(r => new RessursViewModel
+        {
+            Id = r.Id,
+            TypeRessurs = r.TypeRessurs,
+            AnnenType = r.AnnenType,
+            Drivstofftype = r.Drivstofftype,
+            Lastekapasitet = r.Lastekapasitet,
+            GeografiskOmrade = r.GeografiskOmrade,
+            Tidspunkt = r.Tidspunkt,
+            Kontaktpunkt = r.Kontaktpunkt,
+            Status = r.Status,
+            Latitude = r.Latitude,
+            Longitude = r.Longitude
+        }).ToList();
+
+        return View(visning);
     }
 }
