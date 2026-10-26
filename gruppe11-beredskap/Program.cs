@@ -2,6 +2,8 @@ using System.Globalization;
 using gruppe11_beredskap.DataAccess;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using gruppe11_beredskap.DataAccess.Repositories;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +33,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
             maxRetryCount: 5,
             maxRetryDelay: TimeSpan.FromSeconds(10),
             errorNumbersToAdd: null)));
-
+builder.Services.AddScoped<IRessursRepository, RessursRepository>();
 var app = builder.Build();
 
 // Kjører migrasjonene ved oppstart, slik at tabellene opprettes første gang appen starter.
