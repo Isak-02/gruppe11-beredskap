@@ -22,6 +22,57 @@ namespace gruppe11_beredskap.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("gruppe11_beredskap.Models.Entities.Behov", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("GeografiskOmrade")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Kontaktpunkt")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("OpprettetTidspunkt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Prioritet")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("Tidspunkt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("TypeBehov")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Behov");
+                });
+
             modelBuilder.Entity("gruppe11_beredskap.Models.Entities.Ressurs", b =>
                 {
                     b.Property<int>("Id")

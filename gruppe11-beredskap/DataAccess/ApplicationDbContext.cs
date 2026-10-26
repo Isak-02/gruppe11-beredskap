@@ -12,6 +12,7 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Ressurs> Ressurser { get; set; }
+    public DbSet<Behov> Behov { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +24,14 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.TypeRessurs).HasMaxLength(200).IsRequired();
             entity.Property(e => e.Kontaktpunkt).HasMaxLength(500).IsRequired();
             entity.Property(e => e.Lastekapasitet).HasPrecision(10, 2);
+            entity.Property(e => e.OpprettetTidspunkt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+        });
+        modelBuilder.Entity<Behov>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TypeBehov).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Prioritet).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Kontaktpunkt).HasMaxLength(500).IsRequired();
             entity.Property(e => e.OpprettetTidspunkt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
     }
