@@ -4,7 +4,10 @@ namespace gruppe11_beredskap.Models;
 
 //Registrer behov side og eventuelle feilmeldinger
 public class BehovViewModel
+
 {
+    public int Id { get; set; }
+    
     [Required(ErrorMessage = "Du må velge type behov")]
     [Display(Name = "Type behov")]
     public string TypeBehov { get; set; }
