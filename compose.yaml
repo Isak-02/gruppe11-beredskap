@@ -8,7 +8,7 @@ services:
       - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=db;Port=3306;Database=${MARIADB_DATABASE};User=${MARIADB_USER};Password=${MARIADB_PASSWORD}
+      - ConnectionStrings__DefaultConnection=Server=db;Port=3306;Database=${MARIADB_DATABASE:-beredskapdb};User=${MARIADB_USER:-beredskap};Password=${MARIADB_PASSWORD:-gruppe11}
     depends_on:
       db:
         condition: service_healthy
@@ -19,10 +19,10 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-      MARIADB_DATABASE: ${MARIADB_DATABASE}
-      MARIADB_USER: ${MARIADB_USER}
-      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-gruppe11}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-beredskapdb}
+      MARIADB_USER: ${MARIADB_USER:-beredskap}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-gruppe11}
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
