@@ -1,0 +1,69 @@
+@model gruppe11_beredskap.Models.MatchingViewModel
+@{
+    ViewData["Title"] = "Matching";
+}
+
+<h1>Matching av behov og ressurser</h1>
+
+<form asp-action="Koble" method="post" class="row g-3 mb-4">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="col-md-5">
+        <label asp-for="BehovId" class="form-label"></label>
+        <select asp-for="BehovId" class="form-select">
+            <option value="">Velg behov</option>
+            @foreach (var b in Model.ÅpneBehov)
+            {
+                <option value="@b.Id">#@b.Id @b.TypeBehov (@b.Prioritet)</option>
+            }
+        </select>
+        <span asp-validation-for="BehovId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-5">
+        <label asp-for="RessursId" class="form-label"></label>
+        <select asp-for="RessursId" class="form-select">
+            <option value="">Velg ressurs</option>
+            @foreach (var r in Model.LedigeRessurser)
+            {
+                <option value="@r.Id">#@r.Id @r.TypeRessurs</option>
+            }
+        </select>
+        <span asp-validation-for="RessursId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Koble</button>
+    </div>
+</form>
+
+<h2>Eksisterende koblinger</h2>
+
+@if (!Model.Matchinger.Any())
+{
+    <p>Ingen koblinger ennå.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Behov</th>
+                <th>Ressurs</th>
+                <th>Koblet</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var m in Model.Matchinger)
+            {
+                <tr>
+                    <td>@m.Behov</td>
+                    <td>@m.Ressurs</td>
+                    <td>@m.OpprettetTidspunkt.ToString("g")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

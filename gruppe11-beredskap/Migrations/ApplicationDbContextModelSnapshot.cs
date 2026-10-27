@@ -73,6 +73,34 @@ namespace gruppe11_beredskap.Migrations
                     b.ToTable("Behov");
                 });
 
+            modelBuilder.Entity("gruppe11_beredskap.Models.Entities.Matching", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BehovId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OpprettetTidspunkt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("RessursId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BehovId");
+
+                    b.HasIndex("RessursId");
+
+                    b.ToTable("Matchinger");
+                });
+
             modelBuilder.Entity("gruppe11_beredskap.Models.Entities.Ressurs", b =>
                 {
                     b.Property<int>("Id")
@@ -129,6 +157,25 @@ namespace gruppe11_beredskap.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Ressurser");
+                });
+
+            modelBuilder.Entity("gruppe11_beredskap.Models.Entities.Matching", b =>
+                {
+                    b.HasOne("gruppe11_beredskap.Models.Entities.Behov", "Behov")
+                        .WithMany()
+                        .HasForeignKey("BehovId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("gruppe11_beredskap.Models.Entities.Ressurs", "Ressurs")
+                        .WithMany()
+                        .HasForeignKey("RessursId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Behov");
+
+                    b.Navigation("Ressurs");
                 });
 #pragma warning restore 612, 618
         }
