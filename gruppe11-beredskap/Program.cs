@@ -35,6 +35,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
             errorNumbersToAdd: null)));
 builder.Services.AddScoped<IRessursRepository, RessursRepository>();
 builder.Services.AddScoped<IBehovRepository, BehovRepository>();
+builder.Services.AddScoped<IMatchingRepository, MatchingRepository>();
 var app = builder.Build();
 
 // Kjører migrasjonene ved oppstart, slik at tabellene opprettes første gang appen starter.

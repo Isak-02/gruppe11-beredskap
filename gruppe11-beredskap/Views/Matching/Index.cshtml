@@ -1,0 +1,128 @@
+@model gruppe11_beredskap.Models.MatchingViewModel
+@{
+    ViewData["Title"] = "Matching";
+}
+
+<h1>Matching av behov og ressurser</h1>
+
+<form asp-action="Koble" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <h2 class="h5">Åpne behov</h2>
+            @if (!Model.ÅpneBehov.Any())
+            {
+                <p>Ingen åpne behov.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Behov</th>
+                            <th>Prioritet</th>
+                            <th>Område</th>
+                            <th>Frist</th>
+                            <th>Kontakt</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var b in Model.ÅpneBehov)
+                        {
+                            <tr>
+                                <td><input type="radio" name="BehovId" value="@b.Id" class="form-check-input" /></td>
+                                <td>#@b.Id @b.TypeBehov</td>
+                                <td>@b.Prioritet</td>
+                                <td>@b.GeografiskOmrade</td>
+                                <td>@b.Tidspunkt.ToString("g")</td>
+                                <td>@b.Kontaktpunkt</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            <span asp-validation-for="BehovId" class="text-danger"></span>
+        </div>
+
+        <div class="col-lg-6">
+            <h2 class="h5">Ledige ressurser</h2>
+            @if (!Model.LedigeRessurser.Any())
+            {
+                <p>Ingen ledige ressurser.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Ressurs</th>
+                            <th>Drivstoff</th>
+                            <th>Last</th>
+                            <th>Område</th>
+                            <th>Kontakt</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var r in Model.LedigeRessurser)
+                        {
+                            <tr>
+                                <td><input type="radio" name="RessursId" value="@r.Id" class="form-check-input" /></td>
+                                <td>
+                                    #@r.Id
+                                    @(r.TypeRessurs == "Annet" && !string.IsNullOrWhiteSpace(r.AnnenType)
+                                        ? $"Annet: {r.AnnenType}"
+                                        : r.TypeRessurs)
+                                </td>
+                                <td>@(r.Drivstofftype ?? "-")</td>
+                                <td>@(r.Lastekapasitet.HasValue ? $"{r.Lastekapasitet} t" : "-")</td>
+                                <td>@r.GeografiskOmrade</td>
+                                <td>@r.Kontaktpunkt</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            <span asp-validation-for="RessursId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3 mb-4">Koble valgt behov og ressurs</button>
+</form>
+
+<h2 class="h5">Eksisterende koblinger</h2>
+
+@if (!Model.Matchinger.Any())
+{
+    <p>Ingen koblinger ennå.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Behov</th>
+                <th>Ressurs</th>
+                <th>Koblet</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var m in Model.Matchinger)
+            {
+                <tr>
+                    <td>@m.Behov</td>
+                    <td>@m.Ressurs</td>
+                    <td>@m.OpprettetTidspunkt.ToString("g")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
