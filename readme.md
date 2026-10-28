@@ -91,7 +91,7 @@ KI ble brukt som hjelp fra idé til koding. All kode er lest og tilpasset av gru
 
 ### Verktøy
 
-- JetBrains Rider med AI Assistant, modell Claude, Chatgpt, Copilot
+- JetBrains Rider med AI Assistant, Claude, ChatGPT, Copilot
 
 ### Eksempler på prompt-kommandoer
 
