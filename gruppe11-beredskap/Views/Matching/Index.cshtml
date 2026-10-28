@@ -5,39 +5,98 @@
 
 <h1>Matching av behov og ressurser</h1>
 
-<form asp-action="Koble" method="post" class="row g-3 mb-4">
+<form asp-action="Koble" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="col-md-5">
-        <label asp-for="BehovId" class="form-label"></label>
-        <select asp-for="BehovId" class="form-select">
-            <option value="">Velg behov</option>
-            @foreach (var b in Model.ÅpneBehov)
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <h2 class="h5">Åpne behov</h2>
+            @if (!Model.ÅpneBehov.Any())
             {
-                <option value="@b.Id">#@b.Id @b.TypeBehov (@b.Prioritet)</option>
+                <p>Ingen åpne behov.</p>
             }
-        </select>
-        <span asp-validation-for="BehovId" class="text-danger"></span>
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Behov</th>
+                            <th>Prioritet</th>
+                            <th>Område</th>
+                            <th>Frist</th>
+                            <th>Kontakt</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var b in Model.ÅpneBehov)
+                        {
+                            <tr>
+                                <td><input type="radio" name="BehovId" value="@b.Id" class="form-check-input" /></td>
+                                <td>#@b.Id @b.TypeBehov</td>
+                                <td>@b.Prioritet</td>
+                                <td>@b.GeografiskOmrade</td>
+                                <td>@b.Tidspunkt.ToString("g")</td>
+                                <td>@b.Kontaktpunkt</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            <span asp-validation-for="BehovId" class="text-danger"></span>
+        </div>
+
+        <div class="col-lg-6">
+            <h2 class="h5">Ledige ressurser</h2>
+            @if (!Model.LedigeRessurser.Any())
+            {
+                <p>Ingen ledige ressurser.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Ressurs</th>
+                            <th>Drivstoff</th>
+                            <th>Last</th>
+                            <th>Område</th>
+                            <th>Kontakt</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var r in Model.LedigeRessurser)
+                        {
+                            <tr>
+                                <td><input type="radio" name="RessursId" value="@r.Id" class="form-check-input" /></td>
+                                <td>
+                                    #@r.Id
+                                    @(r.TypeRessurs == "Annet" && !string.IsNullOrWhiteSpace(r.AnnenType)
+                                        ? $"Annet: {r.AnnenType}"
+                                        : r.TypeRessurs)
+                                </td>
+                                <td>@(r.Drivstofftype ?? "-")</td>
+                                <td>@(r.Lastekapasitet.HasValue ? $"{r.Lastekapasitet} t" : "-")</td>
+                                <td>@r.GeografiskOmrade</td>
+                                <td>@r.Kontaktpunkt</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            <span asp-validation-for="RessursId" class="text-danger"></span>
+        </div>
     </div>
 
-    <div class="col-md-5">
-        <label asp-for="RessursId" class="form-label"></label>
-        <select asp-for="RessursId" class="form-select">
-            <option value="">Velg ressurs</option>
-            @foreach (var r in Model.LedigeRessurser)
-            {
-                <option value="@r.Id">#@r.Id @r.TypeRessurs</option>
-            }
-        </select>
-        <span asp-validation-for="RessursId" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-2 d-flex align-items-end">
-        <button type="submit" class="btn btn-primary w-100">Koble</button>
-    </div>
+    <button type="submit" class="btn btn-primary mt-3 mb-4">Koble valgt behov og ressurs</button>
 </form>
 
-<h2>Eksisterende koblinger</h2>
+<h2 class="h5">Eksisterende koblinger</h2>
 
 @if (!Model.Matchinger.Any())
 {

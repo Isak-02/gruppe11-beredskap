@@ -63,7 +63,9 @@ public class MatchingController : Controller
                 Id = b.Id,
                 TypeBehov = b.TypeBehov,
                 Prioritet = b.Prioritet,
-                GeografiskOmrade = b.GeografiskOmrade
+                GeografiskOmrade = b.GeografiskOmrade,
+                Tidspunkt = b.Tidspunkt,
+                Kontaktpunkt = b.Kontaktpunkt
             }).ToList();
 
         model.LedigeRessurser = ressurser
@@ -73,7 +75,11 @@ public class MatchingController : Controller
                 Id = r.Id,
                 TypeRessurs = r.TypeRessurs,
                 AnnenType = r.AnnenType,
-                GeografiskOmrade = r.GeografiskOmrade
+                Drivstofftype = r.Drivstofftype,
+                Lastekapasitet = r.Lastekapasitet,
+                GeografiskOmrade = r.GeografiskOmrade,
+                Tidspunkt = r.Tidspunkt,
+                Kontaktpunkt = r.Kontaktpunkt
             }).ToList();
 
         model.Matchinger = matchinger.Select(m => new MatchingVisning
