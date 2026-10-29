@@ -78,7 +78,7 @@ public class BehovControllerTests
     {
         var repo = new FakeBehovRepository();
         var controller = new BehovController(repo);
-        controller.ModelState.AddModelError("Latitude", "Du må klikke på kartet for å velge sted");
+        controller.ModelState.AddModelError("Latitude", "Du må tegne en markør eller sirkel på kartet for å velge sted");
 
         var result = await controller.Registrer(LagModel());
 
@@ -98,5 +98,50 @@ public class BehovControllerTests
         var view = Assert.IsType<ViewResult>(result);
         var liste = Assert.IsType<List<BehovViewModel>>(view.Model);
         Assert.Single(liste);
+    }
+
+    [Fact]
+    public async Task Registrer_Post_MedSirkel_LagrerRadius()
+    {
+        var repo = new FakeBehovRepository();
+        var controller = new BehovController(repo);
+
+        var model = LagModel();
+        model.Radius = 250;
+
+        await controller.Registrer(model);
+
+        var lagret = Assert.Single(repo.Lagret);
+        Assert.Equal(250, lagret.Radius);
+    }
+
+    [Fact]
+    public async Task Registrer_Post_MedMarkør_LagrerRadiusSomNull()
+    {
+        var repo = new FakeBehovRepository();
+        var controller = new BehovController(repo);
+
+        await controller.Registrer(LagModel());
+
+        var lagret = Assert.Single(repo.Lagret);
+        Assert.Null(lagret.Radius);
+    }
+
+    [Fact]
+    public async Task Oversikt_ViserRadiusFraLagretBehov()
+    {
+        var repo = new FakeBehovRepository();
+        var controller = new BehovController(repo);
+
+        var model = LagModel();
+        model.Radius = 250;
+        await controller.Registrer(model);
+
+        var result = await controller.Oversikt();
+
+        var view = Assert.IsType<ViewResult>(result);
+        var liste = Assert.IsType<List<BehovViewModel>>(view.Model);
+        var behov = Assert.Single(liste);
+        Assert.Equal(250, behov.Radius);
     }
 }

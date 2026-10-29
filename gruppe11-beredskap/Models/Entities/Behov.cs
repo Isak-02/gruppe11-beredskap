@@ -31,5 +31,8 @@ public class Behov
     public double Latitude { get; set; }
     public double Longitude { get; set; }
 
+    // Radius i meter. Er null når posisjonen er en markør og ikke en sirkel.
+    public double? Radius { get; set; }
+
     public DateTime OpprettetTidspunkt { get; set; } = DateTime.UtcNow;
 }

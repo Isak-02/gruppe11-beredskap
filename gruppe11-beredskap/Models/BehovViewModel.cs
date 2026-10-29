@@ -29,9 +29,14 @@ public class BehovViewModel
 
     public string Status { get; set; } = "Ny";
 
-    [Required(ErrorMessage = "Du må klikke på kartet for å velge sted")]
+    [Required(ErrorMessage = "Du må tegne en markør eller sirkel på kartet for å velge sted")]
     public double? Latitude { get; set; }
 
-    [Required(ErrorMessage = "Du må klikke på kartet for å velge sted")]
+    [Required(ErrorMessage = "Du må tegne en markør eller sirkel på kartet for å velge sted")]
     public double? Longitude { get; set; }
+
+    // Valgfri. Settes bare når brukeren tegner en sirkel på kartet.
+    [Range(1, double.MaxValue, ErrorMessage = "Radius må være større enn 0 meter")]
+    [Display(Name = "Radius (meter)")]
+    public double? Radius { get; set; }
 }

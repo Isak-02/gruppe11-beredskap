@@ -31,9 +31,9 @@ public class RessursViewModel
 
     public string Status { get; set; } = "Tilgjengelig";
 
-    [Required(ErrorMessage = "Du må klikke på kartet for å velge sted")]
+    [Required(ErrorMessage = "Du må sette en markør på kartet for å velge sted")]
     public double? Latitude { get; set; }
 
-    [Required(ErrorMessage = "Du må klikke på kartet for å velge sted")]
+    [Required(ErrorMessage = "Du må sette en markør på kartet for å velge sted")]
     public double? Longitude { get; set; }
 }

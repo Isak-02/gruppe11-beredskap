@@ -67,7 +67,7 @@
     </div>
 
     <div class="col-12">
-        <label class="form-label">Geografisk område — klikk på kartet for å velge sted</label>
+        <label class="form-label">Geografisk område — bruk markøren i verktøylinjen på kartet for å velge sted</label>
         <div id="map" style="height: 400px;"></div>
         <input type="hidden" asp-for="Latitude" id="latitude"/>
         <input type="hidden" asp-for="Longitude" id="longitude"/>
@@ -136,11 +136,51 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        var marker;
+        // Gruppe som holder markøren brukeren har satt
+        var tegnedeFigurer = new L.FeatureGroup();
+        map.addLayer(tegnedeFigurer);
 
-        map.on('click', function (e) {
-            var lat = e.latlng.lat;
-            var lng = e.latlng.lng;
+        // Norske tekster i verktøylinjen. Må settes før verktøylinjen lages.
+        L.drawLocal.draw.toolbar.actions.title = "Avbryt tegning";
+        L.drawLocal.draw.toolbar.actions.text = "Avbryt";
+        L.drawLocal.draw.toolbar.buttons.marker = "Sett en markør";
+        L.drawLocal.draw.handlers.marker.tooltip.start = "Klikk på kartet for å sette markøren.";
+        L.drawLocal.edit.toolbar.actions.save.title = "Lagre endringene";
+        L.drawLocal.edit.toolbar.actions.save.text = "Lagre";
+        L.drawLocal.edit.toolbar.actions.cancel.title = "Avbryt redigering og forkast endringene";
+        L.drawLocal.edit.toolbar.actions.cancel.text = "Avbryt";
+        L.drawLocal.edit.toolbar.actions.clearAll.title = "Slett alle figurer";
+        L.drawLocal.edit.toolbar.actions.clearAll.text = "Slett alle";
+        L.drawLocal.edit.toolbar.buttons.edit = "Rediger";
+        L.drawLocal.edit.toolbar.buttons.editDisabled = "Ingenting å redigere";
+        L.drawLocal.edit.toolbar.buttons.remove = "Slett";
+        L.drawLocal.edit.toolbar.buttons.removeDisabled = "Ingenting å slette";
+        L.drawLocal.edit.handlers.edit.tooltip.text = "Dra i figuren for å flytte eller endre den.";
+        L.drawLocal.edit.handlers.edit.tooltip.subtext = "Klikk Avbryt for å angre endringene.";
+        L.drawLocal.edit.handlers.remove.tooltip.text = "Klikk på figuren for å slette den.";
+
+        // Verktøylinje på kartet: markør, rediger og slett (ingen sirkel for ressurs)
+        var tegneverktøy = new L.Control.Draw({
+            draw: {
+                polygon: false,
+                polyline: false,
+                rectangle: false,
+                circlemarker: false,
+                circle: false,
+                marker: true
+            },
+            edit: {
+                featureGroup: tegnedeFigurer,
+                remove: true
+            }
+        });
+        map.addControl(tegneverktøy);
+
+        // Fyller skjemafeltene med posisjonen til markøren
+        function oppdaterPosisjon(layer) {
+            var latlng = layer.getLatLng();
+            var lat = latlng.lat;
+            var lng = latlng.lng;
 
             document.getElementById('latitude').value = lat;
             document.getElementById('longitude').value = lng;
@@ -149,11 +189,50 @@
             document.getElementById('valgtStedTekst').textContent = "Valgt posisjon: " + lat.toFixed(5) + ", " + lng.toFixed(5);
             document.getElementById('valgtStedTekst').classList.remove('text-muted');
             document.getElementById('valgtStedTekst').classList.add('text-success');
+        }
 
-            if (marker) {
-                map.removeLayer(marker);
-            }
-            marker = L.marker([lat, lng]).addTo(map);
+        // Tømmer skjemafeltene når figuren slettes
+        function tomPosisjon() {
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+            document.getElementById('geografiskOmrade').value = '';
+
+            document.getElementById('valgtStedTekst').textContent = "Ingen posisjon valgt ennå";
+            document.getElementById('valgtStedTekst').classList.remove('text-success');
+            document.getElementById('valgtStedTekst').classList.add('text-muted');
+        }
+
+        // Ny figur tegnet. Bare én figur om gangen, så den forrige fjernes først.
+        map.on('draw:created', function (e) {
+            var layer = e.layer;
+
+            tegnedeFigurer.clearLayers();
+            tegnedeFigurer.addLayer(layer);
+            oppdaterPosisjon(layer);
         });
+
+        // Figuren er flyttet med rediger-verktøyet
+        map.on('draw:edited', function (e) {
+            e.layers.eachLayer(function (layer) {
+                oppdaterPosisjon(layer);
+            });
+        });
+
+        // Figuren er slettet med slett-verktøyet
+        map.on('draw:deleted', function () {
+            tomPosisjon();
+        });
+
+        // Ved valideringsfeil kommer siden tilbake med posisjonen i de skjulte feltene.
+        // Da settes markøren på kartet igjen, slik at brukeren ser den og kan flytte eller slette den.
+        var lagretLat = document.getElementById('latitude').value;
+        var lagretLng = document.getElementById('longitude').value;
+
+        if (lagretLat && lagretLng) {
+            var lagretMarkor = L.marker([Number(lagretLat), Number(lagretLng)]);
+
+            tegnedeFigurer.addLayer(lagretMarkor);
+            oppdaterPosisjon(lagretMarkor);
+        }
     </script>
 }
