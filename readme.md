@@ -10,7 +10,8 @@ Målet er å utvikle en webbasert løsning som støtter kriseberedskap og samhan
 
 - Registrering av behov via skjema (POST) og visning på en egen oversiktsside (GET)
 - Registrering av ressurser via skjema (POST) og visning på en egen oversiktsside (GET)
-- Kart (Leaflet) på registreringssidene. Klikk i kartet fyller inn breddegrad og lengdegrad, som lagres sammen med skjemaet og vises i oversikten
+- Kart (Leaflet) med verktøylinje (Leaflet.Draw) på registreringssidene. Posisjonen settes med en markør, og for behov også med en sirkel. Breddegrad, lengdegrad og eventuell radius (meter) lagres sammen med skjemaet, og posisjonen vises i oversikten
+- Matching av behov og ressurser på en egen side, der behov og ressurser som ikke allerede er koblet kan kobles sammen
 - Validering av påkrevde felt før data lagres
 - Responsivt grensesnitt med Bootstrap
 
@@ -20,21 +21,28 @@ Målet er å utvikle en webbasert løsning som støtter kriseberedskap og samhan
 - C#
 - Razor Views
 - Docker og Docker Compose
-- Leaflet og OpenStreetMap
+- MariaDB
+- Entity Framework Core (Pomelo MySQL-provider)
+- Leaflet, Leaflet.Draw og OpenStreetMap
 - Bootstrap
+- xUnit
 - GitHub
 
 ## Prosjektstruktur
 
 ```text
 gruppe11-beredskap/
-├── Controllers/     BehovController, RessursController, HomeController
-├── Models/          BehovViewModel, RessursViewModel, PositionModel
-├── Views/           Behov, Ressurs, Home, Shared
+├── Controllers/     BehovController, RessursController, MatchingController, HomeController
+├── DataAccess/      ApplicationDbContext og repositories
+├── Migrations/      EF Core-migrasjoner som oppretter og oppdaterer tabellene
+├── Models/          BehovViewModel, RessursViewModel, MatchingViewModel, PositionModel
+│   └── Entities/    Behov, Ressurs, Matching (tabellene i databasen)
+├── Views/           Behov, Ressurs, Matching, Home, Shared
 ├── wwwroot/         css, js
 ├── Program.cs
 ├── Dockerfile
-└── compose.yaml     (ligger i rotmappen)
+├── compose.yaml     (ligger i rotmappen)
+└── gruppe11-beredskap.Tests/   xUnit-tester (ligger i rotmappen)
 ```
 
 ## Installasjon
@@ -61,21 +69,21 @@ http://localhost:8080
 
 - Nettleseren sender GET og POST til en ASP.NET Core MVC-controller. Controlleren validerer view-modellen og sender den til et Razor-view.
 
-- BehovController og RessursController har hver en GET-action som viser skjema og kart, en POST-action som lagrer, og en GET-action (`Oversikt`) som viser dataene. Et klikk i Leaflet-kartet skriver breddegrad og lengdegrad inn i skjulte felt, og de følger med i POST.
+- BehovController og RessursController har hver en GET-action som viser skjema og kart, en POST-action som lagrer, og en GET-action (`Oversikt`) som viser dataene. Når en markør eller sirkel tegnes, flyttes eller slettes med verktøylinjen i Leaflet-kartet, oppdateres breddegrad, lengdegrad og radius i skjulte felt, og de følger med i POST.
 
-- Data lagres i lister i minnet og forsvinner når appen starter på nytt. Det er ingen database.
+- Data lagres i MariaDB (i Docker) via Entity Framework Core. Repository-klasser i `DataAccess` håndterer lagring og henting, og migrasjonene oppretter og oppdaterer tabellene automatisk når appen starter.
 
 ## Testing
 
-Automatiske tester med xUnit, i prosjektet `gruppe11-beredskap.Tests`. Kjørt med `dotnet test` 30. september 2026.
+Automatiske tester med xUnit, i prosjektet `gruppe11-beredskap.Tests`. Testene bruker falske repositories i minnet, så de kjører uten database. Kjørt i Rider 29. oktober 2026.
 
-| Test | Hva den sjekker | Resultat |
+| Testklasse | Hva den sjekker | Antall | Resultat |
+|---|---|---|---|
+| `BehovControllerTests` | GET og POST `Registrer` og `Oversikt` for behov: at gyldige behov lagres, at ugyldige ikke lagres, og at radius lagres og vises riktig | 8 | Bestått |
+| `RessursControllerTests` | GET og POST `Registrer` og `Oversikt` for ressurser, og at kjøretøy må ha drivstofftype og lastebiler lastekapasitet | 6 | Bestått |
+| `BehovViewModelTests` | Valideringen i `BehovViewModel`: at radius er valgfri, at radius må være større enn 0, og at posisjon på kartet er påkrevd | 5 | Bestått |
 
-| `Registrer_Get_ReturnsViewResult` | GET `Registrer` på `RessursController` returnerer en side (skjemaet) | Bestått |
-| `Registrer_Post_WithValidModel_RedirectsToOversikt` | POST `Registrer` med gyldig modell (type, tidspunkt og kontaktpunkt) sender brukeren videre til `Oversikt` | Bestått |
-| `Oversikt_ReturnsViewResult` | GET `Oversikt` returnerer oversikten over registrerte ressurser | Bestått |
-
-Resultat av kjøringen: 3 bestått, 0 feilet, 0 hoppet over.
+Resultat av kjøringen: 19 bestått, 0 feilet, 0 hoppet over.
 
 ## Bruk av KI
 
@@ -113,7 +121,12 @@ Gruppe 11
 
 ## Status
 
-Leveranse klar for IS-202: MVC-app i Docker med skjema, GET/POST og kart. Data lagres i minnet. GitHub-lenke: https://github.com/Isak-02/gruppe11-beredskap
+Under arbeid mot neste leveranse.
+
+- Forrige leveranse (IS-202): MVC-app i Docker med skjema, GET/POST og kart. Data ble lagret i minnet.
+- Nå: data lagres i MariaDB med Entity Framework Core og migrasjoner, kartene har fått verktøylinje (Leaflet.Draw) med lagring av radius på behov, matching mellom behov og ressurser er lagt til, og det er skrevet enhetstester.
+
+GitHub-lenke: https://github.com/Isak-02/gruppe11-beredskap
 
 ## Lisens
 
