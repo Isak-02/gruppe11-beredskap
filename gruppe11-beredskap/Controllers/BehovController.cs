@@ -41,7 +41,8 @@ public class BehovController : Controller
             Kontaktpunkt = model.Kontaktpunkt,
             Status = model.Status,
             Latitude = model.Latitude!.Value,
-            Longitude = model.Longitude!.Value
+            Longitude = model.Longitude!.Value,
+            Radius = model.Radius
         };
 
         await _repo.AddAsync(behov);
@@ -64,7 +65,8 @@ public class BehovController : Controller
             Kontaktpunkt = b.Kontaktpunkt,
             Status = b.Status,
             Latitude = b.Latitude,
-            Longitude = b.Longitude
+            Longitude = b.Longitude,
+            Radius = b.Radius
         }).ToList();
 
         return View(visning);

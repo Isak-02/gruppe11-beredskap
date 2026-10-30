@@ -55,6 +55,9 @@ namespace gruppe11_beredskap.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<double?>("Radius")
+                        .HasColumnType("double");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
