@@ -25,6 +25,7 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color: #DCECAC;
 }
 
 .form-floating > .form-control-plaintext::placeholder,
@@ -213,7 +214,7 @@ body {
    ==================================== */
 
 .kk-navbar {
-  background-color: #1A4404;
+  background-color: #347A38;
   padding: 12px 32px;
 }
 
