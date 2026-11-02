@@ -10,7 +10,7 @@
 
     <div class="col-md-6">
         <label asp-for="TypeBehov" class="form-label"></label>
-        <select asp-for="TypeBehov" class="form-select">
+        <select asp-for="TypeBehov" class="form-select" onchange="visBeskrivelseFelt()">
             <option value="">Velg type</option>
             <option>Transport</option>
             <option>Droneobservasjon</option>
@@ -24,6 +24,12 @@
             <option>Lokaler</option>
         </select>
         <span asp-validation-for="TypeBehov" class="text-danger"></span>
+    </div>
+
+    <div class="col-12" id="beskrivelseFeltWrapper" style="display: none;">
+        <label asp-for="Beskrivelse" class="form-label"></label>
+        <textarea asp-for="Beskrivelse" class="form-control" rows="3" placeholder="Beskriv behovet"></textarea>
+        <span asp-validation-for="Beskrivelse" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
@@ -69,6 +75,16 @@
 
 @section Scripts {
     <script>
+        // Viser beskrivelsesfeltet først når en type behov er valgt
+        function visBeskrivelseFelt() {
+            var select = document.getElementById("TypeBehov");
+            var wrapper = document.getElementById("beskrivelseFeltWrapper");
+
+            wrapper.style.display = select.value !== "" ? "block" : "none";
+        }
+
+        document.addEventListener("DOMContentLoaded", visBeskrivelseFelt);
+
         var map = L.map('map').setView([58.1467, 7.9956], 13);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

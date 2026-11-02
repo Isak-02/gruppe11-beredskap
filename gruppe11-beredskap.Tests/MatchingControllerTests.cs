@@ -41,6 +41,7 @@ public class MatchingControllerTests
     {
         Id = id,
         TypeBehov = "Transport",
+        Beskrivelse = "Trenger transport av utstyr",
         Prioritet = "Høy",
         Tidspunkt = DateTime.Now,
         Kontaktpunkt = "Testperson",
@@ -134,5 +135,20 @@ public class MatchingControllerTests
         var view = Assert.IsType<ViewResult>(result);
         Assert.Equal("Index", view.ViewName);
         Assert.Empty(matchingRepo.Lagret);
+    }
+
+    [Fact]
+    public async Task Index_SenderMedBeskrivelseAvBehov()
+    {
+        var behovRepo = new FakeBehovRepository();
+        behovRepo.Lagret.Add(LagBehov(1));
+        var controller = new MatchingController(behovRepo, new FakeRessursRepository(), new FakeMatchingRepository());
+
+        var result = await controller.Index();
+
+        var view = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsType<MatchingViewModel>(view.Model);
+        var behov = Assert.Single(model.ÅpneBehov);
+        Assert.Equal("Trenger transport av utstyr", behov.Beskrivelse);
     }
 }

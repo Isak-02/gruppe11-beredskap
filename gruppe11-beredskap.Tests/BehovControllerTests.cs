@@ -30,6 +30,7 @@ public class BehovControllerTests
     private static BehovViewModel LagModel() => new()
     {
         TypeBehov = "Transport",
+        Beskrivelse = "Trenger transport av utstyr",
         Prioritet = "Høy",
         Tidspunkt = DateTime.Now,
         Kontaktpunkt = "Testperson",
@@ -143,5 +144,35 @@ public class BehovControllerTests
         var liste = Assert.IsType<List<BehovViewModel>>(view.Model);
         var behov = Assert.Single(liste);
         Assert.Equal(250, behov.Radius);
+    }
+
+    [Fact]
+    public async Task Registrer_Post_LagrerBeskrivelse()
+    {
+        var repo = new FakeBehovRepository();
+        var controller = new BehovController(repo);
+
+        var model = LagModel();
+        model.Beskrivelse = "Trenger aggregat til skolen";
+
+        await controller.Registrer(model);
+
+        var lagret = Assert.Single(repo.Lagret);
+        Assert.Equal("Trenger aggregat til skolen", lagret.Beskrivelse);
+    }
+
+    [Fact]
+    public async Task Oversikt_ViserBeskrivelseFraLagretBehov()
+    {
+        var repo = new FakeBehovRepository();
+        var controller = new BehovController(repo);
+        await controller.Registrer(LagModel());
+
+        var result = await controller.Oversikt();
+
+        var view = Assert.IsType<ViewResult>(result);
+        var liste = Assert.IsType<List<BehovViewModel>>(view.Model);
+        var behov = Assert.Single(liste);
+        Assert.Equal("Trenger transport av utstyr", behov.Beskrivelse);
     }
 }

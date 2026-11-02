@@ -26,7 +26,7 @@
             else
             {
                 <div class="table-responsive">
-                    <table class="table table-sm table-hover align-middle">
+                    <table class="table table-sm table-hover align-top">
                         <thead>
                         <tr>
                             <th></th>
@@ -42,7 +42,14 @@
                         {
                             <tr>
                                 <td><input type="radio" name="BehovId" value="@b.Id" class="form-check-input" /></td>
-                                <td>#@b.Id @b.TypeBehov</td>
+                                <td>
+                                    #@b.Id @b.TypeBehov
+                                    @if (!string.IsNullOrWhiteSpace(b.Beskrivelse))
+                                    {
+                                        <div class="small text-muted">Beskrivelse:</div>
+                                        <div class="small text-muted">@b.Beskrivelse</div>
+                                    }
+                                </td>
                                 <td>@b.Prioritet</td>
                                 <td>@b.GeografiskOmrade</td>
                                 <td>@b.Tidspunkt.ToString("g")</td>
@@ -65,7 +72,7 @@
             else
             {
                 <div class="table-responsive">
-                    <table class="table table-sm table-hover align-middle">
+                    <table class="table table-sm table-hover align-top">
                         <thead>
                         <tr>
                             <th></th>
@@ -202,6 +209,7 @@ else
 
             L.marker([behov.latitude, behov.longitude], { icon: lagBehovIkon(behov.prioritet) })
                 .bindPopup(lagPopup("Behov #" + behov.id + ": " + behov.typeBehov, [
+                    behov.beskrivelse,
                     "Prioritet: " + behov.prioritet,
                     "Kontakt: " + behov.kontaktpunkt
                 ]))

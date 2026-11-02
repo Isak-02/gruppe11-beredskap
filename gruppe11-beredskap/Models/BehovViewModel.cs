@@ -12,6 +12,11 @@ public class BehovViewModel
     [Display(Name = "Type behov")]
     public string TypeBehov { get; set; }
 
+    [Required(ErrorMessage = "Du må skrive en beskrivelse av behovet")]
+    [StringLength(1000, ErrorMessage = "Beskrivelsen kan være maks 1000 tegn")]
+    [Display(Name = "Beskrivelse")]
+    public string Beskrivelse { get; set; }
+
     [Display(Name = "Geografisk område")]
     public string? GeografiskOmrade { get; set; }
 
