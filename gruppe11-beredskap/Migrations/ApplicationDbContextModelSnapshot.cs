@@ -30,6 +30,11 @@ namespace gruppe11_beredskap.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Beskrivelse")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
                     b.Property<string>("GeografiskOmrade")
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");

@@ -12,6 +12,10 @@ public class Behov
     [MaxLength(200)]
     public string TypeBehov { get; set; } = string.Empty;
 
+    [Required]
+    [MaxLength(1000)]
+    public string Beskrivelse { get; set; } = string.Empty;
+
     [MaxLength(200)]
     public string? GeografiskOmrade { get; set; }
 

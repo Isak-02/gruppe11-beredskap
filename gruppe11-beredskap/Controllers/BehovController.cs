@@ -35,6 +35,7 @@ public class BehovController : Controller
         var behov = new Behov
         {
             TypeBehov = model.TypeBehov,
+            Beskrivelse = model.Beskrivelse,
             GeografiskOmrade = model.GeografiskOmrade,
             Tidspunkt = model.Tidspunkt,
             Prioritet = model.Prioritet,
@@ -59,6 +60,7 @@ public class BehovController : Controller
         {
             Id = b.Id,
             TypeBehov = b.TypeBehov,
+            Beskrivelse = b.Beskrivelse,
             GeografiskOmrade = b.GeografiskOmrade,
             Tidspunkt = b.Tidspunkt,
             Prioritet = b.Prioritet,

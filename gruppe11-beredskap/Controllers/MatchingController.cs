@@ -62,6 +62,7 @@ public class MatchingController : Controller
             {
                 Id = b.Id,
                 TypeBehov = b.TypeBehov,
+                Beskrivelse = b.Beskrivelse,
                 Prioritet = b.Prioritet,
                 GeografiskOmrade = b.GeografiskOmrade,
                 Tidspunkt = b.Tidspunkt,

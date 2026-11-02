@@ -10,6 +10,7 @@ public class BehovViewModelTests
     private static BehovViewModel LagModel() => new()
     {
         TypeBehov = "Transport",
+        Beskrivelse = "Trenger transport av utstyr",
         Prioritet = "Høy",
         Tidspunkt = DateTime.Now,
         Kontaktpunkt = "Testperson",
@@ -71,5 +72,32 @@ public class BehovViewModelTests
 
         Assert.Equal(2, feil.Count);
         Assert.All(feil, f => Assert.Equal("Du må tegne en markør eller sirkel på kartet for å velge sted", f.ErrorMessage));
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UtenBeskrivelse_GirFeilmelding(string beskrivelse)
+    {
+        var model = LagModel();
+        model.Beskrivelse = beskrivelse;
+
+        var feil = Valider(model);
+
+        var beskrivelseFeil = Assert.Single(feil);
+        Assert.Contains("Beskrivelse", beskrivelseFeil.MemberNames);
+        Assert.Equal("Du må skrive en beskrivelse av behovet", beskrivelseFeil.ErrorMessage);
+    }
+
+    [Fact]
+    public void Beskrivelse_LengreEnn1000Tegn_GirFeilmelding()
+    {
+        var model = LagModel();
+        model.Beskrivelse = new string('a', 1001);
+
+        var feil = Valider(model);
+
+        var beskrivelseFeil = Assert.Single(feil);
+        Assert.Equal("Beskrivelsen kan være maks 1000 tegn", beskrivelseFeil.ErrorMessage);
     }
 }
