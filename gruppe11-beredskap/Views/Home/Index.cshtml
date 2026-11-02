@@ -2,6 +2,49 @@
     ViewData["Title"] = "Hjemmeside";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Velkommen til Kartkrise!</h1>
-</div>
+<section class="kk-home">
+    <div class="kk-home-content">
+
+        <div class="kk-intro">
+            <p class="kk-eyebrow">VELKOMMEN TIL KARTKRISE</p>
+
+            <h1>
+                Sammen står vi sterkere<br />
+                i krisesituasjoner
+            </h1>
+
+            <p class="kk-description">
+                KartKrise gjør det enklere å bidra når det virkelig
+                gjelder. Registrer ressurser som kan hjelpe andre
+                i en krisesituasjon.
+            </p>
+        </div>
+
+        <div class="row g-4 kk-actions">
+            <div class="col-12 col-lg-7">
+                <div class="kk-card kk-resource-card">
+
+                    <div class="kk-card-icon kk-green">
+                        +
+                    </div>
+
+                    <h2>Har du ressurser som kan hjelpe?</h2>
+
+                    <p>
+                        Enten du har tilgjengelig utstyr,
+                        transport eller annen kapasitet,
+                        kan ditt bidrag gjøre en forskjell.
+                    </p>
+
+                    <a asp-controller="Ressurs"
+                       asp-action="Registrer"
+                       class="kk-button kk-button-green">
+                        Registrer ressurs &rarr;
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
