@@ -1,9 +1,18 @@
 @model gruppe11_beredskap.Models.MatchingViewModel
 @{
-    ViewData["Title"] = "Matching";
+    ViewData["Title"] = "Kobling";
 }
 
-<h1>Matching av behov og ressurser</h1>
+<h1>Kobling av behov og ressurser</h1>
+
+<h2 class="h5">Oversikt over åpne behov og ledige ressurser</h2>
+<div id="map" style="height: 400px;"></div>
+<div class="d-flex flex-wrap gap-4 mt-2 mb-4">
+    <span><span class="behov-ikon behov-hoy"></span> Behov – høy prioritet</span>
+    <span><span class="behov-ikon behov-middels"></span> Behov – middels prioritet</span>
+    <span><span class="behov-ikon behov-lav"></span> Behov – lav prioritet</span>
+    <span><img src="https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png" alt="" style="height: 25px;" /> Ressurs</span>
+</div>
 
 <form asp-action="Koble" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -125,4 +134,103 @@ else
             </tbody>
         </table>
     </div>
+}
+
+@section Scripts {
+    <script>
+        var map = L.map('map').setView([58.1467, 7.9956], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Åpne behov og ledige ressurser fra controlleren (de samme som i tabellene under kartet)
+        var åpneBehov = @Json.Serialize(Model.ÅpneBehov);
+        var ledigeRessurser = @Json.Serialize(Model.LedigeRessurser);
+
+        // Lager utropstegn-ikonet for et behov, med farge etter prioritet:
+        // høy = rød, middels = oransje, lav = gul. Utseendet, også selve "!", ligger i site.css.
+        // Ikonet er rundt, så midten peker på posisjonen, og popupen åpnes rett over.
+        function lagBehovIkon(prioritet) {
+            var fargeKlasse = 'behov-hoy';
+
+            if (prioritet === "Middels") {
+                fargeKlasse = 'behov-middels';
+            } else if (prioritet === "Lav") {
+                fargeKlasse = 'behov-lav';
+            }
+
+            return L.divIcon({
+                className: 'behov-ikon ' + fargeKlasse,
+                html: '',
+                iconSize: [26, 26],
+                iconAnchor: [13, 13],
+                popupAnchor: [0, -13]
+            });
+        }
+
+        // Gruppe med alle markørene, slik at kartet kan zoome så alle vises
+        var alleMarkorer = L.featureGroup().addTo(map);
+
+        // Sjekker at posisjonen finnes og er innenfor gyldige verdier
+        function harGyldigPosisjon(lat, lng) {
+            return typeof lat === 'number' && typeof lng === 'number' &&
+                lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+        }
+
+        // Lager innholdet i popupen. textContent gjør at tekst fra skjemaene vises som tekst, ikke som HTML.
+        function lagPopup(overskrift, linjer) {
+            var innhold = document.createElement('div');
+
+            var tittel = document.createElement('strong');
+            tittel.textContent = overskrift;
+            innhold.appendChild(tittel);
+
+            linjer.forEach(function (tekst) {
+                var linje = document.createElement('div');
+                linje.textContent = tekst;
+                innhold.appendChild(linje);
+            });
+
+            return innhold;
+        }
+
+        // Behov: utropstegn-ikon. Behov uten gyldig posisjon hoppes over.
+        åpneBehov.forEach(function (behov) {
+            if (!harGyldigPosisjon(behov.latitude, behov.longitude)) {
+                return;
+            }
+
+            L.marker([behov.latitude, behov.longitude], { icon: lagBehovIkon(behov.prioritet) })
+                .bindPopup(lagPopup("Behov #" + behov.id + ": " + behov.typeBehov, [
+                    "Prioritet: " + behov.prioritet,
+                    "Kontakt: " + behov.kontaktpunkt
+                ]))
+                .addTo(alleMarkorer);
+        });
+
+        // Ressurser: samme markør som på Registrer ressurs-siden (standardmarkøren i Leaflet)
+        ledigeRessurser.forEach(function (ressurs) {
+            if (!harGyldigPosisjon(ressurs.latitude, ressurs.longitude)) {
+                return;
+            }
+
+            var type = ressurs.typeRessurs;
+            if (type === "Annet" && ressurs.annenType) {
+                type = "Annet: " + ressurs.annenType;
+            }
+
+            L.marker([ressurs.latitude, ressurs.longitude])
+                .bindPopup(lagPopup("Ressurs #" + ressurs.id + ": " + type, [
+                    "Kontakt: " + ressurs.kontaktpunkt
+                ]))
+                .addTo(alleMarkorer);
+        });
+
+        // Zoomer så alle markørene vises. Er det ingen, beholdes standardvisningen.
+        // maxZoom hindrer at kartet zoomer helt inn når det bare er én markør.
+        if (alleMarkorer.getLayers().length > 0) {
+            map.fitBounds(alleMarkorer.getBounds(), { padding: [30, 30], maxZoom: 13 });
+        }
+    </script>
 }
