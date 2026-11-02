@@ -39,6 +39,57 @@ body {
   text-align: start;
 }
 
+/* Utropstegn-ikon for behov på kartet på matching-siden (brukes også i tegnforklaringen).
+   Fargen settes etter prioritet med klassene under. */
+.behov-ikon {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 26px;
+  height: 26px;
+  border: 2px solid white;
+  border-radius: 50%;
+  background-color: #dc3545;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  color: black;
+  vertical-align: middle;
+}
+
+/* "!" tegnes med to små figurer i stedet for med tekst, slik at det står nøyaktig midt i
+   sirkelen uansett font. Innsiden av sirkelen er 22px høy: 3px luft + strek 10px +
+   mellomrom 2px + prikk 4px + 3px luft = 22px. Fargen følger color (currentColor). */
+.behov-ikon::before {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 10px;
+  margin: 3px auto 0;
+  border-radius: 2px;
+  background-color: currentColor;
+}
+
+.behov-ikon::after {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 4px;
+  margin: 2px auto 0;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+/* Farge etter prioritet: høy = rød, middels = oransje, lav = gul */
+.behov-hoy {
+  background-color: #dc3545;
+}
+
+.behov-middels {
+  background-color: #fd7e14;
+}
+
+.behov-lav {
+  background-color: #ffc107;
+}
+
 
 /* ====================================
    KARTKRISE FORSIDE

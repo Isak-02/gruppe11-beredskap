@@ -65,7 +65,9 @@ public class MatchingController : Controller
                 Prioritet = b.Prioritet,
                 GeografiskOmrade = b.GeografiskOmrade,
                 Tidspunkt = b.Tidspunkt,
-                Kontaktpunkt = b.Kontaktpunkt
+                Kontaktpunkt = b.Kontaktpunkt,
+                Latitude = b.Latitude,
+                Longitude = b.Longitude
             }).ToList();
 
         model.LedigeRessurser = ressurser
@@ -79,7 +81,9 @@ public class MatchingController : Controller
                 Lastekapasitet = r.Lastekapasitet,
                 GeografiskOmrade = r.GeografiskOmrade,
                 Tidspunkt = r.Tidspunkt,
-                Kontaktpunkt = r.Kontaktpunkt
+                Kontaktpunkt = r.Kontaktpunkt,
+                Latitude = r.Latitude,
+                Longitude = r.Longitude
             }).ToList();
 
         model.Matchinger = matchinger.Select(m => new MatchingVisning
