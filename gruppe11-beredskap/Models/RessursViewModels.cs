@@ -21,11 +21,11 @@ public class RessursViewModel
 
     [Display(Name = "Geografisk område")] public string? GeografiskOmrade { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Du må velge tidspunkt/frist")]
     [Display(Name = "Tidspunkt/frist")]
     public DateTime Tidspunkt { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Du må skrive inn et kontaktpunkt")]
     [Display(Name = "Kontaktpunkt")]
     public string Kontaktpunkt { get; set; }
 

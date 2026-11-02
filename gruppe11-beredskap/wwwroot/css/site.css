@@ -48,7 +48,7 @@ body {
   height: 26px;
   border: 2px solid white;
   border-radius: 50%;
-  background-color: #dc3545;
+  background-color: #ff1a1a;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
   color: black;
   vertical-align: middle;
@@ -79,7 +79,7 @@ body {
 
 /* Farge etter prioritet: høy = rød, middels = oransje, lav = gul */
 .behov-hoy {
-  background-color: #dc3545;
+  background-color: #ff1a1a;
 }
 
 .behov-middels {
