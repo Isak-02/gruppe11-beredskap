@@ -18,7 +18,10 @@ public class RessursController : Controller
     [HttpGet]
     public IActionResult Registrer()
     {
-        return View(new RessursViewModel());
+        return View(new RessursViewModel
+        {
+            Tidspunkt = DateTime.Now
+        });
     }
 
     [HttpPost]
