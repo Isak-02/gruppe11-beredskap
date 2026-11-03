@@ -5,12 +5,20 @@
 
 <h1>Registrer ressurs</h1>
 
-<form asp-action="Registrer" method="post" class="row g-3">
+<form asp-action="Registrer" method="post" class="wizard" data-wizard>
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="col-md-6">
+    <nav class="wizard-progress" data-wizard-progress aria-label="Fremdrift"></nav>
+    <p class="wizard-status" data-wizard-status></p>
+
+    <section class="wizard-panel is-active" data-wizard-panel data-wizard-label="Type">
+        <h2 id="steg-type">Type</h2>
+        <p class="wizard-lead">Hva kan dere stille med?</p>
         <label asp-for="TypeRessurs" class="form-label"></label>
-        <select asp-for="TypeRessurs" class="form-select" id="typeRessursSelect" onchange="toggleAnnetFelt()">
+        <select asp-for="TypeRessurs" class="form-select" id="typeRessursSelect" onchange="toggleAnnetFelt()"
+                data-summary="Type"
+                data-step-required="true"
+                data-step-message="Du må velge type ressurs.">
             <option value="">Velg type</option>
             <option>Drone og droneoperatør</option>
             <option>ATV</option>
@@ -30,61 +38,104 @@
             <option value="Annet">Annet</option>
         </select>
         <span asp-validation-for="TypeRessurs" class="text-danger"></span>
-    </div>
+    </section>
 
-    <div class="col-md-6" id="annetFeltWrapper" style="display: none;">
+    <section class="wizard-panel" data-wizard-panel data-wizard-label="Annen type" id="annetSteg" hidden>
+        <h2 id="steg-annet">Spesifiser type</h2>
+        <p class="wizard-lead">Skriv inn type ressurs.</p>
         <label asp-for="AnnenType" class="form-label">Spesifiser type</label>
-        <input asp-for="AnnenType" class="form-control" placeholder="Skriv inn type ressurs"/>
-    </div>
+        <input asp-for="AnnenType" class="form-control" placeholder="Skriv inn type ressurs"
+               data-summary="Spesifisert type"
+               data-step-required="true"
+               data-step-message="Skriv inn type ressurs." />
+    </section>
 
-    <div class="col-12" id="beskrivelseFeltWrapper" style="display: none;">
+    <section class="wizard-panel" data-wizard-panel data-wizard-label="Beskrivelse">
+        <h2 id="steg-beskrivelse">Beskrivelse</h2>
+        <p class="wizard-lead">Beskriv ressursen.</p>
         <label asp-for="Beskrivelse" class="form-label"></label>
-        <textarea asp-for="Beskrivelse" class="form-control" rows="3" placeholder="Beskriv ressursen"></textarea>
+        <textarea asp-for="Beskrivelse" class="form-control" rows="4" placeholder="Beskriv ressursen"
+                  data-summary="Beskrivelse"
+                  data-step-required="true"
+                  data-step-message="Du må skrive en beskrivelse av ressursen."></textarea>
         <span asp-validation-for="Beskrivelse" class="text-danger"></span>
-    </div>
+    </section>
 
-    <div class="col-md-6" id="drivstoffFeltWrapper" style="display: none;">
+    <section class="wizard-panel" data-wizard-panel data-wizard-label="Drivstoff" id="drivstoffSteg" hidden>
+        <h2 id="steg-drivstoff">Drivstofftype</h2>
+        <p class="wizard-lead">Hvilken drivstofftype bruker den?</p>
         <label asp-for="Drivstofftype" class="form-label"></label>
-        <select asp-for="Drivstofftype" class="form-select">
+        <select asp-for="Drivstofftype" class="form-select"
+                data-summary="Drivstofftype"
+                data-step-required="true"
+                data-step-message="Du må velge drivstofftype for denne ressursen.">
             <option value="">Velg drivstofftype</option>
             <option>Bensin</option>
             <option>Diesel</option>
             <option>Elektrisk</option>
         </select>
         <span asp-validation-for="Drivstofftype" class="text-danger"></span>
-    </div>
+    </section>
 
-    <div class="col-md-6" id="lastekapasitetFeltWrapper" style="display: none;">
+    <section class="wizard-panel" data-wizard-panel data-wizard-label="Last" id="lastSteg" hidden>
+        <h2 id="steg-last">Lastekapasitet</h2>
+        <p class="wizard-lead">Hvor mye kan den laste?</p>
         <label asp-for="Lastekapasitet" class="form-label"></label>
-        <input asp-for="Lastekapasitet" class="form-control" type="number" min="0.01" step="0.01"/>
+        <input asp-for="Lastekapasitet" class="form-control" type="number" min="0.01" step="0.01"
+               data-summary="Lastekapasitet (tonn)"
+               data-step-required="true"
+               data-step-message="Du må skrive inn en lastekapasitet som er større enn 0." />
         <span asp-validation-for="Lastekapasitet" class="text-danger"></span>
-    </div>
+    </section>
 
-    <div class="col-md-6">
+    <section class="wizard-panel" data-wizard-panel data-wizard-label="Tidspunkt">
+        <h2 id="steg-tid">Tidspunkt/frist</h2>
+        <p class="wizard-lead">Når er ressursen tilgjengelig?</p>
         <label asp-for="Tidspunkt" class="form-label"></label>
         <input asp-for="Tidspunkt" class="form-control" type="datetime-local"
-               asp-format="{0:yyyy-MM-ddTHH:mm}" step="60"/>
+               asp-format="{0:yyyy-MM-ddTHH:mm}" step="60"
+               data-summary="Tidspunkt/frist"
+               data-step-required="true"
+               data-step-message="Du må velge tidspunkt." />
         <span asp-validation-for="Tidspunkt" class="text-danger"></span>
-    </div>
+    </section>
 
-    <div class="col-md-6">
+    <section class="wizard-panel" data-wizard-panel data-wizard-label="Kontakt">
+        <h2 id="steg-kontakt">Kontaktpunkt</h2>
+        <p class="wizard-lead">Hvem disponerer ressursen? Skriv navn og telefonnummer.</p>
         <label asp-for="Kontaktpunkt" class="form-label"></label>
-        <input asp-for="Kontaktpunkt" class="form-control"/>
+        <input asp-for="Kontaktpunkt" class="form-control" placeholder="F.eks. Kari Nordmann, 900 00 000"
+               data-summary="Kontaktpunkt"
+               data-step-required="true"
+               data-step-message="Du må skrive inn et kontaktpunkt." />
         <span asp-validation-for="Kontaktpunkt" class="text-danger"></span>
-    </div>
+    </section>
 
-    <div class="col-12">
-        <label class="form-label">Geografisk område — bruk markøren i verktøylinjen på kartet for å velge sted</label>
-        <div id="map" style="height: 400px;"></div>
-        <input type="hidden" asp-for="Latitude" id="latitude"/>
-        <input type="hidden" asp-for="Longitude" id="longitude"/>
-        <input type="hidden" asp-for="GeografiskOmrade" id="geografiskOmrade"/>
-        <p id="valgtStedTekst" class="text-muted mt-2">Ingen posisjon valgt ennå</p>
-        <span asp-validation-for="Latitude" class="text-danger d-block"></span>
-    </div>
+    <section class="wizard-panel" data-wizard-panel data-wizard-label="Kart" data-wizard-map="true"
+             data-step-message="Du må sette en markør på kartet for å velge sted.">
+        <h2 id="steg-kart">Hvor på kartet</h2>
+        <p class="wizard-lead">Bruk markøren i verktøylinjen på kartet for å velge sted.</p>
+        <div id="map"></div>
+        <input type="hidden" asp-for="Latitude" id="latitude" data-wizard-lat />
+        <input type="hidden" asp-for="Longitude" id="longitude" />
+        <input type="hidden" asp-for="GeografiskOmrade" id="geografiskOmrade" />
+        <p id="valgtStedTekst" class="text-muted mt-2 mb-0">Ingen posisjon valgt ennå</p>
+        <span asp-validation-for="Latitude" class="text-danger"></span>
+    </section>
 
-    <div class="col-12">
-        <button type="submit" class="btn btn-primary">Registrer ressurs</button>
+    <section class="wizard-panel" data-wizard-panel data-wizard-label="Oversikt" data-wizard-summary="true">
+        <h2 id="steg-oversikt">Oversikt</h2>
+        <p class="wizard-lead">Se over valgene. Endre sender deg tilbake til det steget.</p>
+        <dl class="wizard-summary" data-wizard-summary-list></dl>
+    </section>
+
+    <div class="wizard-actions">
+        <p class="wizard-error text-danger" data-wizard-error hidden></p>
+        <div class="wizard-buttons">
+            <button type="button" class="btn btn-outline-primary" data-wizard-back hidden>Tilbake</button>
+            <button type="button" class="btn btn-primary" data-wizard-next>Neste</button>
+            <button type="submit" class="btn btn-primary" data-wizard-submit hidden>Registrer ressurs</button>
+        </div>
     </div>
 </form>
 
@@ -92,15 +143,16 @@
     <script>
         function toggleAnnetFelt() {
             var select = document.getElementById("typeRessursSelect");
-            var wrapper = document.getElementById("annetFeltWrapper");
-            var drivstoffWrapper = document.getElementById("drivstoffFeltWrapper");
-            var lastekapasitetWrapper = document.getElementById("lastekapasitetFeltWrapper");
-            var beskrivelseWrapper = document.getElementById("beskrivelseFeltWrapper");
+            var annetSteg = document.getElementById("annetSteg");
+            var drivstoffSteg = document.getElementById("drivstoffSteg");
+            var lastSteg = document.getElementById("lastSteg");
 
-            wrapper.style.display = select.value === "Annet" ? "block" : "none";
+            var visAnnet = select.value === "Annet";
+            annetSteg.hidden = !visAnnet;
 
-            // Beskrivelsesfeltet vises først når en type ressurs er valgt
-            beskrivelseWrapper.style.display = select.value !== "" ? "block" : "none";
+            if (!visAnnet) {
+                document.getElementById("AnnenType").value = "";
+            }
 
             var kjøretøyOgMaskiner = [
                 "Drone og droneoperatør",
@@ -116,7 +168,7 @@
             ];
 
             var trengerDrivstoff = kjøretøyOgMaskiner.includes(select.value);
-            drivstoffWrapper.style.display = trengerDrivstoff ? "block" : "none";
+            drivstoffSteg.hidden = !trengerDrivstoff;
 
             if (!trengerDrivstoff) {
                 document.getElementById("Drivstofftype").value = "";
@@ -132,118 +184,152 @@
             ];
 
             var trengerLastekapasitet = ressurserMedLastekapasitet.includes(select.value);
-            lastekapasitetWrapper.style.display = trengerLastekapasitet ? "block" : "none";
+            lastSteg.hidden = !trengerLastekapasitet;
 
             if (!trengerLastekapasitet) {
                 document.getElementById("Lastekapasitet").value = "";
             }
+
+            select.form.dispatchEvent(new CustomEvent("wizard:refresh"));
         }
 
         document.addEventListener("DOMContentLoaded", toggleAnnetFelt);
+        toggleAnnetFelt();
 
-        var map = L.map('map').setView([58.1467, 7.9956], 13);
+        var ressursKart = null;
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
-
-        // Gruppe som holder markøren brukeren har satt
-        var tegnedeFigurer = new L.FeatureGroup();
-        map.addLayer(tegnedeFigurer);
-
-        // Norske tekster i verktøylinjen. Må settes før verktøylinjen lages.
-        L.drawLocal.draw.toolbar.actions.title = "Avbryt tegning";
-        L.drawLocal.draw.toolbar.actions.text = "Avbryt";
-        L.drawLocal.draw.toolbar.buttons.marker = "Sett en markør";
-        L.drawLocal.draw.handlers.marker.tooltip.start = "Klikk på kartet for å sette markøren.";
-        L.drawLocal.edit.toolbar.actions.save.title = "Lagre endringene";
-        L.drawLocal.edit.toolbar.actions.save.text = "Lagre";
-        L.drawLocal.edit.toolbar.actions.cancel.title = "Avbryt redigering og forkast endringene";
-        L.drawLocal.edit.toolbar.actions.cancel.text = "Avbryt";
-        L.drawLocal.edit.toolbar.actions.clearAll.title = "Slett alle figurer";
-        L.drawLocal.edit.toolbar.actions.clearAll.text = "Slett alle";
-        L.drawLocal.edit.toolbar.buttons.edit = "Rediger";
-        L.drawLocal.edit.toolbar.buttons.editDisabled = "Ingenting å redigere";
-        L.drawLocal.edit.toolbar.buttons.remove = "Slett";
-        L.drawLocal.edit.toolbar.buttons.removeDisabled = "Ingenting å slette";
-        L.drawLocal.edit.handlers.edit.tooltip.text = "Dra i figuren for å flytte eller endre den.";
-        L.drawLocal.edit.handlers.edit.tooltip.subtext = "Klikk Avbryt for å angre endringene.";
-        L.drawLocal.edit.handlers.remove.tooltip.text = "Klikk på figuren for å slette den.";
-
-        // Verktøylinje på kartet: markør, rediger og slett (ingen sirkel for ressurs)
-        var tegneverktøy = new L.Control.Draw({
-            draw: {
-                polygon: false,
-                polyline: false,
-                rectangle: false,
-                circlemarker: false,
-                circle: false,
-                marker: true
-            },
-            edit: {
-                featureGroup: tegnedeFigurer,
-                remove: true
+        function startRessursKart() {
+            if (ressursKart) {
+                window.setTimeout(function () { ressursKart.invalidateSize(); }, 0);
+                return;
             }
-        });
-        map.addControl(tegneverktøy);
 
-        // Fyller skjemafeltene med posisjonen til markøren
-        function oppdaterPosisjon(layer) {
-            var latlng = layer.getLatLng();
-            var lat = latlng.lat;
-            var lng = latlng.lng;
+            var map = L.map('map').setView([58.1467, 7.9956], 13);
+            ressursKart = map;
 
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-            document.getElementById('geografiskOmrade').value = lat.toFixed(5) + ", " + lng.toFixed(5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
 
-            document.getElementById('valgtStedTekst').textContent = "Valgt posisjon: " + lat.toFixed(5) + ", " + lng.toFixed(5);
-            document.getElementById('valgtStedTekst').classList.remove('text-muted');
-            document.getElementById('valgtStedTekst').classList.add('text-success');
-        }
+            // Gruppe som holder markøren brukeren har satt
+            var tegnedeFigurer = new L.FeatureGroup();
+            map.addLayer(tegnedeFigurer);
 
-        // Tømmer skjemafeltene når figuren slettes
-        function tomPosisjon() {
-            document.getElementById('latitude').value = '';
-            document.getElementById('longitude').value = '';
-            document.getElementById('geografiskOmrade').value = '';
+            // Norske tekster i verktøylinjen. Må settes før verktøylinjen lages.
+            L.drawLocal.draw.toolbar.actions.title = "Avbryt tegning";
+            L.drawLocal.draw.toolbar.actions.text = "Avbryt";
+            L.drawLocal.draw.toolbar.buttons.marker = "Sett en markør";
+            L.drawLocal.draw.handlers.marker.tooltip.start = "Klikk på kartet for å sette markøren.";
+            L.drawLocal.edit.toolbar.actions.save.title = "Lagre endringene";
+            L.drawLocal.edit.toolbar.actions.save.text = "Lagre";
+            L.drawLocal.edit.toolbar.actions.cancel.title = "Avbryt redigering og forkast endringene";
+            L.drawLocal.edit.toolbar.actions.cancel.text = "Avbryt";
+            L.drawLocal.edit.toolbar.actions.clearAll.title = "Slett alle figurer";
+            L.drawLocal.edit.toolbar.actions.clearAll.text = "Slett alle";
+            L.drawLocal.edit.toolbar.buttons.edit = "Rediger";
+            L.drawLocal.edit.toolbar.buttons.editDisabled = "Ingenting å redigere";
+            L.drawLocal.edit.toolbar.buttons.remove = "Slett";
+            L.drawLocal.edit.toolbar.buttons.removeDisabled = "Ingenting å slette";
+            L.drawLocal.edit.handlers.edit.tooltip.text = "Dra i figuren for å flytte eller endre den.";
+            L.drawLocal.edit.handlers.edit.tooltip.subtext = "Klikk Avbryt for å angre endringene.";
+            L.drawLocal.edit.handlers.remove.tooltip.text = "Klikk på figuren for å slette den.";
 
-            document.getElementById('valgtStedTekst').textContent = "Ingen posisjon valgt ennå";
-            document.getElementById('valgtStedTekst').classList.remove('text-success');
-            document.getElementById('valgtStedTekst').classList.add('text-muted');
-        }
+            // Verktøylinje på kartet: markør, rediger og slett (ingen sirkel for ressurs)
+            var tegneverktøy = new L.Control.Draw({
+                draw: {
+                    polygon: false,
+                    polyline: false,
+                    rectangle: false,
+                    circlemarker: false,
+                    circle: false,
+                    marker: true
+                },
+                edit: {
+                    featureGroup: tegnedeFigurer,
+                    remove: true
+                }
+            });
+            map.addControl(tegneverktøy);
 
-        // Ny figur tegnet. Bare én figur om gangen, så den forrige fjernes først.
-        map.on('draw:created', function (e) {
-            var layer = e.layer;
+            var latInput = document.getElementById('latitude');
 
-            tegnedeFigurer.clearLayers();
-            tegnedeFigurer.addLayer(layer);
-            oppdaterPosisjon(layer);
-        });
+            function varsleSkjema() {
+                latInput.dispatchEvent(new Event("input", { bubbles: true }));
+            }
 
-        // Figuren er flyttet med rediger-verktøyet
-        map.on('draw:edited', function (e) {
-            e.layers.eachLayer(function (layer) {
+            // Fyller skjemafeltene med posisjonen til markøren
+            function oppdaterPosisjon(layer) {
+                var latlng = layer.getLatLng();
+                var lat = latlng.lat;
+                var lng = latlng.lng;
+
+                latInput.value = lat;
+                document.getElementById('longitude').value = lng;
+                document.getElementById('geografiskOmrade').value = lat.toFixed(5) + ", " + lng.toFixed(5);
+
+                document.getElementById('valgtStedTekst').textContent = "Valgt posisjon: " + lat.toFixed(5) + ", " + lng.toFixed(5);
+                document.getElementById('valgtStedTekst').classList.remove('text-muted');
+                document.getElementById('valgtStedTekst').classList.add('text-success');
+                varsleSkjema();
+            }
+
+            // Tømmer skjemafeltene når figuren slettes
+            function tomPosisjon() {
+                latInput.value = '';
+                document.getElementById('longitude').value = '';
+                document.getElementById('geografiskOmrade').value = '';
+
+                document.getElementById('valgtStedTekst').textContent = "Ingen posisjon valgt ennå";
+                document.getElementById('valgtStedTekst').classList.remove('text-success');
+                document.getElementById('valgtStedTekst').classList.add('text-muted');
+                varsleSkjema();
+            }
+
+            // Ny figur tegnet. Bare én figur om gangen, så den forrige fjernes først.
+            map.on('draw:created', function (e) {
+                var layer = e.layer;
+
+                tegnedeFigurer.clearLayers();
+                tegnedeFigurer.addLayer(layer);
                 oppdaterPosisjon(layer);
             });
-        });
 
-        // Figuren er slettet med slett-verktøyet
-        map.on('draw:deleted', function () {
-            tomPosisjon();
-        });
+            // Figuren er flyttet med rediger-verktøyet
+            map.on('draw:edited', function (e) {
+                e.layers.eachLayer(function (layer) {
+                    oppdaterPosisjon(layer);
+                });
+            });
 
-        // Ved valideringsfeil kommer siden tilbake med posisjonen i de skjulte feltene.
-        // Da settes markøren på kartet igjen, slik at brukeren ser den og kan flytte eller slette den.
-        var lagretLat = document.getElementById('latitude').value;
-        var lagretLng = document.getElementById('longitude').value;
+            // Figuren er slettet med slett-verktøyet
+            map.on('draw:deleted', function () {
+                tomPosisjon();
+            });
 
-        if (lagretLat && lagretLng) {
-            var lagretMarkor = L.marker([Number(lagretLat), Number(lagretLng)]);
+            // Ved valideringsfeil kommer siden tilbake med posisjonen i de skjulte feltene.
+            // Da settes markøren på kartet igjen, slik at brukeren ser den og kan flytte eller slette den.
+            var lagretLat = latInput.value;
+            var lagretLng = document.getElementById('longitude').value;
 
-            tegnedeFigurer.addLayer(lagretMarkor);
-            oppdaterPosisjon(lagretMarkor);
+            if (lagretLat && lagretLng) {
+                var lagretMarkor = L.marker([Number(lagretLat), Number(lagretLng)]);
+
+                tegnedeFigurer.addLayer(lagretMarkor);
+                oppdaterPosisjon(lagretMarkor);
+            }
+
+            window.addEventListener("resize", function () {
+                map.invalidateSize();
+            });
+
+            window.setTimeout(function () { map.invalidateSize(); }, 0);
+            window.setTimeout(function () { map.invalidateSize(); }, 200);
         }
+
+        var skjema = document.querySelector("[data-wizard]");
+        skjema.addEventListener("wizard:shown", function (e) {
+            if (e.target.querySelector("#map")) startRessursKart();
+        });
+        if (document.querySelector(".wizard-panel.is-active #map")) startRessursKart();
     </script>
 }
