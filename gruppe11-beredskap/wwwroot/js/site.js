@@ -22,26 +22,46 @@
             button.type = "button";
             button.textContent = (i + 1) + ". " + (panel.dataset.wizardLabel || "");
             button.addEventListener("click", function () {
+                if (panels[i].hidden) return;
                 if (i !== index) show(i, true);
             });
             progress.appendChild(button);
             return button;
         });
 
+        function nesteSynlige(fra, steg) {
+            var i = fra + steg;
+            while (i >= 0 && i < panels.length) {
+                if (!panels[i].hidden) return i;
+                i += steg;
+            }
+            return -1;
+        }
+
+        function sisteSynligeIndex() {
+            for (var i = panels.length - 1; i >= 0; i--) {
+                if (!panels[i].hidden) return i;
+            }
+            return 0;
+        }
+
         function show(i, moveFocus) {
+            if (panels[i].hidden) {
+                var hopp = nesteSynlige(i, 1);
+                if (hopp < 0) hopp = nesteSynlige(i, -1);
+                if (hopp < 0) return;
+                i = hopp;
+            }
             index = i;
             panels.forEach(function (panel, n) {
                 panel.classList.toggle("is-active", n === index);
             });
             oppdaterSteg();
-            backBtn.hidden = index === 0;
-            var last = index === panels.length - 1;
+            backBtn.hidden = nesteSynlige(index, -1) < 0;
+            var last = index === sisteSynligeIndex();
             nextBtn.hidden = last;
             submitBtn.hidden = !last;
             if (!harForsoktSende && error) error.hidden = true;
-            if (status) {
-                status.textContent = "Steg " + (index + 1) + " av " + panels.length;
-            }
 
             var panel = panels[index];
             if (panel.dataset.wizardSummary === "true") fyllOversikt();
@@ -59,7 +79,7 @@
         }
 
         function manglerIPanel(panel) {
-            if (panel.dataset.wizardSummary === "true") return false;
+            if (panel.hidden || panel.dataset.wizardSummary === "true") return false;
 
             var requiredBits = panel.querySelectorAll("[data-step-required]");
             for (var i = 0; i < requiredBits.length; i++) {
@@ -91,13 +111,29 @@
         }
 
         function oppdaterSteg() {
+            var antall = 0;
+            var gjeldende = 0;
+            var nr = 0;
+            panels.forEach(function (panel) {
+                if (!panel.hidden) antall++;
+            });
             crumbs.forEach(function (button, n) {
+                var skjult = panels[n].hidden;
+                button.hidden = skjult;
+                if (!skjult) {
+                    nr++;
+                    button.textContent = nr + ". " + (panels[n].dataset.wizardLabel || "");
+                    if (n === index) gjeldende = nr;
+                }
                 var ferdig = erFullfort(panels[n]);
-                var mangler = panels[n].dataset.wizardSummary !== "true" && !ferdig;
+                var mangler = !skjult && panels[n].dataset.wizardSummary !== "true" && !ferdig;
                 button.classList.toggle("is-current", n === index);
                 button.classList.toggle("is-done", ferdig && n !== index);
                 button.classList.toggle("is-missing", harForsoktSende && mangler);
             });
+            if (status) {
+                status.textContent = "Steg " + gjeldende + " av " + antall;
+            }
             if (harForsoktSende && error) {
                 if (manglerNoen()) {
                     error.hidden = false;
@@ -124,7 +160,7 @@
             if (panel.dataset.wizardMap === "true") {
                 var lat = panel.querySelector("[data-wizard-lat]");
                 if (!lat || lat.value === "") {
-                    fail("Tegn en markør eller sirkel på kartet for å velge sted.");
+                    fail(panel.dataset.stepMessage || "Tegn en markør eller sirkel på kartet for å velge sted.");
                     return false;
                 }
             }
@@ -134,12 +170,28 @@
         }
 
         backBtn.addEventListener("click", function () {
-            if (index > 0) show(index - 1, true);
+            var forrige = nesteSynlige(index, -1);
+            if (forrige >= 0) show(forrige, true);
         });
 
         nextBtn.addEventListener("click", function () {
             if (!validate(panels[index])) return;
-            if (index < panels.length - 1) show(index + 1, true);
+            var neste = nesteSynlige(index, 1);
+            if (neste >= 0) show(neste, true);
+        });
+
+        form.addEventListener("wizard:refresh", function () {
+            if (panels[index].hidden) {
+                var hopp = nesteSynlige(index, 1);
+                if (hopp < 0) hopp = nesteSynlige(index, -1);
+                if (hopp >= 0) show(hopp, false);
+                return;
+            }
+            oppdaterSteg();
+            backBtn.hidden = nesteSynlige(index, -1) < 0;
+            var last = index === sisteSynligeIndex();
+            nextBtn.hidden = last;
+            submitBtn.hidden = !last;
         });
 
         form.addEventListener("input", function () {
@@ -153,7 +205,7 @@
 
         form.addEventListener("keydown", function (e) {
             if (e.key !== "Enter" || e.target.tagName === "TEXTAREA") return;
-            if (index >= panels.length - 1) return;
+            if (nesteSynlige(index, 1) < 0) return;
             e.preventDefault();
             nextBtn.click();
         });
@@ -215,7 +267,7 @@
             if (!list) return;
             list.replaceChildren();
             panels.forEach(function (panel, panelIndex) {
-                if (panel.dataset.wizardSummary === "true") return;
+                if (panel.hidden || panel.dataset.wizardSummary === "true") return;
                 if (panel.dataset.wizardMap === "true") {
                     var tekst = panel.querySelector("#valgtStedTekst");
                     var sted = tekst && tekst.classList.contains("text-success")
