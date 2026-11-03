@@ -321,6 +321,17 @@ body {
   --bs-btn-hover-color: #FFFFFF;
 }
 
+.btn-outline-primary {
+  --bs-btn-color: #005B27;
+  --bs-btn-border-color: #005B27;
+  --bs-btn-hover-color: #FFFFFF;
+  --bs-btn-hover-bg: #005B27;
+  --bs-btn-hover-border-color: #005B27;
+  --bs-btn-active-color: #FFFFFF;
+  --bs-btn-active-bg: #1A4404;
+  --bs-btn-active-border-color: #1A4404;
+}
+
 /* KartKrise innloggingsknapp */
 
 .kk-login-button {
@@ -533,6 +544,144 @@ html {
 
 .kk-profile-menu .dropdown-divider {
   border-color: #E2EBDD;
+}
+
+.wizard-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+}
+
+.wizard-progress button {
+  appearance: none;
+  font-family: inherit;
+  border: 1px solid #ced4da;
+  background: #fff;
+  color: #3d4a40;
+  border-radius: 0.25rem;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.wizard-progress button.is-current {
+  background: #005B27;
+  border-color: #005B27;
+  color: #fff;
+}
+
+.wizard-progress button.is-done {
+  background: #CCE193;
+  border-color: #005B27;
+  color: #1A4404;
+}
+
+.wizard-progress button.is-missing {
+  border-color: #DA4527;
+  color: #DA4527;
+}
+
+.wizard-progress button.is-current.is-missing {
+  background: #DA4527;
+  border-color: #DA4527;
+  color: #fff;
+}
+
+.wizard-status {
+  margin: 0 0 1rem;
+  color: #3d4a40;
+}
+
+.wizard-panel {
+  display: none;
+  background: #fff;
+  border: 1px solid #d5e0c4;
+  border-radius: 0.25rem;
+  padding: 1.25rem 1.25rem 1.4rem;
+}
+
+.wizard-panel.is-active {
+  display: block;
+}
+
+.wizard-panel h2 {
+  font-size: 1.35rem;
+  margin-bottom: 0.35rem;
+  color: #005B27;
+}
+
+.wizard-lead {
+  margin: 0 0 1rem;
+}
+
+.wizard-error {
+  margin: 0 0 0.5rem;
+}
+
+.wizard-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: #DCECAC;
+  padding: 0.75rem 0 0.25rem;
+}
+
+.wizard-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.wizard-summary {
+  margin: 0;
+}
+
+.wizard-summary-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid #e4e4e0;
+}
+
+.wizard-summary-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.wizard-summary-row dt {
+  flex: 0 0 11rem;
+  margin: 0;
+  font-weight: 700;
+  color: #005B27;
+}
+
+.wizard-summary-row dd {
+  flex: 1 1 12rem;
+  margin: 0;
+}
+
+.wizard-summary-edit {
+  margin-left: auto;
+}
+
+.wizard-summary-row.is-missing dt,
+.wizard-summary-row.is-missing dd {
+  color: #DA4527;
+}
+
+.wizard .field-validation-error {
+  display: block;
+  margin-top: 0.35rem;
+}
+
+.wizard #map {
+  height: 420px;
+  border: 1px solid #ccc;
 }
 /* Skjul elementer som ikke skal vises */
 [hidden] {
