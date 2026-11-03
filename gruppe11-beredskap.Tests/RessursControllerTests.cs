@@ -30,6 +30,7 @@ public class RessursControllerTests
     private static RessursViewModel LagModel(string type) => new()
     {
         TypeRessurs = type,
+        Beskrivelse = "Kan brukes hele døgnet",
         Tidspunkt = DateTime.Now,
         Kontaktpunkt = "Testperson",
         Latitude = 58.14,

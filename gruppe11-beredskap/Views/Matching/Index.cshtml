@@ -93,6 +93,11 @@
                                     @(r.TypeRessurs == "Annet" && !string.IsNullOrWhiteSpace(r.AnnenType)
                                         ? $"Annet: {r.AnnenType}"
                                         : r.TypeRessurs)
+                                    @if (!string.IsNullOrWhiteSpace(r.Beskrivelse))
+                                    {
+                                        <div class="small text-muted">Beskrivelse:</div>
+                                        <div class="small text-muted">@r.Beskrivelse</div>
+                                    }
                                 </td>
                                 <td>@(r.Drivstofftype ?? "-")</td>
                                 <td>@(r.Lastekapasitet.HasValue ? $"{r.Lastekapasitet} t" : "-")</td>
@@ -229,6 +234,7 @@ else
 
             L.marker([ressurs.latitude, ressurs.longitude])
                 .bindPopup(lagPopup("Ressurs #" + ressurs.id + ": " + type, [
+                    ressurs.beskrivelse,
                     "Kontakt: " + ressurs.kontaktpunkt
                 ]))
                 .addTo(alleMarkorer);

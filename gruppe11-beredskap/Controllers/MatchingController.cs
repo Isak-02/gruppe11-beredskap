@@ -77,6 +77,7 @@ public class MatchingController : Controller
             {
                 Id = r.Id,
                 TypeRessurs = r.TypeRessurs,
+                Beskrivelse = r.Beskrivelse,
                 AnnenType = r.AnnenType,
                 Drivstofftype = r.Drivstofftype,
                 Lastekapasitet = r.Lastekapasitet,
