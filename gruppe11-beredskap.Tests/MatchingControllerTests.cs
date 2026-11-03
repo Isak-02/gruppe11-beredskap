@@ -53,6 +53,7 @@ public class MatchingControllerTests
     {
         Id = id,
         TypeRessurs = "Traktor",
+        Beskrivelse = "Kan brukes hele døgnet",
         Tidspunkt = DateTime.Now,
         Kontaktpunkt = "Testperson",
         Latitude = 58.20,

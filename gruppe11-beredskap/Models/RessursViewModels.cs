@@ -11,6 +11,11 @@ public class RessursViewModel
     [Display(Name = "Type ressurs")]
     public string TypeRessurs { get; set; }
 
+    [Required(ErrorMessage = "Du må skrive en beskrivelse av ressursen")]
+    [StringLength(1000, ErrorMessage = "Beskrivelsen kan være maks 1000 tegn")]
+    [Display(Name = "Beskrivelse")]
+    public string Beskrivelse { get; set; }
+
     [Display(Name = "Spesifiser annen type")]
     public string? AnnenType { get; set; }
 

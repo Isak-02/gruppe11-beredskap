@@ -17,6 +17,7 @@ else
         <tr>
             <th>ID</th>
             <th>Type</th>
+            <th>Beskrivelse</th>
             <th>Drivstofftype</th>
             <th>Lastekapasitet</th>
             <th>Område</th>
@@ -31,6 +32,7 @@ else
             <tr>
                 <td>@ressurs.Id.ToString("D4")</td>
                 <td>@ressurs.TypeRessurs</td>
+                <td>@ressurs.Beskrivelse</td>
                 <td>@(ressurs.Drivstofftype ?? "-")</td>
                 <td>@(ressurs.Lastekapasitet.HasValue ? $"{ressurs.Lastekapasitet} tonn" : "-")</td>
                 <td>@ressurs.GeografiskOmrade</td>

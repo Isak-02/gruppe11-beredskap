@@ -37,6 +37,12 @@
         <input asp-for="AnnenType" class="form-control" placeholder="Skriv inn type ressurs"/>
     </div>
 
+    <div class="col-12" id="beskrivelseFeltWrapper" style="display: none;">
+        <label asp-for="Beskrivelse" class="form-label"></label>
+        <textarea asp-for="Beskrivelse" class="form-control" rows="3" placeholder="Beskriv ressursen"></textarea>
+        <span asp-validation-for="Beskrivelse" class="text-danger"></span>
+    </div>
+
     <div class="col-md-6" id="drivstoffFeltWrapper" style="display: none;">
         <label asp-for="Drivstofftype" class="form-label"></label>
         <select asp-for="Drivstofftype" class="form-select">
@@ -89,8 +95,12 @@
             var wrapper = document.getElementById("annetFeltWrapper");
             var drivstoffWrapper = document.getElementById("drivstoffFeltWrapper");
             var lastekapasitetWrapper = document.getElementById("lastekapasitetFeltWrapper");
+            var beskrivelseWrapper = document.getElementById("beskrivelseFeltWrapper");
 
             wrapper.style.display = select.value === "Annet" ? "block" : "none";
+
+            // Beskrivelsesfeltet vises først når en type ressurs er valgt
+            beskrivelseWrapper.style.display = select.value !== "" ? "block" : "none";
 
             var kjøretøyOgMaskiner = [
                 "Drone og droneoperatør",

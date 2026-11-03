@@ -75,6 +75,7 @@ public class RessursController : Controller
         var ressurs = new Ressurs
         {
             TypeRessurs = model.TypeRessurs,
+            Beskrivelse = model.Beskrivelse,
             AnnenType = model.AnnenType,
             Drivstofftype = model.Drivstofftype,
             Lastekapasitet = model.Lastekapasitet,
@@ -100,6 +101,7 @@ public class RessursController : Controller
         {
             Id = r.Id,
             TypeRessurs = r.TypeRessurs,
+            Beskrivelse = r.Beskrivelse,
             AnnenType = r.AnnenType,
             Drivstofftype = r.Drivstofftype,
             Lastekapasitet = r.Lastekapasitet,

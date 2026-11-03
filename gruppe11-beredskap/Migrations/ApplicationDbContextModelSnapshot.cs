@@ -121,6 +121,11 @@ namespace gruppe11_beredskap.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
+                    b.Property<string>("Beskrivelse")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
                     b.Property<string>("Drivstofftype")
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
