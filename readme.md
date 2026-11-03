@@ -35,7 +35,7 @@ gruppe11-beredskap/
 ├── Controllers/     BehovController, RessursController, MatchingController, HomeController
 ├── DataAccess/      ApplicationDbContext og repositories
 ├── Migrations/      EF Core-migrasjoner som oppretter og oppdaterer tabellene
-├── Models/          BehovViewModel, RessursViewModel, MatchingViewModel, PositionModel
+├── Models/          BehovViewModel, RessursViewModel, MatchingViewModel
 │   └── Entities/    Behov, Ressurs, Matching (tabellene i databasen)
 ├── Views/           Behov, Ressurs, Matching, Home, Shared
 ├── wwwroot/         css, js
