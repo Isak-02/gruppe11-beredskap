@@ -62,6 +62,14 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+// Kobling-siden får adressen /Kobling. Controlleren heter fortsatt MatchingController,
+// og den gamle adressen /Matching virker fortsatt via standardruten under.
+app.MapControllerRoute(
+        name: "kobling",
+        pattern: "Kobling/{action=Index}/{id?}",
+        defaults: new { controller = "Matching" })
+    .WithStaticAssets();
+
 app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")
