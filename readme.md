@@ -1,48 +1,54 @@
-# Kriseberedskap - Ressurs- og behovsportal
+# KartKrise – Ressurs- og behovsportal
 
 ## Om prosjektet
 
-Dette prosjektet utvikles som en del av IS-20X Case 2026
+Dette prosjektet utvikles som en del av IS-20X Case 2026.
 
-Målet er å utvikle en webbasert løsning som støtter kriseberedskap og samhandler i Totalforsvaret. Løsningen gjør det mulig for offentlige aktører å registrere behov for bistand, samtidig som privatpersoner, organisasjoner og bedrifter kan registrere tilgjengelige ressurser.
+KartKrise er en webløsning for kriseberedskap i Totalforsvaret. Offentlige aktører kan registrere behov for hjelp, og privatpersoner, organisasjoner og bedrifter kan registrere ressurser de har tilgjengelig. Behov og ressurser vises i kart, og kan kobles sammen.
 
-## Funksjonalitet 
+## Funksjonalitet
 
-- Registrering av behov via skjema (POST) og visning på en egen oversiktsside (GET)
-- Registrering av ressurser via skjema (POST) og visning på en egen oversiktsside (GET)
-- Kart (Leaflet) med verktøylinje (Leaflet.Draw) på registreringssidene. Posisjonen settes med en markør, og for behov også med en sirkel. Breddegrad, lengdegrad og eventuell radius (meter) lagres sammen med skjemaet, og posisjonen vises i oversikten
-- Matching av behov og ressurser på en egen side, der behov og ressurser som ikke allerede er koblet kan kobles sammen
+- Registrering av behov og ressurser via skjema (GET/POST), med egne oversiktssider
+- Kart (Leaflet med Leaflet.Draw) der posisjon settes med markør, og for behov også med sirkel (radius)
+- Kobling av behov og ressurser på siden `/Kobling`, med kart og oversikt over åpne behov og ledige ressurser
 - Validering av påkrevde felt før data lagres
-- Responsivt grensesnitt med Bootstrap
+- Lagring i MariaDB med Entity Framework Core
+- Eget KartKrise-design med Bootstrap
 
-## Teknologistack 
+**Under utvikling:** Innlogging og profilmeny finnes foreløpig bare som design. Det er ikke mulig å logge inn ennå, og koblingssiden er åpen for alle.
 
-- ASP.NET Core MVC (.NET 10)
-- C#
+## Teknologistack
+
+- ASP.NET Core MVC (.NET 10) og C#
 - Razor Views
-- Docker og Docker Compose
-- MariaDB
 - Entity Framework Core (Pomelo MySQL-provider)
+- MariaDB
+- Docker og Docker Compose
 - Leaflet, Leaflet.Draw og OpenStreetMap
 - Bootstrap
 - xUnit
-- GitHub
+- JetBrains Rider og GitHub
 
 ## Prosjektstruktur
 
 ```text
 gruppe11-beredskap/
-├── Controllers/     BehovController, RessursController, MatchingController, HomeController
-├── DataAccess/      ApplicationDbContext og repositories
-├── Migrations/      EF Core-migrasjoner som oppretter og oppdaterer tabellene
-├── Models/          BehovViewModel, RessursViewModel, MatchingViewModel
-│   └── Entities/    Behov, Ressurs, Matching (tabellene i databasen)
-├── Views/           Behov, Ressurs, Matching, Home, Shared
-├── wwwroot/         css, js
-├── Program.cs
+├── Properties/                    launchSettings.json (kjøreprofiler for Rider)
+├── wwwroot/                       css, js, bilder
+├── Controllers/                   BehovController, RessursController, MatchingController, HomeController
+├── DataAccess/                    ApplicationDbContext og repositories
+├── Migrations/                    EF Core-migrasjoner
+├── Models/                        BehovViewModel, RessursViewModel, MatchingViewModel
+│   └── Entities/                  Behov, Ressurs, Matching (tabellene i databasen)
+├── Views/                         Behov, Ressurs, Matching, Home, Shared
+├── appsettings.json
+├── appsettings.Development.json
 ├── Dockerfile
-├── compose.yaml     (ligger i rotmappen)
-└── gruppe11-beredskap.Tests/   xUnit-tester (ligger i rotmappen)
+└── Program.cs
+
+gruppe11-beredskap.Tests/          xUnit-tester
+
+compose.yaml                       (ligger i rotmappen)
 ```
 
 ## Installasjon
@@ -53,37 +59,40 @@ gruppe11-beredskap/
 git clone https://github.com/Isak-02/gruppe11-beredskap
 ```
 
-### Start Docker-containerne
+### Alternativ 1: Docker Compose
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
-### Åpne i nettleser
+Åpne http://localhost:8080 i nettleseren.
 
-```text
-http://localhost:8080
-```
+### Alternativ 2: Run-knappen i JetBrains Rider
+
+1. Start databasen: `docker compose up -d db`
+2. Åpne `gruppe11-beredskap.sln` i Rider
+3. Trykk på **Run** (▶). Appen åpnes på http://localhost:5178
+
+Tabellene i databasen opprettes automatisk når appen starter.
 
 ## Systemarkitektur
 
-- Nettleseren sender GET og POST til en ASP.NET Core MVC-controller. Controlleren validerer view-modellen og sender den til et Razor-view.
-
-- BehovController og RessursController har hver en GET-action som viser skjema og kart, en POST-action som lagrer, og en GET-action (`Oversikt`) som viser dataene. Når en markør eller sirkel tegnes, flyttes eller slettes med verktøylinjen i Leaflet-kartet, oppdateres breddegrad, lengdegrad og radius i skjulte felt, og de følger med i POST.
-
-- Data lagres i MariaDB (i Docker) via Entity Framework Core. Repository-klasser i `DataAccess` håndterer lagring og henting, og migrasjonene oppretter og oppdaterer tabellene automatisk når appen starter.
+- Nettleseren sender GET og POST til en controller. Controlleren validerer view-modellen og sender den til et Razor-view.
+- Når man tegner på kartet, lagres posisjon (og eventuell radius) i skjulte felt som sendes med skjemaet.
+- Data lagres i MariaDB via Entity Framework Core og repository-klasser i `DataAccess`.
 
 ## Testing
 
-Automatiske tester med xUnit, i prosjektet `gruppe11-beredskap.Tests`. Testene bruker falske repositories i minnet, så de kjører uten database. Kjørt i Rider 29. oktober 2026.
+Enhetstester med xUnit ligger i `gruppe11-beredskap.Tests`. Testene bruker falske repositories, så de trenger ingen database. Kjør dem i Rider eller med `dotnet test`.
 
-| Testklasse | Hva den sjekker | Antall | Resultat |
-|---|---|---|---|
-| `BehovControllerTests` | GET og POST `Registrer` og `Oversikt` for behov: at gyldige behov lagres, at ugyldige ikke lagres, og at radius lagres og vises riktig | 8 | Bestått |
-| `RessursControllerTests` | GET og POST `Registrer` og `Oversikt` for ressurser, og at kjøretøy må ha drivstofftype og lastebiler lastekapasitet | 6 | Bestått |
-| `BehovViewModelTests` | Valideringen i `BehovViewModel`: at radius er valgfri, at radius må være større enn 0, og at posisjon på kartet er påkrevd | 5 | Bestått |
+| Testklasse | Hva den sjekker | Antall |
+|---|---|---|
+| `BehovControllerTests` | Registrering og oversikt av behov, inkludert radius og beskrivelse | 10 |
+| `RessursControllerTests` | Registrering og oversikt av ressurser, krav om drivstoff og lastekapasitet | 6 |
+| `BehovViewModelTests` | Validering av radius, posisjon og beskrivelse | 8 |
+| `MatchingControllerTests` | Visning av åpne behov og ledige ressurser, og lagring av koblinger | 5 |
 
-Resultat av kjøringen: 19 bestått, 0 feilet, 0 hoppet over.
+Siste kjøring (3. november 2026): 29 bestått, 0 feilet.
 
 ## Bruk av KI
 
@@ -93,6 +102,7 @@ KI ble brukt som hjelp fra idé til koding. All kode er lest og tilpasset av gru
 
 - Forklare MVC-flyten mellom controller, view-modell og view
 - Foreslå skjema, validering og hvordan kartklikk kan fylle skjulte felt
+- Hjelp med database, tester og dokumentasjon
 - Finne mangler i oppgaven
 - Få tilbakemeldinger
 - Opprette klasser
@@ -123,8 +133,9 @@ Gruppe 11
 
 Under arbeid mot neste leveranse.
 
-- Forrige leveranse (IS-202): MVC-app i Docker med skjema, GET/POST og kart. Data ble lagret i minnet.
-- Nå: data lagres i MariaDB med Entity Framework Core og migrasjoner, kartene har fått verktøylinje (Leaflet.Draw) med lagring av radius på behov, matching mellom behov og ressurser er lagt til, og det er skrevet enhetstester.
+- **Forrige leveranse (IS-202):** MVC-app i Docker med skjema, GET/POST og kart. Data ble lagret i minnet.
+- **Ferdig nå:** Lagring i MariaDB, kart med verktøylinje og radius, beskrivelse på behov og ressurser, koblingsside, nytt design og 29 enhetstester.
+- **Under utvikling:** Innlogging og tilgangskontroll for kriseleder.
 
 GitHub-lenke: https://github.com/Isak-02/gruppe11-beredskap
 
