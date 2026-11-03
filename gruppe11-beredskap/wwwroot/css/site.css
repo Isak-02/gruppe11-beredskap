@@ -320,3 +320,221 @@ body {
   --bs-btn-color: #FFFFFF;
   --bs-btn-hover-color: #FFFFFF;
 }
+
+/* KartKrise innloggingsknapp */
+
+.kk-login-button {
+  background-color: #FFFFFF;
+  color: #005B27;
+  border: 1px solid #FFFFFF;
+  border-radius: 9px;
+  padding: 9px 22px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.kk-login-button:hover {
+  background-color: #DCECAC;
+  border-color: #DCECAC;
+  color: #1A4404;
+}
+
+.kk-login-button:focus-visible {
+  outline: 3px solid #DCECAC;
+  outline-offset: 3px;
+}
+
+/* ====================================
+   KARTKRISE INNLOGGINGSSEKSJON
+   ==================================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+.kk-login-section {
+  min-height: 100vh;
+  padding: 70px 20px 110px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  scroll-margin-top: 0;
+}
+
+.kk-login-card {
+  width: 100%;
+  max-width: 550px;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 91, 39, 0.10);
+  border-radius: 22px;
+  padding: 55px 50px;
+  box-shadow: 0 18px 50px rgba(26, 68, 4, 0.10);
+}
+
+.kk-login-heading {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.kk-login-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  background-color: #E8F3CE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 20px;
+}
+
+.kk-login-eyebrow {
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: #005B27;
+}
+
+.kk-login-heading h2 {
+  color: #1A4404;
+  font-size: 29px;
+  font-weight: 750;
+  margin-bottom: 10px;
+}
+
+.kk-login-heading > p:last-child {
+  color: #64748B;
+  font-size: 14px;
+}
+
+.kk-login-form .form-label {
+  font-weight: 600;
+  color: #263B2B;
+  font-size: 14px;
+}
+
+.kk-login-form .form-control {
+  border-radius: 10px;
+  padding: 13px 14px;
+  border: 1px solid #D7E3D5;
+}
+
+.kk-login-form .form-control:focus {
+  border-color: #005B27;
+  box-shadow: 0 0 0 3px rgba(0, 91, 39, 0.12);
+}
+
+.kk-login-submit {
+  width: 100%;
+  background-color: #005B27;
+  color: #FFFFFF;
+  border: 0;
+  border-radius: 10px;
+  padding: 14px;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.kk-login-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.kk-login-footer {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+}
+
+.kk-login-footer p {
+  color: #64748B;
+  margin-bottom: 5px;
+}
+
+.kk-register-placeholder {
+  color: #005B27;
+  font-weight: 600;
+}
+
+.kk-login-notice {
+  text-align: center;
+  color: #64748B;
+  font-size: 12px;
+  margin-top: 25px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 576px) {
+  .kk-login-section {
+    padding: 45px 10px 70px;
+  }
+
+  .kk-login-card {
+    padding: 28px 22px;
+  }
+}
+/* Bytte mellom innlogging og registrering */
+
+.kk-switch-button {
+  background: none;
+  border: none;
+  color: #005B27;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.kk-switch-button:hover {
+  color: #1A4404;
+  text-decoration: underline;
+}
+
+.kk-switch-button:focus-visible {
+  outline: 2px solid #005B27;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+[hidden] {
+  display: none !important;
+}
+/* KartKrise profilmeny */
+
+.kk-profile-menu {
+  min-width: 260px;
+  padding: 12px 0;
+  border: 1px solid #E2EBDD;
+  border-radius: 14px;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.13);
+}
+
+.kk-profile-menu strong {
+  color: #1A4404;
+  font-size: 14px;
+}
+
+.kk-profile-email {
+  color: #64748B;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.kk-profile-menu .dropdown-item {
+  padding: 10px 18px;
+  font-size: 14px;
+}
+
+.kk-profile-menu .dropdown-item:not(:disabled):hover {
+  background-color: #E8F3CE;
+  color: #005B27;
+}
+
+.kk-profile-menu .dropdown-divider {
+  border-color: #E2EBDD;
+}
+/* Skjul elementer som ikke skal vises */
+[hidden] {
+  display: none !important;
+}
