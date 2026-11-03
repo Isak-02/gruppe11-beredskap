@@ -38,10 +38,86 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Matching" asp-action="Index">Kobling</a>
                     </li>
+                
                 </ul>
+
+               
+<!-- Innlogging og profilmeny -->
+<div class="ms-sm-auto mt-3 mt-sm-0 d-flex align-items-center gap-2">
+
+    <!-- Vanlig innloggingsknapp -->
+    <a id="kk-navbar-login"
+       asp-controller="Home"
+       asp-action="Index"
+       asp-fragment="innlogging"
+       class="btn kk-login-button">
+        Logg inn
+    </a>
+
+    <!-- Profilmeny, vises i testmodus -->
+    <div id="kk-navbar-profile" class="dropdown" hidden>
+        <button class="btn kk-login-button dropdown-toggle d-flex align-items-center gap-2"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+            <span aria-hidden="true">&#9679;</span>
+            Min profil
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end kk-profile-menu">
+            <li class="px-3 py-2">
+                <strong>Eksempelbruker</strong>
+                <div class="kk-profile-email">bruker@eksempel.no</div>
+            </li>
+
+            <li><hr class="dropdown-divider"></li>
+
+            <li>
+                <button class="dropdown-item" type="button" disabled>
+                    Min profil
+                </button>
+            </li>
+
+            <li>
+                <a class="dropdown-item"
+                   asp-controller="Ressurs"
+                   asp-action="Oversikt">
+                    Mine ressurser
+                </a>
+            </li>
+
+            <li>
+                <button class="dropdown-item" type="button" disabled>
+                    Innstillinger
+                </button>
+            </li>
+
+            <li><hr class="dropdown-divider"></li>
+
+            <li>
+                <button class="dropdown-item text-danger"
+                        type="button"
+                        onclick="kkShowLoginPreview()">
+                    Tilbake til innlogging
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Midlertidig testknapp -->
+    <button id="kk-profile-preview-toggle"
+            type="button"
+            class="btn btn-sm btn-outline-light"
+            onclick="kkToggleProfilePreview()">
+        Test profil
+    </button>
+</div>
+
+
             </div>
         </div>
     </nav>
+
 </header>
 @{
     var isHomePage = ViewContext.RouteData.Values["controller"]?.ToString() == "Home"
@@ -59,6 +135,29 @@
 <script src="~/js/site.js" asp-append-version="true"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+<script>
+    function kkShowProfilePreview() {
+        document.getElementById("kk-navbar-login").hidden = true;
+        document.getElementById("kk-navbar-profile").hidden = false;
+    }
+
+    function kkShowLoginPreview() {
+        document.getElementById("kk-navbar-profile").hidden = true;
+        document.getElementById("kk-navbar-login").hidden = false;
+    }
+
+    function kkToggleProfilePreview() {
+        const profile = document.getElementById("kk-navbar-profile");
+
+        if (profile.hidden) {
+            kkShowProfilePreview();
+        } else {
+            kkShowLoginPreview();
+        }
+    }
+</script>
+
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
