@@ -27,4 +27,5 @@ public class MatchingVisning
     public string Behov { get; set; } = string.Empty;
     public string Ressurs { get; set; } = string.Empty;
     public DateTime OpprettetTidspunkt { get; set; }
+    public DateTime? LostTidspunkt { get; set; }
 }

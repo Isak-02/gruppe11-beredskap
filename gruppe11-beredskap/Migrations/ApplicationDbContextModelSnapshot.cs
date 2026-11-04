@@ -92,6 +92,9 @@ namespace gruppe11_beredskap.Migrations
                     b.Property<int>("BehovId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("LostTidspunkt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<DateTime>("OpprettetTidspunkt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")

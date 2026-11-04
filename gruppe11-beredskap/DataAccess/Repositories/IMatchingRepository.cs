@@ -10,4 +10,5 @@ public interface IMatchingRepository
     Task<HashSet<int>> GetMatchedeBehovIdsAsync();
     Task<HashSet<int>> GetMatchedeRessursIdsAsync();
     Task DeleteByBehovIdAsync(int behovId);
+    Task MarkerLostAsync(int behovId);
 }

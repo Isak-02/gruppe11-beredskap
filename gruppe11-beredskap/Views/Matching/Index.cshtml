@@ -116,11 +116,16 @@
     <button type="submit" class="btn btn-primary mt-3 mb-4">Koble valgt behov og ressurs</button>
 </form>
 
-<h2 class="h5">Eksisterende koblinger</h2>
+@{
+    var aktive = Model.Matchinger.Where(m => m.LostTidspunkt == null).ToList();
+    var løste = Model.Matchinger.Where(m => m.LostTidspunkt != null).ToList();
+}
 
-@if (!Model.Matchinger.Any())
+<h2 class="h5">Aktive koblinger</h2>
+
+@if (!aktive.Any())
 {
-    <p>Ingen koblinger ennå.</p>
+    <p>Ingen aktive koblinger.</p>
 }
 else
 {
@@ -135,7 +140,7 @@ else
             </tr>
             </thead>
             <tbody>
-            @foreach (var m in Model.Matchinger)
+            @foreach (var m in aktive)
             {
                 <tr>
                     <td>@m.Behov</td>
@@ -148,6 +153,39 @@ else
                             <button type="submit" class="btn btn-sm btn-success">Løst</button>
                         </form>
                     </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+
+<h2 class="h5 mt-4">Løste koblinger</h2>
+
+@if (!løste.Any())
+{
+    <p>Ingen løste koblinger ennå.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Behov</th>
+                <th>Ressurs</th>
+                <th>Koblet</th>
+                <th>Løst</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var m in løste)
+            {
+                <tr>
+                    <td>@m.Behov</td>
+                    <td>@m.Ressurs</td>
+                    <td>@m.OpprettetTidspunkt.ToString("g")</td>
+                    <td>@m.LostTidspunkt!.Value.ToString("g")</td>
                 </tr>
             }
             </tbody>
