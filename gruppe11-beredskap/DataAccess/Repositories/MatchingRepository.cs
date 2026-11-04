@@ -48,4 +48,17 @@ public class MatchingRepository : IMatchingRepository
         _db.Matchinger.RemoveRange(koblinger);
         await _db.SaveChangesAsync();
     }
+
+    // Markerer koblingen som løst og beholder den som historikk
+    public async Task MarkerLostAsync(int behovId)
+    {
+        var koblinger = await _db.Matchinger
+            .Where(m => m.BehovId == behovId && m.LostTidspunkt == null)
+            .ToListAsync();
+
+        foreach (var kobling in koblinger)
+            kobling.LostTidspunkt = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync();
+    }
 }

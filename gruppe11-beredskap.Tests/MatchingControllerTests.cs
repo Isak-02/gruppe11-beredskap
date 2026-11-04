@@ -38,6 +38,13 @@ public class FakeMatchingRepository : IMatchingRepository
         Lagret.RemoveAll(m => m.BehovId == behovId);
         return Task.CompletedTask;
     }
+
+    public Task MarkerLostAsync(int behovId)
+    {
+        foreach (var m in Lagret.Where(m => m.BehovId == behovId && m.LostTidspunkt == null))
+            m.LostTidspunkt = DateTime.UtcNow;
+        return Task.CompletedTask;
+    }
 }
 
 public class MatchingControllerTests
@@ -73,8 +80,10 @@ public class MatchingControllerTests
         var ressursRepo = new FakeRessursRepository();
         var matchingRepo = new FakeMatchingRepository();
         behovRepo.Lagret.Add(LagBehov(1));
+        behovRepo.Lagret[0].Status = BehovStatus.Tildelt;
         behovRepo.Lagret.Add(LagBehov(2));
         ressursRepo.Lagret.Add(LagRessurs(1));
+        ressursRepo.Lagret[0].Status = RessursStatus.Tildelt;
         ressursRepo.Lagret.Add(LagRessurs(2));
         matchingRepo.Lagret.Add(new Matching { Id = 1, BehovId = 1, RessursId = 1 });
         var controller = new MatchingController(behovRepo, ressursRepo, matchingRepo);

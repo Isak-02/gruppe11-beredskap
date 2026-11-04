@@ -12,4 +12,7 @@ public class Matching
     public Ressurs? Ressurs { get; set; }
 
     public DateTime OpprettetTidspunkt { get; set; } = DateTime.UtcNow;
+
+    // Tom så lenge koblingen er aktiv. Settes når behovet er løst, så historikken bevares.
+    public DateTime? LostTidspunkt { get; set; }
 }

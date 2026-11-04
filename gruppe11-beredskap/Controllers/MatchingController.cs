@@ -76,23 +76,20 @@ public class MatchingController : Controller
     {
         await _behovRepo.UpdateStatusAsync(behovId, BehovStatus.Løst);
         await _ressursRepo.UpdateStatusAsync(ressursId, RessursStatus.Tilgjengelig);
-        await _matchingRepo.DeleteByBehovIdAsync(behovId);
+        await _matchingRepo.MarkerLostAsync(behovId);
         return RedirectToAction(nameof(Index));
     }
 
     // Fyller listene: bare behov og ressurser som kan kobles, pluss eksisterende koblinger
     private async Task<MatchingViewModel> ByggModell(MatchingViewModel model)
     {
-        var matchedeBehov = await _matchingRepo.GetMatchedeBehovIdsAsync();
-        var matchedeRessurser = await _matchingRepo.GetMatchedeRessursIdsAsync();
 
         var behov = await _behovRepo.GetAllAsync();
         var ressurser = await _ressursRepo.GetAllAsync();
         var matchinger = await _matchingRepo.GetAllAsync();
 
         model.ÅpneBehov = behov
-            .Where(b => !matchedeBehov.Contains(b.Id)
-                        && (b.Status == BehovStatus.Ny || b.Status == BehovStatus.Vurderes))
+            .Where(b => b.Status == BehovStatus.Ny || b.Status == BehovStatus.Vurderes)
             .Select(b => new BehovViewModel
             {
                 Id = b.Id,
@@ -108,8 +105,7 @@ public class MatchingController : Controller
             }).ToList();
 
         model.LedigeRessurser = ressurser
-            .Where(r => !matchedeRessurser.Contains(r.Id)
-                        && r.Status == RessursStatus.Tilgjengelig)
+            .Where(r => r.Status == RessursStatus.Tilgjengelig)
             .Select(r => new RessursViewModel
             {
                 Id = r.Id,
@@ -133,7 +129,8 @@ public class MatchingController : Controller
             RessursId = m.RessursId,
             Behov = $"#{m.BehovId} {m.Behov?.TypeBehov}",
             Ressurs = $"#{m.RessursId} {m.Ressurs?.TypeRessurs}",
-            OpprettetTidspunkt = m.OpprettetTidspunkt
+            OpprettetTidspunkt = m.OpprettetTidspunkt,
+            LostTidspunkt = m.LostTidspunkt
         }).ToList();
 
         return model;
