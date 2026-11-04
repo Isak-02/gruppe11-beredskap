@@ -7,6 +7,16 @@
 
 <div class="kart-ramme mb-4">
     <div id="map"></div>
+    <button type="button"
+            id="fullskjermKnapp"
+            class="kart-info-knapp kart-fullskjerm-knapp"
+            aria-label="Vis kartet i fullskjerm"
+            title="Vis kartet i fullskjerm">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" />
+        </svg>
+    </button>
     <div class="kart-info">
         <button type="button"
                 class="kart-info-knapp"
@@ -318,5 +328,28 @@ else
                 kartInfoKnapp.setAttribute("aria-expanded", "false");
             }, true);
         }
+
+        // Fullskjerm for kartet. Hele rammen vises i fullskjerm, så infoknappen og tegnforklaringen er med.
+        // Esc eller nytt klikk på knappen avslutter.
+        var kartRamme = document.querySelector(".kart-ramme");
+        var fullskjermKnapp = document.getElementById("fullskjermKnapp");
+
+        fullskjermKnapp.addEventListener("click", function () {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                kartRamme.requestFullscreen();
+            }
+        });
+
+        // Når fullskjerm slås av eller på: oppdater teksten på knappen, og la kartet tilpasse seg ny størrelse
+        document.addEventListener("fullscreenchange", function () {
+            var erFullskjerm = document.fullscreenElement === kartRamme;
+            var tekst = erFullskjerm ? "Avslutt fullskjerm" : "Vis kartet i fullskjerm";
+
+            fullskjermKnapp.setAttribute("aria-label", tekst);
+            fullskjermKnapp.setAttribute("title", tekst);
+            map.invalidateSize();
+        });
     </script>
 }

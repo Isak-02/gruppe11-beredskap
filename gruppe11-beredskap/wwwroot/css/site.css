@@ -108,9 +108,10 @@ body {
 
 .kart-info {
   position: absolute;
-  /* Luften i kortet (1.25rem) + 12px, slik at knappen fortsatt står 12px inn på selve kartet */
+  /* Luften i kortet (1.25rem) + 12px inn på kartet. Står til venstre for fullskjermknappen
+     (36px knapp + 8px mellomrom). */
   top: calc(1.25rem + 12px);
-  right: calc(1.25rem + 12px);
+  right: calc(1.25rem + 12px + 36px + 8px);
   z-index: 500;
 }
 
@@ -141,6 +142,22 @@ body {
 
 .kart-info-knapp:focus-visible {
   box-shadow: 0 0 0 0.2rem rgba(0, 91, 39, 0.35);
+}
+
+/* Fullskjermknappen ser ut som infoknappen og står innerst i hjørnet, 12px inn på kartet */
+.kart-fullskjerm-knapp {
+  position: absolute;
+  top: calc(1.25rem + 12px);
+  right: calc(1.25rem + 12px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* I fullskjerm fyller rammen hele skjermen, og kartet fyller rammen */
+.kart-ramme:fullscreen #map {
+  height: 100%;
 }
 
 .kart-info-panel {
