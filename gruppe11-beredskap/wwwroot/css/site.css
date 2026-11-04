@@ -160,15 +160,30 @@ body {
   gap: 10px;
 }
 
+/* Fast ikonkolonne på 26px, lik bredden på behovsirkelen.
+   Leaflet-pinnen er 25×41, så uten fast kolonne starter «Ressurs»
+   lenger til venstre enn «Behov». */
 .kart-info-panel > span {
-  display: flex;
+  display: grid;
+  grid-template-columns: 26px 1fr;
   align-items: center;
-  gap: 10px;
+  column-gap: 10px;
+  min-height: 26px;
+}
+
+.kart-info-panel .behov-ikon,
+.kart-info-panel img {
+  justify-self: center;
 }
 
 .kart-info-panel img {
-  height: 25px;
+  display: block;
+  height: 26px;
   width: auto;
+  /* Den hvite prikken i pinnen ligger på y=12.5 av 41.
+     Ved høyde 26px er det 7.9px fra toppen, mens sirklene har
+     midten på 13px. 5px ned flytter prikken inn på samme linje. */
+  transform: translateY(5px);
 }
 
 
