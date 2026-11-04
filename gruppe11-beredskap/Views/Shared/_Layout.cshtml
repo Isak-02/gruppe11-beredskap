@@ -50,7 +50,7 @@
                             <a class="nav-link text-dark" asp-controller="Behov" asp-action="Registrer">Registrer behov</a>
                         </li>
                     }
-                    @if (innloggetBruker == null || erRessursInnmelder || erKoordinator)
+                    @if (erRessursInnmelder || erKoordinator)
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Ressurs" asp-action="Registrer">Registrer ressurs</a>
