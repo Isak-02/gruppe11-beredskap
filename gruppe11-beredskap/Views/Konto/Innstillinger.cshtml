@@ -1,0 +1,220 @@
+
+@{
+    ViewData["Title"] = "Innstillinger";
+}
+
+<div class="container py-5">
+
+    <h1 class="mb-3">⚙ Innstillinger</h1>
+    <p class="text-muted mb-4">
+        Administrer kontoen din og hvordan KartKrise fungerer.
+    </p>
+
+    <div class="accordion" id="innstillingerMeny">
+
+        <!-- KONTOINNSTILLINGER -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#konto">
+                    Kontoinnstillinger
+                </button>
+            </h2>
+
+            <div id="konto" class="accordion-collapse collapse"
+                 data-bs-parent="#innstillingerMeny">
+                <div class="accordion-body">
+
+                    <p>Endre navn, e-post og telefonnummer.</p>
+
+                    <div class="mb-3">
+                        <label class="form-label">Navn</label>
+                        <input type="text" class="form-control"
+                               placeholder="Skriv inn navnet ditt">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">E-postadresse</label>
+                        <input type="email" class="form-control"
+                               placeholder="Skriv inn e-postadressen din">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Telefonnummer</label>
+                        <input type="tel" class="form-control"
+                               placeholder="Skriv inn telefonnummeret ditt">
+                    </div>
+
+                    <button class="btn btn-success" disabled>
+                        Lagre endringer (kommer senere)
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- VARSLINGER -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#varslinger">
+                    Varslinger
+                </button>
+            </h2>
+
+            <div id="varslinger" class="accordion-collapse collapse"
+                 data-bs-parent="#innstillingerMeny">
+                <div class="accordion-body">
+
+                    <p>Velg hvilke hendelser du ønsker varsler om.</p>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input"
+                               type="checkbox" disabled>
+                        <label class="form-check-label">
+                            Varsler om nye behov
+                        </label>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input"
+                               type="checkbox" disabled>
+                        <label class="form-check-label">
+                            Varsler om nye koblinger
+                        </label>
+                    </div>
+
+                    <p class="text-muted mt-3">
+                        Varslingsfunksjonen kommer senere.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- SIKKERHET -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sikkerhet">
+                    Sikkerhet og personvern
+                </button>
+            </h2>
+
+            <div id="sikkerhet" class="accordion-collapse collapse"
+                 data-bs-parent="#innstillingerMeny">
+                <div class="accordion-body">
+
+                    <h5>Endre passord</h5>
+                    <p>Administrer passord og innloggingssikkerhet.</p>
+
+                    <button class="btn btn-outline-secondary" disabled>
+                        Endre passord (kommer senere)
+                    </button>
+
+                    <hr>
+
+                    <h5>Personvern</h5>
+                    <p>
+                        Her kan brukeren senere få informasjon
+                        om hvordan personopplysninger behandles.
+                    </p>
+                    
+                    <hr class="my-4">
+
+                    <h5 class="text-danger">Slett konto</h5>
+
+                    <p>
+                        Hvis du sletter kontoen din, kan du miste tilgang
+                        til profilen og registrerte ressurser.
+                    </p>
+
+                    <button type="button"
+                            class="btn btn-outline-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#slettKontoModal">
+                        Slett konto
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- SPRÅK OG UTSEENDE -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sprak">
+                    Språk og utseende
+                </button>
+            </h2>
+
+            <div id="sprak" class="accordion-collapse collapse"
+                 data-bs-parent="#innstillingerMeny">
+                <div class="accordion-body">
+
+                    <label for="sprakValg" class="form-label">Språk</label>
+
+                    <select id="sprakValg" class="form-select mb-3">
+                        <option value="no">Norsk</option>
+                        <option value="en">English</option>
+                    </select>
+
+                    <label class="form-label">Utseende</label>
+                    <select class="form-select" disabled>
+                        <option>Lys modus</option>
+                        <option>Mørk modus</option>
+                    </select>
+
+                    <p class="text-muted mt-3">
+                        Språk- og temavalg kommer senere.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Bekreftelsesvindu for sletting -->
+<div class="modal fade" id="slettKontoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Slett konto</h5>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Lukk"></button>
+            </div>
+
+            <div class="modal-body">
+                Er du sikker på at du vil slette kontoen din?
+                Denne handlingen kan ikke angres.
+            </div>
+
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Avbryt
+                </button>
+
+                <button type="button"
+                        class="btn btn-danger" disabled>
+                    Bekreft sletting (kommer senere)
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
