@@ -32,6 +32,12 @@ public class FakeMatchingRepository : IMatchingRepository
     {
         return Task.FromResult(Lagret.Select(m => m.RessursId).ToHashSet());
     }
+
+    public Task DeleteByBehovIdAsync(int behovId)
+    {
+        Lagret.RemoveAll(m => m.BehovId == behovId);
+        return Task.CompletedTask;
+    }
 }
 
 public class MatchingControllerTests

@@ -9,4 +9,5 @@ public interface IMatchingRepository
     Task<List<Matching>> GetAllAsync();
     Task<HashSet<int>> GetMatchedeBehovIdsAsync();
     Task<HashSet<int>> GetMatchedeRessursIdsAsync();
+    Task DeleteByBehovIdAsync(int behovId);
 }

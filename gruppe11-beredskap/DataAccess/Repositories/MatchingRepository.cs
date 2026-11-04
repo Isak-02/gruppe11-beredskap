@@ -40,4 +40,12 @@ public class MatchingRepository : IMatchingRepository
         var ids = await _db.Matchinger.Select(m => m.RessursId).ToListAsync();
         return ids.ToHashSet();
     }
+
+    // Fjerner koblingen(e) for et behov, slik at ressursen blir ledig igjen
+    public async Task DeleteByBehovIdAsync(int behovId)
+    {
+        var koblinger = await _db.Matchinger.Where(m => m.BehovId == behovId).ToListAsync();
+        _db.Matchinger.RemoveRange(koblinger);
+        await _db.SaveChangesAsync();
+    }
 }

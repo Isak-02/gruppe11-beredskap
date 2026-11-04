@@ -26,4 +26,15 @@ public class BehovRepository : IBehovRepository
             .OrderBy(b => b.Id)
             .ToListAsync();
     }
+
+    // Endrer bare status på ett behov
+    public async Task UpdateStatusAsync(int id, string status)
+    {
+        var behov = await _db.Behov.FindAsync(id);
+        if (behov == null)
+            return;
+
+        behov.Status = status;
+        await _db.SaveChangesAsync();
+    }
 }

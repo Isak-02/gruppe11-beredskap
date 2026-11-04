@@ -22,6 +22,8 @@ public class MatchingViewModel
 public class MatchingVisning
 {
     public int Id { get; set; }
+    public int BehovId { get; set; }
+    public int RessursId { get; set; }
     public string Behov { get; set; } = string.Empty;
     public string Ressurs { get; set; } = string.Empty;
     public DateTime OpprettetTidspunkt { get; set; }

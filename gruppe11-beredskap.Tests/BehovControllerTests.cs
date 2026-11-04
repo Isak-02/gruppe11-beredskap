@@ -22,6 +22,14 @@ public class FakeBehovRepository : IBehovRepository
     {
         return Task.FromResult(Lagret.ToList());
     }
+
+    public Task UpdateStatusAsync(int id, string status)
+    {
+        var behov = Lagret.FirstOrDefault(b => b.Id == id);
+        if (behov != null)
+            behov.Status = status;
+        return Task.CompletedTask;
+    }
 }
 
 public class BehovControllerTests
