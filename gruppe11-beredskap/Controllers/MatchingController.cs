@@ -1,12 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using gruppe11_beredskap.DataAccess.Repositories;
 using gruppe11_beredskap.Models;
+using gruppe11_beredskap.Models.Authorization;
 using gruppe11_beredskap.Models.Entities;
 
 namespace gruppe11_beredskap.Controllers;
 
-// Matching av behov og ressurser. Skal bare være tilgjengelig for kriseleder
-// (tilgangskontroll legges på når Identity er på plass).
+// Matching (kobling) av behov og ressurser. Bare koordinatorer har tilgang til hele controlleren.
+[Authorize(Roles = RoleNames.Koordinator)]
 public class MatchingController : Controller
 {
     private readonly IBehovRepository _behovRepo;

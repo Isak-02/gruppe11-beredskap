@@ -39,4 +39,8 @@ public class Behov
     public double? Radius { get; set; }
 
     public DateTime OpprettetTidspunkt { get; set; } = DateTime.UtcNow;
+
+    // Brukeren som registrerte den. Er null for det som ble registrert før innlogging fantes.
+    public string? OpprettetAvId { get; set; }
+    public Bruker? OpprettetAv { get; set; }
 }

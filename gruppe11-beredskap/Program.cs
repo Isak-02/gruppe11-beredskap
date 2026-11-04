@@ -3,6 +3,10 @@ using gruppe11_beredskap.DataAccess;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using gruppe11_beredskap.DataAccess.Repositories;
+using gruppe11_beredskap.Models.Entities;
+using gruppe11_beredskap.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,13 +40,39 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IRessursRepository, RessursRepository>();
 builder.Services.AddScoped<IBehovRepository, BehovRepository>();
 builder.Services.AddScoped<IMatchingRepository, MatchingRepository>();
+
+// Innlogging med ASP.NET Core Identity. Brukere og roller lagres i MariaDB via ApplicationDbContext.
+builder.Services.AddSingleton<IEmailSender, ConsoleEmailSender>();
+builder.Services
+    .AddIdentity<Bruker, IdentityRole>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+        options.User.RequireUniqueEmail = true;
+        options.Lockout.AllowedForNewUsers = true;
+        options.Lockout.MaxFailedAccessAttempts = 10;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddErrorDescriber<NorskIdentityErrorDescriber>()
+    .AddDefaultTokenProviders();
+
 var app = builder.Build();
 
 // Kjører migrasjonene ved oppstart, slik at tabellene opprettes første gang appen starter.
+// Deretter opprettes rollene, og i utvikling også testbrukerne (én per rolle).
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    await IdentitySeeder.SeedRollerAsync(roleManager);
+
+    var testpassord = app.Configuration["Testbrukere:Passord"];
+    if (app.Environment.IsDevelopment() && !string.IsNullOrEmpty(testpassord))
+    {
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Bruker>>();
+        await IdentitySeeder.SeedTestbrukereAsync(userManager, testpassord);
+    }
 }
 
 app.UseRequestLocalization();
@@ -58,6 +88,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+// Først finner vi ut hvem brukeren er (innlogging), så hva hen har lov til (roller)
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

@@ -1,0 +1,154 @@
+@model InnloggingViewModel
+
+<!-- INNLOGGING: kortet fra forsiden. Brukes også på /Account/Login og /Account/Register. -->
+
+<section id="innlogging" class="kk-login-section">
+    <div class="kk-login-card">
+
+        <!-- Logg inn -->
+        <div id="kk-login-view" hidden="@Model.VisRegistrering">
+
+            <div class="kk-login-heading">
+                <h2>Logg inn</h2>
+            </div>
+
+            <form class="kk-login-form" asp-controller="Account" asp-action="Login" method="post">
+                <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+
+                @if (Model.LoggInnFeil != null)
+                {
+                    <div class="text-danger mb-3" role="alert">@Model.LoggInnFeil</div>
+                }
+
+                <div class="mb-3">
+                    <label asp-for="LoggInn.Epost" class="form-label"></label>
+                    <input asp-for="LoggInn.Epost"
+                           class="form-control"
+                           placeholder="navn@eksempel.no"
+                           autocomplete="email" />
+                    <span asp-validation-for="LoggInn.Epost" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LoggInn.Passord" class="form-label"></label>
+                    <input asp-for="LoggInn.Passord"
+                           class="form-control"
+                           placeholder="Skriv inn passord"
+                           autocomplete="current-password" />
+                    <span asp-validation-for="LoggInn.Passord" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="kk-login-submit">
+                    Logg inn
+                </button>
+            </form>
+
+            <div class="kk-login-footer">
+                <p><a asp-controller="Account" asp-action="ForgotPassword">Glemt passord?</a></p>
+                <p>Ingen konto?</p>
+                <button type="button"
+                        class="kk-switch-button"
+                        onclick="showRegister()">
+                    Opprett bruker
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Opprett bruker -->
+        <div id="kk-register-view" hidden="@(!Model.VisRegistrering)">
+
+            <div class="kk-login-heading">
+                <h2>Opprett bruker</h2>
+                <p>For privatpersoner, bedrifter og organisasjoner som vil tilby ressurser.</p>
+            </div>
+
+            <form class="kk-login-form" asp-controller="Account" asp-action="Register" method="post">
+                <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+
+                @if (Model.RegistrerFeil.Any())
+                {
+                    <div class="text-danger mb-3" role="alert">
+                        @foreach (var feil in Model.RegistrerFeil)
+                        {
+                            <div>@feil</div>
+                        }
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label asp-for="Registrer.Navn" class="form-label"></label>
+                    <input asp-for="Registrer.Navn"
+                           class="form-control"
+                           placeholder="Fullt navn"
+                           autocomplete="name" />
+                    <span asp-validation-for="Registrer.Navn" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Registrer.Epost" class="form-label"></label>
+                    <input asp-for="Registrer.Epost"
+                           class="form-control"
+                           placeholder="navn@eksempel.no"
+                           autocomplete="email" />
+                    <span asp-validation-for="Registrer.Epost" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Registrer.Telefon" class="form-label"></label>
+                    <input asp-for="Registrer.Telefon"
+                           class="form-control"
+                           placeholder="F.eks. 123 45 678"
+                           autocomplete="tel" />
+                    <span asp-validation-for="Registrer.Telefon" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Registrer.Passord" class="form-label"></label>
+                    <input asp-for="Registrer.Passord"
+                           class="form-control"
+                           placeholder="Minst 6 tegn, med stor og liten bokstav, tall og spesialtegn"
+                           autocomplete="new-password" />
+                    <span asp-validation-for="Registrer.Passord" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Registrer.BekreftPassord" class="form-label"></label>
+                    <input asp-for="Registrer.BekreftPassord"
+                           class="form-control"
+                           placeholder="Gjenta passord"
+                           autocomplete="new-password" />
+                    <span asp-validation-for="Registrer.BekreftPassord" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="kk-login-submit">
+                    Opprett bruker
+                </button>
+            </form>
+
+            <div class="kk-login-footer">
+                <p>Har du allerede en konto?</p>
+                <button type="button"
+                        class="kk-switch-button"
+                        onclick="showLogin()">
+                    Logg inn
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<script>
+    // Bytter mellom "Logg inn" og "Opprett bruker" i kortet
+    function showRegister() {
+        document.getElementById("kk-login-view").hidden = true;
+        document.getElementById("kk-register-view").hidden = false;
+    }
+
+    function showLogin() {
+        document.getElementById("kk-register-view").hidden = true;
+        document.getElementById("kk-login-view").hidden = false;
+    }
+</script>
