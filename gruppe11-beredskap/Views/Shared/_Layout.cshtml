@@ -1,4 +1,18 @@
-﻿<!DOCTYPE html>
+﻿@using gruppe11_beredskap.Models.Entities
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Bruker> UserManager
+@{
+    // Brukeren som er logget inn (null hvis ingen). Brukes til navnet i profilmenyen.
+    var innloggetBruker = User.Identity?.IsAuthenticated == true ? await UserManager.GetUserAsync(User) : null;
+    var erKoordinator = User.IsInRole(RoleNames.Koordinator);
+    var erKriseInnmelder = User.IsInRole(RoleNames.KriseInnmelder);
+    var erRessursInnmelder = User.IsInRole(RoleNames.RessursInnmelder);
+    var rolleNavn = erKoordinator ? "Koordinator"
+        : erKriseInnmelder ? "Krise-innmelder"
+        : erRessursInnmelder ? "Ressurs-innmelder"
+        : "";
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -28,89 +42,120 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <!-- Menyen viser bare sidene brukeren har tilgang til -->
                 <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Behov" asp-action="Registrer">Registrer behov</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Ressurs" asp-action="Registrer">Registrer ressurs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Matching" asp-action="Index">Kobling</a>
-                    </li>
-                
+                    @if (erKriseInnmelder || erKoordinator)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Behov" asp-action="Registrer">Registrer behov</a>
+                        </li>
+                    }
+                    @if (innloggetBruker == null || erRessursInnmelder || erKoordinator)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Ressurs" asp-action="Registrer">Registrer ressurs</a>
+                        </li>
+                    }
+                    @if (erKoordinator)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Matching" asp-action="Index">Kobling</a>
+                        </li>
+                    }
                 </ul>
 
                
 <!-- Innlogging og profilmeny -->
 <div class="ms-sm-auto mt-3 mt-sm-0 d-flex align-items-center gap-2">
 
-    <!-- Vanlig innloggingsknapp -->
-    <a id="kk-navbar-login"
-       asp-controller="Home"
-       asp-action="Index"
-       asp-fragment="innlogging"
-       class="btn kk-login-button">
-        Logg inn
-    </a>
+    @if (innloggetBruker == null)
+    {
+        <!-- Innloggingsknapp: går til innloggingskortet på forsiden -->
+        <a id="kk-navbar-login"
+           asp-controller="Home"
+           asp-action="Index"
+           asp-fragment="innlogging"
+           class="btn kk-login-button">
+            Logg inn
+        </a>
+    }
+    else
+    {
+        <!-- Profilmeny for den som er logget inn -->
+        <div id="kk-navbar-profile" class="dropdown">
+            <button class="btn kk-login-button dropdown-toggle d-flex align-items-center gap-2"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <span aria-hidden="true">&#9679;</span>
+                Min profil
+            </button>
 
-    <!-- Profilmeny, vises i testmodus -->
-    <div id="kk-navbar-profile" class="dropdown" hidden>
-        <button class="btn kk-login-button dropdown-toggle d-flex align-items-center gap-2"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
-            <span aria-hidden="true">&#9679;</span>
-            Min profil
-        </button>
+            <ul class="dropdown-menu dropdown-menu-end kk-profile-menu">
+                <li class="px-3 py-2">
+                    <strong>@innloggetBruker.Navn</strong>
+                    <div class="kk-profile-email">@innloggetBruker.Email</div>
+                    <div class="kk-profile-email">@rolleNavn</div>
+                </li>
 
-        <ul class="dropdown-menu dropdown-menu-end kk-profile-menu">
-            <li class="px-3 py-2">
-                <strong>Eksempelbruker</strong>
-                <div class="kk-profile-email">bruker@eksempel.no</div>
-            </li>
+                <li><hr class="dropdown-divider"></li>
 
-            <li><hr class="dropdown-divider"></li>
+                <li>
+                    <button class="dropdown-item" type="button" disabled>
+                        Min profil
+                    </button>
+                </li>
 
-            <li>
-                <button class="dropdown-item" type="button" disabled>
-                    Min profil
-                </button>
-            </li>
+                @if (erKriseInnmelder || erKoordinator)
+                {
+                    <li>
+                        <a class="dropdown-item" asp-controller="Behov" asp-action="Mine">
+                            Mine behov
+                        </a>
+                    </li>
+                }
 
-            <li>
-                <a class="dropdown-item"
-                   asp-controller="Ressurs"
-                   asp-action="Oversikt">
-                    Mine ressurser
-                </a>
-            </li>
+                @if (erRessursInnmelder || erKoordinator)
+                {
+                    <li>
+                        <a class="dropdown-item" asp-controller="Ressurs" asp-action="Mine">
+                            Mine ressurser
+                        </a>
+                    </li>
+                }
 
-            <li>
-                <button class="dropdown-item" type="button" disabled>
-                    Innstillinger
-                </button>
-            </li>
+                @if (erKoordinator)
+                {
+                    <li>
+                        <a class="dropdown-item" asp-controller="Behov" asp-action="Oversikt">
+                            Alle behov
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-controller="Ressurs" asp-action="Oversikt">
+                            Alle ressurser
+                        </a>
+                    </li>
+                }
 
-            <li><hr class="dropdown-divider"></li>
+                <li>
+                    <button class="dropdown-item" type="button" disabled>
+                        Innstillinger
+                    </button>
+                </li>
 
-            <li>
-                <button class="dropdown-item text-danger"
-                        type="button"
-                        onclick="kkShowLoginPreview()">
-                    Tilbake til innlogging
-                </button>
-            </li>
-        </ul>
-    </div>
+                <li><hr class="dropdown-divider"></li>
 
-    <!-- Midlertidig testknapp -->
-    <button id="kk-profile-preview-toggle"
-            type="button"
-            class="btn btn-sm btn-outline-light"
-            onclick="kkToggleProfilePreview()">
-        Test profil
-    </button>
+                <li>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="dropdown-item text-danger">
+                            Logg ut
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    }
 </div>
 
 
@@ -136,27 +181,6 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
-<script>
-    function kkShowProfilePreview() {
-        document.getElementById("kk-navbar-login").hidden = true;
-        document.getElementById("kk-navbar-profile").hidden = false;
-    }
-
-    function kkShowLoginPreview() {
-        document.getElementById("kk-navbar-profile").hidden = true;
-        document.getElementById("kk-navbar-login").hidden = false;
-    }
-
-    function kkToggleProfilePreview() {
-        const profile = document.getElementById("kk-navbar-profile");
-
-        if (profile.hidden) {
-            kkShowProfilePreview();
-        } else {
-            kkShowLoginPreview();
-        }
-    }
-</script>
 
 @await RenderSectionAsync("Scripts", required: false)
 </body>

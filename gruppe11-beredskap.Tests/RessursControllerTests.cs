@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using gruppe11_beredskap.Controllers;
 using gruppe11_beredskap.DataAccess.Repositories;
@@ -56,14 +58,14 @@ public class RessursControllerTests
     }
 
     [Fact]
-    public async Task Registrer_Post_WithValidModel_RedirectsToOversikt()
+    public async Task Registrer_Post_WithValidModel_RedirectsToMine()
     {
         var controller = new RessursController(new FakeRessursRepository());
 
         var result = await controller.Registrer(LagModel("Mat"));
 
         var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Oversikt", redirectResult.ActionName);
+        Assert.Equal("Mine", redirectResult.ActionName);
     }
 
     [Fact]
@@ -123,5 +125,50 @@ public class RessursControllerTests
         var view = Assert.IsType<ViewResult>(result);
         var liste = Assert.IsType<List<RessursViewModel>>(view.Model);
         Assert.Single(liste);
+    }
+
+    // Later som om en bruker med denne Id-en er logget inn, slik controlleren ser det
+    private static void LoggInnSom(Controller controller, string brukerId)
+    {
+        var bruker = new ClaimsPrincipal(new ClaimsIdentity(
+            new[] { new Claim(ClaimTypes.NameIdentifier, brukerId) }, "Test"));
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = bruker }
+        };
+    }
+
+    [Fact]
+    public async Task Registrer_Post_LagrerInnloggetBrukerSomOppretter()
+    {
+        var repo = new FakeRessursRepository();
+        var controller = new RessursController(repo);
+        LoggInnSom(controller, "bruker-1");
+
+        await controller.Registrer(LagModel("Mat"));
+
+        var lagret = Assert.Single(repo.Lagret);
+        Assert.Equal("bruker-1", lagret.OpprettetAvId);
+    }
+
+    [Fact]
+    public async Task Mine_ViserBareRessurserSomBrukerenSelvHarRegistrert()
+    {
+        var repo = new FakeRessursRepository();
+        var controller = new RessursController(repo);
+
+        LoggInnSom(controller, "bruker-1");
+        await controller.Registrer(LagModel("Mat"));
+        LoggInnSom(controller, "bruker-2");
+        await controller.Registrer(LagModel("Mat"));
+
+        LoggInnSom(controller, "bruker-1");
+        var result = await controller.Mine();
+
+        var view = Assert.IsType<ViewResult>(result);
+        Assert.Equal("Oversikt", view.ViewName);
+        var liste = Assert.IsType<List<RessursViewModel>>(view.Model);
+        var ressurs = Assert.Single(liste);
+        Assert.Equal(1, ressurs.Id);
     }
 }

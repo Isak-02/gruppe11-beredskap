@@ -1,9 +1,11 @@
 @model List<gruppe11_beredskap.Models.BehovViewModel>
 @{
-    ViewData["Title"] = "Oversikt over behov";
+    // "Mine behov" bruker samme visning, med egen overskrift fra controlleren
+    var overskrift = ViewData["Overskrift"] as string ?? "Registrerte behov";
+    ViewData["Title"] = overskrift;
 }
 
-<h1>Registrerte behov</h1>
+<h1>@overskrift</h1>
 <a asp-action="Registrer" class="btn btn-outline-primary mb-3">+ Registrer nytt behov</a>
 
 @if (!Model.Any())

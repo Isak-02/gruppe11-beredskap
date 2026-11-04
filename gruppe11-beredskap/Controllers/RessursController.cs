@@ -1,11 +1,15 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using gruppe11_beredskap.DataAccess.Repositories;
 using gruppe11_beredskap.Models;
+using gruppe11_beredskap.Models.Authorization;
 using gruppe11_beredskap.Models.Entities;
 
 namespace gruppe11_beredskap.Controllers;
 
 // Håndterer innmelding og visning av ressurser. Lagrer i MariaDB via repository.
+// Ressurs-innmeldere og koordinatorer kan registrere ressurser og se sine egne. Bare koordinatorer ser alle.
 public class RessursController : Controller
 {
     private readonly IRessursRepository _repo;
@@ -16,6 +20,7 @@ public class RessursController : Controller
     }
 
     [HttpGet]
+    [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
     public IActionResult Registrer()
     {
         return View(new RessursViewModel
@@ -26,6 +31,7 @@ public class RessursController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
     public async Task<IActionResult> Registrer(RessursViewModel model)
     {
         var kjøretøyOgMaskiner = new[]
@@ -84,20 +90,39 @@ public class RessursController : Controller
             Kontaktpunkt = model.Kontaktpunkt,
             Status = model.Status,
             Latitude = model.Latitude!.Value,
-            Longitude = model.Longitude!.Value
+            Longitude = model.Longitude!.Value,
+            OpprettetAvId = InnloggetBrukerId()
         };
 
         await _repo.AddAsync(ressurs);
-        return RedirectToAction(nameof(Oversikt));
+        return RedirectToAction(nameof(Mine));
     }
 
     [HttpGet]
+    [Authorize(Roles = RoleNames.Koordinator)]
     public async Task<IActionResult> Oversikt()
     {
         var ressurser = await _repo.GetAllAsync();
+        return View(TilVisning(ressurser));
+    }
 
-        // Fra entitet tilbake til view-modell, slik at oversikten fungerer som før
-        var visning = ressurser.Select(r => new RessursViewModel
+    // Ressursene den innloggede brukeren selv har registrert. Bruker samme visning som oversikten.
+    [HttpGet]
+    [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
+    public async Task<IActionResult> Mine()
+    {
+        var brukerId = InnloggetBrukerId();
+        var ressurser = await _repo.GetAllAsync();
+        var mine = ressurser.Where(r => brukerId != null && r.OpprettetAvId == brukerId);
+
+        ViewData["Overskrift"] = "Mine ressurser";
+        return View("Oversikt", TilVisning(mine));
+    }
+
+    // Fra entitet tilbake til view-modell, slik at oversikten fungerer som før
+    private static List<RessursViewModel> TilVisning(IEnumerable<Ressurs> ressurser)
+    {
+        return ressurser.Select(r => new RessursViewModel
         {
             Id = r.Id,
             TypeRessurs = r.TypeRessurs,
@@ -112,7 +137,11 @@ public class RessursController : Controller
             Latitude = r.Latitude,
             Longitude = r.Longitude
         }).ToList();
+    }
 
-        return View(visning);
+    // Id-en til brukeren som er logget inn. Er null hvis ingen er logget inn (for eksempel i enhetstester).
+    private string? InnloggetBrukerId()
+    {
+        return User?.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

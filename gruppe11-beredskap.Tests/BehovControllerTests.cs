@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using gruppe11_beredskap.Controllers;
 using gruppe11_beredskap.DataAccess.Repositories;
@@ -57,14 +59,14 @@ public class BehovControllerTests
     }
 
     [Fact]
-    public async Task Registrer_Post_WithValidModel_RedirectsToOversikt()
+    public async Task Registrer_Post_WithValidModel_RedirectsToMine()
     {
         var controller = new BehovController(new FakeBehovRepository());
 
         var result = await controller.Registrer(LagModel());
 
         var redirect = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Oversikt", redirect.ActionName);
+        Assert.Equal("Mine", redirect.ActionName);
     }
 
     [Fact]
@@ -182,5 +184,65 @@ public class BehovControllerTests
         var liste = Assert.IsType<List<BehovViewModel>>(view.Model);
         var behov = Assert.Single(liste);
         Assert.Equal("Trenger transport av utstyr", behov.Beskrivelse);
+    }
+
+    // Later som om en bruker med denne Id-en er logget inn, slik controlleren ser det
+    private static void LoggInnSom(Controller controller, string brukerId)
+    {
+        var bruker = new ClaimsPrincipal(new ClaimsIdentity(
+            new[] { new Claim(ClaimTypes.NameIdentifier, brukerId) }, "Test"));
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = bruker }
+        };
+    }
+
+    [Fact]
+    public async Task Registrer_Post_LagrerInnloggetBrukerSomOppretter()
+    {
+        var repo = new FakeBehovRepository();
+        var controller = new BehovController(repo);
+        LoggInnSom(controller, "bruker-1");
+
+        await controller.Registrer(LagModel());
+
+        var lagret = Assert.Single(repo.Lagret);
+        Assert.Equal("bruker-1", lagret.OpprettetAvId);
+    }
+
+    [Fact]
+    public async Task Mine_ViserBareBehovSomBrukerenSelvHarRegistrert()
+    {
+        var repo = new FakeBehovRepository();
+        var controller = new BehovController(repo);
+
+        LoggInnSom(controller, "bruker-1");
+        await controller.Registrer(LagModel());
+        LoggInnSom(controller, "bruker-2");
+        await controller.Registrer(LagModel());
+
+        LoggInnSom(controller, "bruker-1");
+        var result = await controller.Mine();
+
+        var view = Assert.IsType<ViewResult>(result);
+        Assert.Equal("Oversikt", view.ViewName);
+        var liste = Assert.IsType<List<BehovViewModel>>(view.Model);
+        var behov = Assert.Single(liste);
+        Assert.Equal(1, behov.Id);
+    }
+
+    [Fact]
+    public async Task Mine_UtenInnloggetBruker_ViserIngenBehov()
+    {
+        var repo = new FakeBehovRepository();
+        var controller = new BehovController(repo);
+        // Behov uten "opprettet av", slik som de som ble registrert før innlogging fantes
+        await controller.Registrer(LagModel());
+
+        var result = await controller.Mine();
+
+        var view = Assert.IsType<ViewResult>(result);
+        var liste = Assert.IsType<List<BehovViewModel>>(view.Model);
+        Assert.Empty(liste);
     }
 }
