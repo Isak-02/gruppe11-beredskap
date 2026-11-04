@@ -93,18 +93,24 @@ body {
 /* Tegnforklaring på koblingssiden: info-knapp over kartet, listen vises ved hover eller klikk. */
 .kart-ramme {
   position: relative;
+  /* Hvitt kort rundt kartet, likt som på Registrer behov og Registrer ressurs (.wizard-panel) */
+  background: #fff;
+  border: 1px solid #d5e0c4;
+  border-radius: 0.25rem;
+  padding: 1.25rem;
 }
 
 .kart-ramme #map {
   height: 400px;
-  border-radius: 12px;
+  border: 1px solid #ccc;
   z-index: 0;
 }
 
 .kart-info {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  /* Luften i kortet (1.25rem) + 12px, slik at knappen fortsatt står 12px inn på selve kartet */
+  top: calc(1.25rem + 12px);
+  right: calc(1.25rem + 12px);
   z-index: 500;
 }
 
