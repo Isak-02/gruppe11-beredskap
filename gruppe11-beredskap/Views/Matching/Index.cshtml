@@ -5,12 +5,23 @@
 
 <h1>Kobling av behov og ressurser</h1>
 
-<div id="map" style="height: 400px;"></div>
-<div class="d-flex flex-wrap gap-4 mt-2 mb-4">
-    <span><span class="behov-ikon behov-hoy"></span> Behov – høy prioritet</span>
-    <span><span class="behov-ikon behov-middels"></span> Behov – middels prioritet</span>
-    <span><span class="behov-ikon behov-lav"></span> Behov – lav prioritet</span>
-    <span><img src="https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png" alt="" style="height: 25px;" /> Ressurs</span>
+<div class="kart-ramme mb-4">
+    <div id="map"></div>
+    <div class="kart-info">
+        <button type="button"
+                class="kart-info-knapp"
+                aria-expanded="false"
+                aria-controls="kart-tegnforklaring"
+                aria-label="Vis tegnforklaring">
+            i
+        </button>
+        <div id="kart-tegnforklaring" class="kart-info-panel" role="region" aria-label="Tegnforklaring">
+            <span><span class="behov-ikon behov-hoy" aria-hidden="true"></span> Behov – høy prioritet</span>
+            <span><span class="behov-ikon behov-middels" aria-hidden="true"></span> Behov – middels prioritet</span>
+            <span><span class="behov-ikon behov-lav" aria-hidden="true"></span> Behov – lav prioritet</span>
+            <span><img src="https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png" alt="" /> Ressurs</span>
+        </div>
+    </div>
 </div>
 
 <form asp-action="Koble" method="post">
@@ -252,6 +263,22 @@ else
         // maxZoom hindrer at kartet zoomer helt inn når det bare er én markør.
         if (alleMarkorer.getLayers().length > 0) {
             map.fitBounds(alleMarkorer.getBounds(), { padding: [30, 30], maxZoom: 13 });
+        }
+
+        var kartInfo = document.querySelector(".kart-info");
+        var kartInfoKnapp = kartInfo && kartInfo.querySelector(".kart-info-knapp");
+        if (kartInfo && kartInfoKnapp) {
+            kartInfoKnapp.addEventListener("click", function (event) {
+                event.stopPropagation();
+                var apen = kartInfo.classList.toggle("is-open");
+                kartInfoKnapp.setAttribute("aria-expanded", apen ? "true" : "false");
+            });
+
+            document.addEventListener("click", function (event) {
+                if (kartInfo.contains(event.target)) return;
+                kartInfo.classList.remove("is-open");
+                kartInfoKnapp.setAttribute("aria-expanded", "false");
+            }, true);
         }
     </script>
 }

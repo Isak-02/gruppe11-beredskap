@@ -90,6 +90,87 @@ body {
   background-color: #ffc107;
 }
 
+/* Tegnforklaring på koblingssiden: info-knapp over kartet, listen vises ved hover eller klikk. */
+.kart-ramme {
+  position: relative;
+}
+
+.kart-ramme #map {
+  height: 400px;
+  border-radius: 12px;
+  z-index: 0;
+}
+
+.kart-info {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 500;
+}
+
+.kart-info-knapp {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px solid #005B27;
+  border-radius: 50%;
+  background: #fff;
+  color: #005B27;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.kart-info-knapp:hover,
+.kart-info-knapp:focus-visible,
+.kart-info.is-open .kart-info-knapp {
+  background: #005B27;
+  color: #fff;
+  outline: none;
+}
+
+.kart-info-knapp:focus-visible {
+  box-shadow: 0 0 0 0.2rem rgba(0, 91, 39, 0.35);
+}
+
+.kart-info-panel {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 250px;
+  margin: 0;
+  padding: 12px 14px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  color: #17251B;
+  font-size: 14px;
+  font-style: normal;
+}
+
+.kart-info:hover .kart-info-panel,
+.kart-info.is-open .kart-info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kart-info-panel > span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kart-info-panel img {
+  height: 25px;
+  width: auto;
+}
+
 
 /* ====================================
    KARTKRISE FORSIDE
