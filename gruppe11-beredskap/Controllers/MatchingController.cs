@@ -36,6 +36,19 @@ public class MatchingController : Controller
         if (!ModelState.IsValid)
             return View("Index", await ByggModell(model));
 
+        var behovene = await _behovRepo.GetAllAsync();
+        var ressursene = await _ressursRepo.GetAllAsync();
+        var valgtBehov = behovene.FirstOrDefault(b => b.Id == model.BehovId);
+        var valgtRessurs = ressursene.FirstOrDefault(r => r.Id == model.RessursId);
+
+        if (valgtBehov == null || (valgtBehov.Status != BehovStatus.Ny && valgtBehov.Status != BehovStatus.Vurderes))
+            ModelState.AddModelError(nameof(model.BehovId), "Behovet kan ikke kobles");
+        if (valgtRessurs == null || valgtRessurs.Status != RessursStatus.Tilgjengelig)
+            ModelState.AddModelError(nameof(model.RessursId), "Ressursen er ikke ledig");
+
+        if (!ModelState.IsValid)
+            return View("Index", await ByggModell(model));
+
         var matching = new Matching
         {
             BehovId = model.BehovId!.Value,
@@ -43,10 +56,31 @@ public class MatchingController : Controller
         };
 
         await _matchingRepo.AddAsync(matching);
+        await _behovRepo.UpdateStatusAsync(matching.BehovId, BehovStatus.Tildelt);
+        await _ressursRepo.UpdateStatusAsync(matching.RessursId, RessursStatus.Tildelt);
+        return RedirectToAction(nameof(Index));
+    }
+    // Behov går fra Ny til Vurderes
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Vurder(int behovId)
+    {
+        await _behovRepo.UpdateStatusAsync(behovId, BehovStatus.Vurderes);
         return RedirectToAction(nameof(Index));
     }
 
-    // Fyller listene: behov og ressurser som ikke allerede er koblet, pluss eksisterende koblinger
+    // Behov er løst: ressursen blir ledig igjen
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Løs(int behovId, int ressursId)
+    {
+        await _behovRepo.UpdateStatusAsync(behovId, BehovStatus.Løst);
+        await _ressursRepo.UpdateStatusAsync(ressursId, RessursStatus.Tilgjengelig);
+        await _matchingRepo.DeleteByBehovIdAsync(behovId);
+        return RedirectToAction(nameof(Index));
+    }
+
+    // Fyller listene: bare behov og ressurser som kan kobles, pluss eksisterende koblinger
     private async Task<MatchingViewModel> ByggModell(MatchingViewModel model)
     {
         var matchedeBehov = await _matchingRepo.GetMatchedeBehovIdsAsync();
@@ -57,10 +91,12 @@ public class MatchingController : Controller
         var matchinger = await _matchingRepo.GetAllAsync();
 
         model.ÅpneBehov = behov
-            .Where(b => !matchedeBehov.Contains(b.Id))
+            .Where(b => !matchedeBehov.Contains(b.Id)
+                        && (b.Status == BehovStatus.Ny || b.Status == BehovStatus.Vurderes))
             .Select(b => new BehovViewModel
             {
                 Id = b.Id,
+                Status = b.Status,
                 TypeBehov = b.TypeBehov,
                 Beskrivelse = b.Beskrivelse,
                 Prioritet = b.Prioritet,
@@ -72,10 +108,12 @@ public class MatchingController : Controller
             }).ToList();
 
         model.LedigeRessurser = ressurser
-            .Where(r => !matchedeRessurser.Contains(r.Id))
+            .Where(r => !matchedeRessurser.Contains(r.Id)
+                        && r.Status == RessursStatus.Tilgjengelig)
             .Select(r => new RessursViewModel
             {
                 Id = r.Id,
+                Status = r.Status,
                 TypeRessurs = r.TypeRessurs,
                 Beskrivelse = r.Beskrivelse,
                 AnnenType = r.AnnenType,
@@ -91,6 +129,8 @@ public class MatchingController : Controller
         model.Matchinger = matchinger.Select(m => new MatchingVisning
         {
             Id = m.Id,
+            BehovId = m.BehovId,
+            RessursId = m.RessursId,
             Behov = $"#{m.BehovId} {m.Behov?.TypeBehov}",
             Ressurs = $"#{m.RessursId} {m.Ressurs?.TypeRessurs}",
             OpprettetTidspunkt = m.OpprettetTidspunkt

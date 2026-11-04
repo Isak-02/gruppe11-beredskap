@@ -26,4 +26,15 @@ public class RessursRepository : IRessursRepository
             .OrderBy(r => r.Id)
             .ToListAsync();
     }
+
+    // Endrer bare status på én ressurs
+    public async Task UpdateStatusAsync(int id, string status)
+    {
+        var ressurs = await _db.Ressurser.FindAsync(id);
+        if (ressurs == null)
+            return;
+
+        ressurs.Status = status;
+        await _db.SaveChangesAsync();
+    }
 }

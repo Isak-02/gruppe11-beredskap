@@ -7,4 +7,5 @@ public interface IBehovRepository
 {
     Task AddAsync(Behov behov);
     Task<List<Behov>> GetAllAsync();
+    Task UpdateStatusAsync(int id, string status);
 }
