@@ -160,6 +160,23 @@ body {
   height: 100%;
 }
 
+/* I fullskjerm blir knappene større (48px i stedet for 36px), så de er lettere å se og treffe */
+.kart-ramme:fullscreen .kart-info-knapp {
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+}
+
+.kart-ramme:fullscreen .kart-fullskjerm-knapp svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Infoknappen flyttes tilsvarende, så det fortsatt er 8px mellom knappene (48px knapp + 8px) */
+.kart-ramme:fullscreen .kart-info {
+  right: calc(1.25rem + 12px + 48px + 8px);
+}
+
 .kart-info-panel {
   display: none;
   position: absolute;
