@@ -22,6 +22,14 @@ public class FakeRessursRepository : IRessursRepository
     {
         return Task.FromResult(Lagret.ToList());
     }
+
+    public Task UpdateStatusAsync(int id, string status)
+    {
+        var ressurs = Lagret.FirstOrDefault(r => r.Id == id);
+        if (ressurs != null)
+            ressurs.Status = status;
+        return Task.CompletedTask;
+    }
 }
 
 public class RessursControllerTests
