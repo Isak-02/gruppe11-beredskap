@@ -7,5 +7,8 @@ public interface IRessursRepository
 {
     Task AddAsync(Ressurs ressurs);
     Task<List<Ressurs>> GetAllAsync();
+    Task<Ressurs?> GetByIdAsync(int id);
+    Task UpdateAsync(Ressurs ressurs);
+    Task DeleteAsync(int id);
     Task UpdateStatusAsync(int id, string status);
 }
