@@ -1,11 +1,13 @@
 @model gruppe11_beredskap.Models.RessursViewModel
 @{
-    ViewData["Title"] = "Registrer ressurs";
+    var endrer = Model.Id != 0;
+    ViewData["Title"] = endrer ? "Endre ressurs" : "Registrer ressurs";
 }
 
-<h1>Registrer ressurs</h1>
+<h1>@(endrer ? "Endre ressurs" : "Registrer ressurs")</h1>
 
-<form asp-action="Registrer" method="post" class="wizard" data-wizard>
+<form asp-action="@(endrer ? "Endre" : "Registrer")" method="post" class="wizard" data-wizard>
+    <input type="hidden" asp-for="Id" />
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <nav class="wizard-progress" data-wizard-progress aria-label="Fremdrift"></nav>
@@ -215,7 +217,7 @@
             var tegnedeFigurer = new L.FeatureGroup();
             map.addLayer(tegnedeFigurer);
 
-            // Norske tekster i verktøylinjen. Må settes før verktøylinjen lages.
+            // Norske tekster i verktøylinjen.
             L.drawLocal.draw.toolbar.actions.title = "Avbryt tegning";
             L.drawLocal.draw.toolbar.actions.text = "Avbryt";
             L.drawLocal.draw.toolbar.buttons.marker = "Sett en markør";
