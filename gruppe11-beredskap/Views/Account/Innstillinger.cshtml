@@ -138,7 +138,7 @@
 
         <section id="varsler" class="settings-panel" hidden>
             <h2>Varslinger</h2>
-            <p>Her skal du senere kunne administrere varslinger.</p>
+            <p>Her kan du administrere varslinger.</p>
 
             <label>
                 <input type="checkbox" disabled />
@@ -148,21 +148,97 @@
 
         <section id="sikkerhet" class="settings-panel" hidden>
             <h2>Sikkerhet og personvern</h2>
-            <p>Administrer sikkerheten til kontoen din.</p>
+            <p>Administrer sikkerheten og personvernet til kontoen din.</p>
 
-            <a asp-controller="Account"
-               asp-action="ForgotPassword"
-               class="btn btn-outline-success">
-                Tilbakestill passord
-            </a>
+            <hr />
+
+            <div class="mb-4">
+                <h4>Endre passord</h4>
+                <p>Administrer passord og innloggingssikkerhet.</p>
+
+                <a asp-controller="Account"
+                   asp-action="ForgotPassword"
+                   class="btn btn-outline-success">
+                    Tilbakestill passord
+                </a>
+            </div>
+
+            <hr />
+
+            <div class="my-4">
+                <h4>Personvern</h4>
+                <p>
+                    Her vil du senere kunne lese mer om hvordan
+                    personopplysningene dine behandles i KartKrise.
+                </p>
+            </div>
+
+            <hr />
+
+            <div class="mt-4">
+                <h4 class="text-danger">Slett konto</h4>
+                <p>
+                    Hvis du sletter kontoen din, kan du miste
+                    tilgang til kontoen og registreringene dine.
+                </p>
+
+                <button type="button"
+                        class="btn btn-outline-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#slettKontoModal">
+                    Slett konto
+                </button>
+            </div>
         </section>
+
+        <div class="modal fade"
+             id="slettKontoModal"
+             tabindex="-1"
+             aria-labelledby="slettKontoTittel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="slettKontoTittel">
+                            Slett konto
+                        </h5>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Lukk">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>Er du sikker på at du vil slette kontoen?</p>
+                        <p class="text-muted">
+                            Sletting av konto er ikke implementert ennå.
+                            Ingen opplysninger blir slettet.
+                        </p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Avbryt
+                        </button>
+                        <button type="button"
+                                class="btn btn-danger"
+                                disabled>
+                            Bekreft sletting (kommer senere)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <section id="sprak" class="settings-panel" hidden>
             <h2>Språk og utseende</h2>
-            <p>Her skal du senere kunne endre språk og utseende.</p>
+            <p>Her kan du endre språk og utseende.</p>
 
             <label for="sprakvalg">Språk</label>
-            <select id="sprakvalg" class="form-select" disabled>
+            <select id="sprakvalg" class="form-select" enabled>
                 <option>Norsk</option>
                 <option>English</option>
             </select>
