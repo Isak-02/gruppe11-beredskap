@@ -101,10 +101,12 @@
                 <li><hr class="dropdown-divider"></li>
 
                 <li>
-                    <button class="dropdown-item" type="button" disabled>
+                    <a class="dropdown-item"
+                    asp-controller="Account"
+                    asp-action="MinProfil">
                         Min profil
-                    </button>
-                </li>
+                </a>
+</li>
 
                 @if (erKriseInnmelder || erKoordinator)
                 {
@@ -137,11 +139,10 @@
                         </a>
                     </li>
                 }
-
                 <li>
-                    <button class="dropdown-item" type="button" disabled>
+                    <a class="dropdown-item" asp-controller="Account" asp-action="Innstillinger">
                         Innstillinger
-                    </button>
+                    </a>
                 </li>
 
                 <li><hr class="dropdown-divider"></li>

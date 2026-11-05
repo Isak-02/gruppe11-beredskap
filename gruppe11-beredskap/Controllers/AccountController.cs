@@ -222,6 +222,51 @@ public class AccountController : Controller
         return View();
     }
 
+    //Viser profilinformasjon for den innloggede brukeren.
+    // NY METODE: Min profil
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> MinProfil()
+    {
+        var bruker = await _userManager.GetUserAsync(User);
+
+        if (bruker == null)
+        {
+            return Challenge();
+        }
+
+        ViewBag.Navn = bruker.Navn;
+        ViewBag.Epost = bruker.Email;
+        ViewBag.Telefon = bruker.PhoneNumber;
+
+        var roller = await _userManager.GetRolesAsync(bruker);
+
+        ViewBag.Rolle = roller.Count > 0
+            ? string.Join(", ", roller)
+            : "Ingen rolle registrert";
+
+        return View();
+    }
+
+
+    // Viser innstillinger for den innloggede brukeren
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Innstillinger()
+    {
+        var bruker = await _userManager.GetUserAsync(User);
+
+        if (bruker == null)
+            return Challenge();
+
+        ViewBag.Navn = bruker.Navn;
+        ViewBag.Epost = bruker.Email;
+        ViewBag.Telefon = bruker.PhoneNumber;
+
+        return View();
+    }
+
+
     // Sender bare videre til adresser på vår egen side, så lenker ikke kan sende brukeren til en annen nettside
     private IActionResult TilLokalAdresse(string? returnUrl)
     {

@@ -1,0 +1,270 @@
+
+@{
+    ViewData["Title"] = "Innstillinger";
+}
+
+<style>
+    .settings-layout {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        gap: 28px;
+        max-width: 1150px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .settings-sidebar {
+        background: #f4f7f5;
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    .settings-sidebar h2 {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .settings-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .settings-menu button {
+        border: none;
+        background: transparent;
+        padding: 12px;
+        text-align: left;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #263b30;
+    }
+
+    .settings-menu button:hover {
+        background: #e0ebe3;
+    }
+
+    .settings-menu button.active {
+        background: #246b45;
+        color: white;
+    }
+
+    .settings-content {
+        background: white;
+        padding: 30px;
+        border: 1px solid #e1e7e2;
+        border-radius: 12px;
+        min-height: 420px;
+    }
+
+    .settings-panel[hidden] {
+        display: none;
+    }
+
+    .settings-field {
+        margin: 20px 0;
+    }
+
+    .settings-field label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .settings-field input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccd8cf;
+        border-radius: 8px;
+        background: #f8faf8;
+    }
+
+    @@media (max-width: 768px) {
+        .settings-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="settings-layout">
+
+    <aside class="settings-sidebar">
+        <h2>Innstillinger</h2>
+
+        <nav class="settings-menu" aria-label="Innstillingsmeny">
+            <button type="button" class="active"
+                    data-panel="konto" aria-pressed="true">
+                Kontoinnstillinger
+            </button>
+
+            <button type="button"
+                    data-panel="varsler" aria-pressed="false">
+                Varslinger
+            </button>
+
+            <button type="button"
+                    data-panel="sikkerhet" aria-pressed="false">
+                Sikkerhet og personvern
+            </button>
+
+            <button type="button"
+                    data-panel="sprak" aria-pressed="false">
+                Språk og utseende
+            </button>
+        </nav>
+    </aside>
+
+    <main class="settings-content">
+
+        <section id="konto" class="settings-panel">
+            <h2>Kontoinnstillinger</h2>
+            <p>Her kan du endre informasjon om kontoen din.</p>
+
+            <div class="settings-field">
+                <label for="navn">Navn</label>
+                <input id="navn" value="@ViewBag.Navn" readonly />
+            </div>
+
+            <div class="settings-field">
+                <label for="epost">E-postadresse</label>
+                <input id="epost" value="@ViewBag.Epost" readonly />
+            </div>
+
+            <div class="settings-field">
+                <label for="telefon">Telefonnummer</label>
+                <input id="telefon" value="@ViewBag.Telefon" readonly />
+            </div>
+        </section>
+
+        <section id="varsler" class="settings-panel" hidden>
+            <h2>Varslinger</h2>
+            <p>Her kan du administrere varslinger.</p>
+
+            <label>
+                <input type="checkbox" disabled />
+                Motta varslinger om nye behov
+            </label>
+        </section>
+
+        <section id="sikkerhet" class="settings-panel" hidden>
+            <h2>Sikkerhet og personvern</h2>
+            <p>Administrer sikkerheten og personvernet til kontoen din.</p>
+
+            <hr />
+
+            <div class="mb-4">
+                <h4>Endre passord</h4>
+                <p>Administrer passord og innloggingssikkerhet.</p>
+
+                <a asp-controller="Account"
+                   asp-action="ForgotPassword"
+                   class="btn btn-outline-success">
+                    Tilbakestill passord
+                </a>
+            </div>
+
+            <hr />
+
+            <div class="my-4">
+                <h4>Personvern</h4>
+                <p>
+                    Her vil du senere kunne lese mer om hvordan
+                    personopplysningene dine behandles i KartKrise.
+                </p>
+            </div>
+
+            <hr />
+
+            <div class="mt-4">
+                <h4 class="text-danger">Slett konto</h4>
+                <p>
+                    Hvis du sletter kontoen din, kan du miste
+                    tilgang til kontoen og registreringene dine.
+                </p>
+
+                <button type="button"
+                        class="btn btn-outline-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#slettKontoModal">
+                    Slett konto
+                </button>
+            </div>
+        </section>
+
+        <div class="modal fade"
+             id="slettKontoModal"
+             tabindex="-1"
+             aria-labelledby="slettKontoTittel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="slettKontoTittel">
+                            Slett konto
+                        </h5>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Lukk">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>Er du sikker på at du vil slette kontoen?</p>
+                        <p class="text-muted">
+                            Sletting av konto er ikke implementert ennå.
+                            Ingen opplysninger blir slettet.
+                        </p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Avbryt
+                        </button>
+                        <button type="button"
+                                class="btn btn-danger"
+                                disabled>
+                            Bekreft sletting (kommer senere)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section id="sprak" class="settings-panel" hidden>
+            <h2>Språk og utseende</h2>
+            <p>Her kan du endre språk og utseende.</p>
+
+            <label for="sprakvalg">Språk</label>
+            <select id="sprakvalg" class="form-select" enabled>
+                <option>Norsk</option>
+                <option>English</option>
+            </select>
+            <small>Språkvalg er ikke implementert ennå.</small>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    document.querySelectorAll(".settings-menu button")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                const panelId = button.dataset.panel;
+
+                document.querySelectorAll(".settings-menu button")
+                    .forEach(item => {
+                        const active = item === button;
+                        item.classList.toggle("active", active);
+                        item.setAttribute("aria-pressed", String(active));
+                    });
+
+                document.querySelectorAll(".settings-panel")
+                    .forEach(panel => {
+                        panel.hidden = panel.id !== panelId;
+                    });
+            });
+        });
+</script>
