@@ -9,4 +9,9 @@ public class KontoController : Controller
     {
         return View();
     }
+    [HttpGet]
+    public IActionResult MinProfil()
+    {
+        return View();
+    }
 }

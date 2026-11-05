@@ -1,0 +1,166 @@
+
+@{
+    ViewData["Title"] = "Min profil";
+}
+
+<div class="container py-5">
+
+    <!-- Profiloversikt -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body p-4">
+
+            <div class="d-flex flex-wrap align-items-center gap-3">
+
+                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                     style="width: 75px; height: 75px; background-color: #e6f0d4;">
+
+                    <i class="bi bi-person-circle fs-1 text-success"></i>
+                </div>
+
+                <div class="flex-grow-1">
+                    <h1 class="mb-1">Min profil</h1>
+                    <p class="text-muted mb-1">
+                        Din personlige oversikt i KartKrise
+                    </p>
+                    <span class="badge bg-success">Bruker</span>
+                </div>
+
+                <a asp-controller="Konto"
+                   asp-action="Innstillinger"
+                   class="btn btn-outline-success">
+                    <i class="bi bi-gear me-1"></i>
+                    Innstillinger
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Aktivitetsoversikt -->
+    <h3 class="mb-3">Min aktivitet</h3>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body p-4">
+
+                    <i class="bi bi-clipboard-check text-success fs-3"></i>
+
+                    <h5 class="mt-3">Mine behov</h5>
+                    <h2>—</h2>
+
+                    <p class="text-muted mb-0">
+                        Antall registrerte behov
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body p-4">
+
+                    <i class="bi bi-box-seam text-success fs-3"></i>
+
+                    <h5 class="mt-3">Mine ressurser</h5>
+                    <h2>—</h2>
+
+                    <p class="text-muted mb-0">
+                        Antall registrerte ressurser
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-body p-4">
+
+                    <i class="bi bi-activity text-success fs-3"></i>
+
+                    <h5 class="mt-3">Aktive registreringer</h5>
+                    <h2>—</h2>
+
+                    <p class="text-muted mb-0">
+                        Registreringer som fortsatt er aktive
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Personlig informasjon -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+
+        <div class="card-body p-4">
+
+            <h3 class="mb-3">
+                <i class="bi bi-person-lines-fill me-2"></i>
+                Personlig informasjon
+            </h3>
+
+            <hr />
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <label class="text-muted">Fullt navn</label>
+                    <p class="fw-semibold mb-0">Ikke registrert</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="text-muted">E-postadresse</label>
+                    <p class="fw-semibold mb-0">Ikke registrert</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="text-muted">Telefonnummer</label>
+                    <p class="fw-semibold mb-0">Ikke registrert</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="text-muted">Brukerrolle</label>
+                    <p class="fw-semibold mb-0">Bruker</p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Mine registreringer -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+
+        <div class="card-body p-4">
+
+            <h3 class="mb-3">
+                <i class="bi bi-clock-history me-2"></i>
+                Mine siste registreringer
+            </h3>
+
+            <hr />
+
+            <div class="text-center py-4">
+
+                <i class="bi bi-clipboard-x fs-1 text-muted"></i>
+
+                <p class="text-muted mt-3 mb-1">
+                    Ingen registreringer tilgjengelig ennå.
+                </p>
+
+                <p class="text-muted small">
+                    Når registreringene dine blir koblet til profilen,
+                    vil de vises her.
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
