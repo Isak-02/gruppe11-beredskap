@@ -34,46 +34,7 @@ public class RessursController : Controller
     [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
     public async Task<IActionResult> Registrer(RessursViewModel model)
     {
-        var kjøretøyOgMaskiner = new[]
-        {
-            "Drone og droneoperatør",
-            "ATV",
-            "Traktor",
-            "Gravemaskin",
-            "Hjullaster",
-            "Skogsmaskin",
-            "Snøskuter",
-            "Lastebil",
-            "Aggregat",
-            "Båt"
-        };
-
-        if (kjøretøyOgMaskiner.Contains(model.TypeRessurs) &&
-            string.IsNullOrWhiteSpace(model.Drivstofftype))
-        {
-            ModelState.AddModelError(
-                nameof(model.Drivstofftype),
-                "Du må velge drivstofftype for denne ressursen");
-        }
-
-        var ressurserMedLastekapasitet = new[]
-        {
-            "Henger",
-            "Traktor",
-            "Gravemaskin",
-            "Hjullaster",
-            "Skogsmaskin",
-            "Lastebil"
-        };
-
-        if (ressurserMedLastekapasitet.Contains(model.TypeRessurs) &&
-            (!model.Lastekapasitet.HasValue || model.Lastekapasitet <= 0))
-        {
-            ModelState.AddModelError(
-                nameof(model.Lastekapasitet),
-                "Du må skrive inn en lastekapasitet som er større enn 0");
-        }
-
+        LeggTilFeltfeil(model);
         if (!ModelState.IsValid)
             return View(model);
 
@@ -95,6 +56,64 @@ public class RessursController : Controller
         };
 
         await _repo.AddAsync(ressurs);
+        return RedirectToAction(nameof(Mine));
+    }
+
+    [HttpGet]
+    [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
+    public async Task<IActionResult> Endre(int id)
+    {
+        var ressurs = await _repo.GetByIdAsync(id);
+        if (ressurs == null)
+            return NotFound();
+        if (!EierEllerKoordinator(ressurs))
+            return Forbid();
+
+        return View("Registrer", TilVisning(new[] { ressurs }).Single());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
+    public async Task<IActionResult> Endre(RessursViewModel model)
+    {
+        var ressurs = await _repo.GetByIdAsync(model.Id);
+        if (ressurs == null)
+            return NotFound();
+        if (!EierEllerKoordinator(ressurs))
+            return Forbid();
+
+        LeggTilFeltfeil(model);
+        if (!ModelState.IsValid)
+            return View("Registrer", model);
+
+        ressurs.TypeRessurs = model.TypeRessurs;
+        ressurs.Beskrivelse = model.Beskrivelse;
+        ressurs.AnnenType = model.AnnenType;
+        ressurs.Drivstofftype = model.Drivstofftype;
+        ressurs.Lastekapasitet = model.Lastekapasitet;
+        ressurs.GeografiskOmrade = model.GeografiskOmrade;
+        ressurs.Tidspunkt = model.Tidspunkt;
+        ressurs.Kontaktpunkt = model.Kontaktpunkt;
+        ressurs.Latitude = model.Latitude!.Value;
+        ressurs.Longitude = model.Longitude!.Value;
+
+        await _repo.UpdateAsync(ressurs);
+        return RedirectToAction(nameof(Mine));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
+    public async Task<IActionResult> Slett(int id)
+    {
+        var ressurs = await _repo.GetByIdAsync(id);
+        if (ressurs == null)
+            return NotFound();
+        if (!EierEllerKoordinator(ressurs))
+            return Forbid();
+
+        await _repo.DeleteAsync(id);
         return RedirectToAction(nameof(Mine));
     }
 
@@ -137,6 +156,58 @@ public class RessursController : Controller
             Latitude = r.Latitude,
             Longitude = r.Longitude
         }).ToList();
+    }
+
+    private void LeggTilFeltfeil(RessursViewModel model)
+    {
+        var kjøretøyOgMaskiner = new[]
+        {
+            "Drone og droneoperatør",
+            "ATV",
+            "Traktor",
+            "Gravemaskin",
+            "Hjullaster",
+            "Skogsmaskin",
+            "Snøskuter",
+            "Lastebil",
+            "Aggregat",
+            "Båt"
+        };
+
+        if (kjøretøyOgMaskiner.Contains(model.TypeRessurs) &&
+            string.IsNullOrWhiteSpace(model.Drivstofftype))
+        {
+            ModelState.AddModelError(
+                nameof(model.Drivstofftype),
+                "Du må velge drivstofftype for denne ressursen");
+        }
+
+        var ressurserMedLastekapasitet = new[]
+        {
+            "Henger",
+            "Traktor",
+            "Gravemaskin",
+            "Hjullaster",
+            "Skogsmaskin",
+            "Lastebil"
+        };
+
+        if (ressurserMedLastekapasitet.Contains(model.TypeRessurs) &&
+            (!model.Lastekapasitet.HasValue || model.Lastekapasitet <= 0))
+        {
+            ModelState.AddModelError(
+                nameof(model.Lastekapasitet),
+                "Du må skrive inn en lastekapasitet som er større enn 0");
+        }
+    }
+
+    private bool EierEllerKoordinator(Ressurs ressurs)
+    {
+        if (User?.IsInRole(RoleNames.Koordinator) == true)
+            return true;
+
+        var brukerId = InnloggetBrukerId();
+        return brukerId != null && ressurs.OpprettetAvId == brukerId;
     }
 
     // Id-en til brukeren som er logget inn. Er null hvis ingen er logget inn (for eksempel i enhetstester).

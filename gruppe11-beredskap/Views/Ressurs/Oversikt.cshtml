@@ -26,6 +26,7 @@ else
             <th>Tidspunkt</th>
             <th>Kontaktpunkt</th>
             <th>Status</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -41,6 +42,13 @@ else
                 <td>@ressurs.Tidspunkt.ToString("g")</td>
                 <td>@ressurs.Kontaktpunkt</td>
                 <td>@ressurs.Status</td>
+                <td class="text-nowrap">
+                    <a asp-action="Endre" asp-route-id="@ressurs.Id">Endre</a>
+                    <form asp-action="Slett" asp-route-id="@ressurs.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Slett</button>
+                    </form>
+                </td>
             </tr>
         }
         </tbody>

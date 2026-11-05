@@ -25,6 +25,25 @@ public class FakeRessursRepository : IRessursRepository
         return Task.FromResult(Lagret.ToList());
     }
 
+    public Task<Ressurs?> GetByIdAsync(int id)
+    {
+        return Task.FromResult(Lagret.FirstOrDefault(r => r.Id == id));
+    }
+
+    public Task UpdateAsync(Ressurs ressurs)
+    {
+        var index = Lagret.FindIndex(r => r.Id == ressurs.Id);
+        if (index >= 0)
+            Lagret[index] = ressurs;
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync(int id)
+    {
+        Lagret.RemoveAll(r => r.Id == id);
+        return Task.CompletedTask;
+    }
+
     public Task UpdateStatusAsync(int id, string status)
     {
         var ressurs = Lagret.FirstOrDefault(r => r.Id == id);
@@ -170,5 +189,33 @@ public class RessursControllerTests
         var liste = Assert.IsType<List<RessursViewModel>>(view.Model);
         var ressurs = Assert.Single(liste);
         Assert.Equal(1, ressurs.Id);
+    }
+
+    [Fact]
+    public async Task Endre_Post_BytterType()
+    {
+        var repo = new FakeRessursRepository();
+        var controller = new RessursController(repo);
+        LoggInnSom(controller, "bruker-1");
+        await controller.Registrer(LagModel("Mat"));
+
+        var model = LagModel("Lokaler");
+        model.Id = 1;
+        await controller.Endre(model);
+
+        Assert.Equal("Lokaler", repo.Lagret[0].TypeRessurs);
+    }
+
+    [Fact]
+    public async Task Slett_FjernerRaden()
+    {
+        var repo = new FakeRessursRepository();
+        var controller = new RessursController(repo);
+        LoggInnSom(controller, "bruker-1");
+        await controller.Registrer(LagModel("Mat"));
+
+        await controller.Slett(1);
+
+        Assert.Empty(repo.Lagret);
     }
 }
