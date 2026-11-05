@@ -14,8 +14,9 @@ KartKrise er en webløsning for kriseberedskap i Totalforsvaret. Offentlige akt�
 - Validering av påkrevde felt før data lagres
 - Lagring i MariaDB med Entity Framework Core
 - Eget KartKrise-design med Bootstrap
-
-**Under utvikling:** Innlogging og profilmeny finnes foreløpig bare som design. Det er ikke mulig å logge inn ennå, og koblingssiden er åpen for alle.
+- Registrering lagrer brukeren i AspNetUsers
+- Innlogging bruker ASP.NET Identity
+- `/Kobling` krever rollen Koordinator
 
 ## Teknologistack
 
@@ -35,12 +36,13 @@ KartKrise er en webløsning for kriseberedskap i Totalforsvaret. Offentlige akt�
 gruppe11-beredskap/
 ├── Properties/                    launchSettings.json (kjøreprofiler for Rider)
 ├── wwwroot/                       css, js, bilder
-├── Controllers/                   BehovController, RessursController, MatchingController, HomeController
+├── Controllers/                   AccountController, BehovController, RessursController, MatchingController, HomeController
 ├── DataAccess/                    ApplicationDbContext og repositories
 ├── Migrations/                    EF Core-migrasjoner
 ├── Models/                        BehovViewModel, RessursViewModel, MatchingViewModel
-│   └── Entities/                  Behov, Ressurs, Matching (tabellene i databasen)
-├── Views/                         Behov, Ressurs, Matching, Home, Shared
+│   ├── Authorization/             Rollene KriseInnmelder, RessursInnmelder og Koordinator
+│   └── Entities/                  Behov, Ressurs, Matching, Bruker (tabellene i databasen)
+├── Views/                         Account, Behov, Ressurs, Matching, Home, Shared
 ├── appsettings.json
 ├── appsettings.Development.json
 ├── Dockerfile
@@ -80,6 +82,7 @@ Tabellene i databasen opprettes automatisk når appen starter.
 - Nettleseren sender GET og POST til en controller. Controlleren validerer view-modellen og sender den til et Razor-view.
 - Når man tegner på kartet, lagres posisjon (og eventuell radius) i skjulte felt som sendes med skjemaet.
 - Data lagres i MariaDB via Entity Framework Core og repository-klasser i `DataAccess`.
+- Innlogging bruker en cookie fra ASP.NET Identity, med rollene KriseInnmelder, RessursInnmelder og Koordinator, og en ressurs kan registreres, endres og slettes av eieren eller en koordinator.
 
 ## Testing
 
@@ -87,12 +90,37 @@ Enhetstester med xUnit ligger i `gruppe11-beredskap.Tests`. Testene bruker falsk
 
 | Testklasse | Hva den sjekker | Antall |
 |---|---|---|
-| `BehovControllerTests` | Registrering og oversikt av behov, inkludert radius og beskrivelse | 10 |
-| `RessursControllerTests` | Registrering og oversikt av ressurser, krav om drivstoff og lastekapasitet | 6 |
+| `BehovControllerTests` | Registrering og oversikt av behov, inkludert radius og beskrivelse | 13 |
+| `RessursControllerTests` | Registrering, endring, sletting og oversikt av ressurser, krav om drivstoff og lastekapasitet | 10 |
 | `BehovViewModelTests` | Validering av radius, posisjon og beskrivelse | 8 |
 | `MatchingControllerTests` | Visning av åpne behov og ledige ressurser, og lagring av koblinger | 5 |
+| `TilgangTests` | Rollekrav på registrering, oversikt og kobling | 7 |
 
-Siste kjøring (3. november 2026): 29 bestått, 0 feilet.
+Siste kjøring (5. november 2026): 43 bestått, 0 feilet.
+
+### Systemtest
+
+Resultat: Ikke kjørt ennå
+
+- Registrer bruker
+- Logg inn
+- Registrer ressurs, endre den og slett den
+
+### Sikkerhetstest
+
+Resultat: Ikke kjørt ennå
+
+- Utlogget bruker kommer ikke inn på endring
+- Vanlig bruker kommer ikke inn på `/Kobling`
+- Passord i AspNetUsers er en hash
+
+### Brukervennlighetstest
+
+Resultat: Ikke kjørt ennå
+
+- Registrer ressurs på smal skjerm
+- Sett markør i kartet
+- Les oversikten
 
 ## Bruk av KI
 
@@ -134,8 +162,7 @@ Gruppe 11
 Under arbeid mot neste leveranse.
 
 - **Forrige leveranse (IS-202):** MVC-app i Docker med skjema, GET/POST og kart. Data ble lagret i minnet.
-- **Ferdig nå:** Lagring i MariaDB, kart med verktøylinje og radius, beskrivelse på behov og ressurser, koblingsside, nytt design og 29 enhetstester.
-- **Under utvikling:** Innlogging og tilgangskontroll for kriseleder.
+- **Ferdig nå:** Lagring i MariaDB, kart med verktøylinje og radius, beskrivelse på behov og ressurser, koblingsside, innlogging med roller, nytt design og 43 enhetstester.
 
 GitHub-lenke: https://github.com/Isak-02/gruppe11-beredskap
 
