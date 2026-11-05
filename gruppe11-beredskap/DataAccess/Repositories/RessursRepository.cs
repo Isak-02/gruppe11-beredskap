@@ -27,6 +27,27 @@ public class RessursRepository : IRessursRepository
             .ToListAsync();
     }
 
+    public async Task<Ressurs?> GetByIdAsync(int id)
+    {
+        return await _db.Ressurser.FindAsync(id);
+    }
+
+    public async Task UpdateAsync(Ressurs ressurs)
+    {
+        _db.Ressurser.Update(ressurs);
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var ressurs = await _db.Ressurser.FindAsync(id);
+        if (ressurs == null)
+            return;
+
+        _db.Ressurser.Remove(ressurs);
+        await _db.SaveChangesAsync();
+    }
+
     // Endrer bare status på én ressurs
     public async Task UpdateStatusAsync(int id, string status)
     {
