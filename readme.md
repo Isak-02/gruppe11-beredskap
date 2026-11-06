@@ -237,7 +237,9 @@ Gjennomført manuelt med appen kjørende i Docker Compose.
 | S5 | Registrer behov som KriseInnmelder | Behovet vises under *Mine behov* og på `/Kobling` | Godkjent |
 | S6 | Koble behov og ressurs, og marker som løst | Status går Ny → Vurderes → Tildelt → Løst, og ressursen blir ledig igjen | Godkjent |
 | S7 | Glemt passord | Lenken skrives i loggen, og nytt passord virker | Godkjent |
-| S8 | Velg fylke på *Ressurser per fylke* | Bare tilgjengelige ressurser i fylket vises, og lista kan skrives ut | Ikke kjørt enda |
+| S8 | Velg fylke på *Ressurser per fylke* | Bare tilgjengelige ressurser i fylket vises, og lista kan skrives ut | Godkjent |
+
+S8 (6. november 2026, Docker på localhost:8080, innlogget som koordinator): Agder viste de tre tilgjengelige ressursene. Oslo viste ingen. Klikk på fylket i kartet valgte Agder. Skriv ut viste overskrift og tabell, uten meny, kart og filter.
 
 ### Sikkerhetstest
 
@@ -256,10 +258,12 @@ Gjennomført med personer utenfor gruppa, og med mobilvisning i nettleseren (F12
 
 | # | Oppgave | Hva vi så etter | Resultat |
 |---|---|---|---|
-| B1 | Registrer en ressurs på smal skjerm | Om skjemaet og kartet er lett å bruke på mobil | Ikke kjørt enda |
+| B1 | Registrer en ressurs på smal skjerm | Om skjemaet og kartet er lett å bruke på mobil | Godkjent |
 | B2 | Sett markør i kartet | Om det er tydelig hvordan man velger posisjon | Godkjent |
 | B3 | Finn igjen ressursen du registrerte | Om *Mine ressurser* er lett å finne | Godkjent |
 | B4 | Les oversikten og koblingssiden | Om fargene og tegnforklaringen er forståelige | Godkjent |
+
+B1 (6. november 2026, 390 px bredde): veiviseren og kartverktøyet fikk plass uten vannrett scrolling. En ressurs (Lokaler) ble lagret med markør og vises under *Mine ressurser*.
 
 ## Bruk av KI
 
