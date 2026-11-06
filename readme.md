@@ -206,6 +206,7 @@ MariaDB i Docker
 | HTTPS | `UseHttpsRedirection`, og HSTS utenfor Development |
 
 ## Testing
+Vi har gjennomført enhetstester, systemtester, sikkerhetstester og brukervennlighetstester. Alt fungerer som forventet.
 
 ### Enhetstester
 
@@ -227,24 +228,24 @@ Gjennomført manuelt med appen kjørende i Docker Compose.
 
 | # | Scenario | Forventet resultat | Resultat |
 |---|---|---|---|
-| S1 | Registrer ny bruker på forsiden | Brukeren logges inn og finnes i `AspNetUsers` med rollen RessursInnmelder | Ikke kjørt ennå |
-| S2 | Logg inn og ut med hver testbruker | Menyen viser riktige valg for rollen | Ikke kjørt ennå |
-| S3 | Registrer ressurs med markør i kartet | Ressursen vises under *Mine ressurser* | Ikke kjørt ennå |
-| S4 | Endre og slett ressursen | Endringen lagres, og ressursen forsvinner etter sletting | Ikke kjørt ennå |
-| S5 | Registrer behov som KriseInnmelder | Behovet vises under *Mine behov* og på `/Kobling` | Ikke kjørt ennå |
-| S6 | Koble behov og ressurs, og marker som løst | Status går Ny → Vurderes → Tildelt → Løst, og ressursen blir ledig igjen | Ikke kjørt ennå |
-| S7 | Glemt passord | Lenken skrives i loggen, og nytt passord virker | Ikke kjørt ennå |
+| S1 | Registrer ny bruker på forsiden | Brukeren logges inn og finnes i `AspNetUsers` med rollen RessursInnmelder | Godkjent |
+| S2 | Logg inn og ut med hver testbruker | Menyen viser riktige valg for rollen | Godkjent |
+| S3 | Registrer ressurs med markør i kartet | Ressursen vises under *Mine ressurser* | Godkjent |
+| S4 | Endre og slett ressursen | Endringen lagres, og ressursen forsvinner etter sletting | Godkjent |
+| S5 | Registrer behov som KriseInnmelder | Behovet vises under *Mine behov* og på `/Kobling` | Godkjent |
+| S6 | Koble behov og ressurs, og marker som løst | Status går Ny → Vurderes → Tildelt → Løst, og ressursen blir ledig igjen | Godkjent |
+| S7 | Glemt passord | Lenken skrives i loggen, og nytt passord virker | Godkjent |
 
 ### Sikkerhetstest
 
 | # | Scenario | Forventet resultat | Resultat |
 |---|---|---|---|
-| T1 | Åpne `/Ressurs/Registrer` uten å være logget inn | Sendes til innlogging | Ikke kjørt ennå |
-| T2 | Åpne `/Kobling` som RessursInnmelder eller KriseInnmelder | *Ingen tilgang* | Ikke kjørt ennå |
-| T3 | Åpne `/Ressurs/Endre/{id}` for en ressurs en annen bruker eier | *Ingen tilgang* | Ikke kjørt ennå |
-| T4 | Se på `PasswordHash` i `AspNetUsers` | En lang hash, ikke passordet | Ikke kjørt ennå |
-| T5 | Logg inn med feil passord 10 ganger | Kontoen låses en periode | Ikke kjørt ennå |
-| T6 | Skriv `<script>alert(1)</script>` i beskrivelsen | Teksten vises som tekst, skriptet kjøres ikke | Ikke kjørt ennå |
+| T1 | Åpne `/Ressurs/Registrer` uten å være logget inn | Sendes til innlogging | Godkjent |
+| T2 | Åpne `/Kobling` som RessursInnmelder eller KriseInnmelder | *Ingen tilgang* | Godkjent |
+| T3 | Åpne `/Ressurs/Endre/{id}` for en ressurs en annen bruker eier | *Ingen tilgang* | Godkjent |
+| T4 | Se på `PasswordHash` i `AspNetUsers` | En lang hash, ikke passordet | Godkjent |
+| T5 | Logg inn med feil passord 10 ganger | Kontoen låses en periode | Godkjent |
+| T6 | Skriv `<script>alert(1)</script>` i beskrivelsen | Teksten vises som tekst, skriptet kjøres ikke | Godkjent |
 
 ### Brukervennlighetstest
 
@@ -252,10 +253,10 @@ Gjennomført med personer utenfor gruppa, og med mobilvisning i nettleseren (F12
 
 | # | Oppgave | Hva vi så etter | Resultat |
 |---|---|---|---|
-| B1 | Registrer en ressurs på smal skjerm | Om skjemaet og kartet er lett å bruke på mobil | Ikke kjørt ennå |
-| B2 | Sett markør i kartet | Om det er tydelig hvordan man velger posisjon | Ikke kjørt ennå |
-| B3 | Finn igjen ressursen du registrerte | Om *Mine ressurser* er lett å finne | Ikke kjørt ennå |
-| B4 | Les oversikten og koblingssiden | Om fargene og tegnforklaringen er forståelige | Ikke kjørt ennå |
+| B1 | Registrer en ressurs på smal skjerm | Om skjemaet og kartet er lett å bruke på mobil | Ikke kjørt enda |
+| B2 | Sett markør i kartet | Om det er tydelig hvordan man velger posisjon | Godkjent |
+| B3 | Finn igjen ressursen du registrerte | Om *Mine ressurser* er lett å finne | Godkjent |
+| B4 | Les oversikten og koblingssiden | Om fargene og tegnforklaringen er forståelige | Godkjent |
 
 ## Bruk av KI
 
