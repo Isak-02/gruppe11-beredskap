@@ -27,7 +27,7 @@
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-dark kk-navbar shadow-sm mb-3">
+    <nav class="navbar navbar-expand-lg navbar-dark kk-navbar shadow-sm mb-3">
         <div class="container-fluid">
             <a class="navbar-brand kk-navbar-brand"
                asp-area=""
@@ -41,7 +41,7 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
                 <!-- Menyen viser bare sidene brukeren har tilgang til -->
                 <ul class="navbar-nav flex-grow-1">
                     @if (erKriseInnmelder || erKoordinator)
@@ -69,7 +69,7 @@
 
                
 <!-- Innlogging og profilmeny -->
-<div class="ms-sm-auto mt-3 mt-sm-0 d-flex align-items-center gap-2">
+<div class="ms-lg-auto mt-3 mt-lg-0 d-flex align-items-center gap-2">
 
     @if (innloggetBruker == null)
     {
