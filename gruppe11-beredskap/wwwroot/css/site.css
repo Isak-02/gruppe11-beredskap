@@ -388,11 +388,12 @@ body {
 
 @media (max-width: 767px) {
   .kk-home {
-    padding: 45px 20px;
+    min-height: 0;
+    padding: 36px 18px 28px;
   }
 
   .kk-intro {
-    margin-bottom: 35px;
+    margin-bottom: 28px;
   }
 }
 
@@ -835,4 +836,66 @@ html {
    Valgt fylke vises allerede med tykk grønn kant. */
 .leaflet-interactive:focus {
   outline: none;
+}
+
+/* Telefon: unngå sidelengs scrolling, iOS-zoom i felt, og for store kart. */
+@media (max-width: 991.98px) {
+  .kk-navbar .navbar-collapse .nav-link {
+    padding: 12px 8px !important;
+  }
+
+  .kk-navbar .ms-lg-auto,
+  .kk-navbar #kk-navbar-profile {
+    width: 100%;
+  }
+
+  .kk-navbar .kk-login-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .kk-profile-menu {
+    position: static !important;
+    width: 100%;
+    min-width: 0;
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .form-control,
+  .form-select,
+  .settings-field input {
+    font-size: 16px;
+  }
+
+  input[type="datetime-local"] {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .kart-ramme #map,
+  .wizard #map {
+    height: 300px;
+  }
+
+  .kart-info-panel {
+    min-width: 0;
+    width: min(250px, calc(100vw - 4.5rem));
+  }
+
+  .wizard-summary-row dt {
+    flex-basis: 100%;
+  }
+
+  .leaflet-popup-content {
+    margin: 8px 10px;
+    max-width: calc(100vw - 5rem);
+  }
+
+  .leaflet-control-zoom a {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+  }
 }

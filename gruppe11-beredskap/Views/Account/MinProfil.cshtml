@@ -102,9 +102,22 @@
     }
 
     @@media (max-width: 768px) {
+        .profile-card {
+            padding: 18px;
+        }
+
         .profile-header {
             align-items: flex-start;
             flex-direction: column;
+        }
+
+        .profile-user {
+            gap: 14px;
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
         }
 
         .profile-stats,
@@ -113,7 +126,11 @@
         }
 
         .profile-title {
-            font-size: 32px;
+            font-size: 28px;
+        }
+
+        .profile-section-title {
+            font-size: 24px;
         }
     }
 </style>
