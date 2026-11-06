@@ -27,6 +27,7 @@ KartKrise er en webløsning for kriseberedskap i Totalforsvaret. Offentlige akt�
 - Kart med Leaflet og OpenStreetMap
 - Posisjon settes med markør i kartet (Leaflet.Draw), og for behov også med sirkel (radius)
 - Norske tekster i verktøylinjen
+- *Ressurser per fylke* (bare koordinator): velg fylke i lista eller ved å klikke i kartet. Bare tilgjengelige ressurser vises, og lista kan skrives ut
 
 **Kobling (`/Kobling`)**
 - Kart og lister over åpne behov og ledige ressurser
@@ -40,7 +41,7 @@ KartKrise er en webløsning for kriseberedskap i Totalforsvaret. Offentlige akt�
 |---|---|---|
 | KriseInnmelder | Offentlig aktør (kommune, politi, brann, helse, Forsvaret o.l.) | Registrere behov og se egne behov |
 | RessursInnmelder | Privatperson, bedrift, frivillig organisasjon | Registrere, endre og slette egne ressurser |
-| Koordinator | Kriseledelsen | Alt over, i tillegg til *Alle behov*, *Alle ressurser* og `/Kobling` |
+| Koordinator | Kriseledelsen | Alt over, i tillegg til *Alle behov*, *Alle ressurser*, *Ressurser per fylke* og `/Kobling` |
 
 Ved registrering får man alltid rollen RessursInnmelder. KriseInnmelder og Koordinator opprettes av oss, slik at fremmede ikke kan gi seg selv tilgang til behov og koblinger.
 
@@ -82,7 +83,7 @@ Passordet ligger i `appsettings.Development.json` under `Testbrukere:Passord`. T
 ```text
 gruppe11-beredskap/
 ├── Properties/                    launchSettings.json (kjøreprofiler for Rider)
-├── wwwroot/                       css, js, bilder
+├── wwwroot/                       css, js, bilder og data/fylker.json
 ├── Controllers/                   AccountController, BehovController, RessursController, MatchingController, HomeController
 ├── DataAccess/                    ApplicationDbContext
 │   └── Repositories/              BehovRepository, RessursRepository, MatchingRepository (med interface)
@@ -183,10 +184,10 @@ MariaDB i Docker
 ```
 
 - **MVC:** Nettleseren sender GET og POST til en controller. Controlleren validerer view-modellen, bruker et repository til å lese eller lagre, og sender data til et Razor-view.
-- **Kart:** Når man tegner på kartet, lagres posisjon (og eventuell radius) i skjulte felt som sendes med skjemaet. På koblingssiden sendes behov og ressurser til kartet som JSON.
+- **Kart:** Når man tegner på kartet, lagres posisjon (og eventuell radius) i skjulte felt som sendes med skjemaet. På koblingssiden sendes behov og ressurser til kartet som JSON. På *Ressurser per fylke* brukes posisjonen til å finne hvilket fylke ressursen ligger i (`wwwroot/data/fylker.json`).
 - **Repositories:** Controllerne snakker med interface (`IBehovRepository`, `IRessursRepository`, `IMatchingRepository`), ikke direkte med databasen. Det gjør at testene kan bruke falske repositories.
 - **Identity:** `ApplicationDbContext` arver fra `IdentityDbContext<Bruker>`, slik at brukere og roller lagres i den samme databasen som behov og ressurser. `Bruker` arver fra `IdentityUser` og har i tillegg `Navn`.
-- **Eierskap:** Behov og ressurser lagrer hvem som opprettet dem (`OpprettetAvId`). Det brukes til *Mine*-sidene og til å sjekke at bare eieren eller en koordinator kan endre og slette.
+- **Eierskap:** Behov og ressurser lagrer hvem som opprettet dem (`OpprettetAvId`). Det brukes til *Mine*-sidene. Ressurser kan bare endres og slettes av eieren eller en koordinator.
 - **Database:** Tabellene `Behov`, `Ressurser` og `Matchinger`, i tillegg til Identity-tabellene (`AspNetUsers`, `AspNetRoles`, `AspNetUserRoles` m.fl.).
 
 ## Sikkerhet
@@ -206,7 +207,8 @@ MariaDB i Docker
 | HTTPS | `UseHttpsRedirection`, og HSTS utenfor Development |
 
 ## Testing
-Vi har gjennomført enhetstester, systemtester, sikkerhetstester og brukervennlighetstester. Alt fungerer som forventet.
+
+Vi har gjennomført enhetstester, systemtester, sikkerhetstester og brukervennlighetstester. Resultatene står i tabellene under.
 
 ### Enhetstester
 
@@ -215,12 +217,12 @@ Enhetstester med xUnit ligger i `gruppe11-beredskap.Tests`. Testene bruker falsk
 | Testklasse | Hva den sjekker | Antall |
 |---|---|---|
 | `BehovControllerTests` | Registrering, *Mine behov* og oversikt av behov, inkludert radius, beskrivelse og hvem som opprettet | 13 |
-| `RessursControllerTests` | Registrering, endring, sletting og oversikt av ressurser, krav om drivstoff og lastekapasitet | 10 |
+| `RessursControllerTests` | Registrering, endring, sletting, oversikt og ressurser per fylke, krav om drivstoff og lastekapasitet | 11 |
 | `BehovViewModelTests` | Validering av radius, posisjon og beskrivelse | 8 |
 | `MatchingControllerTests` | Visning av åpne behov og ledige ressurser, og lagring av koblinger | 5 |
-| `TilgangTests` | Rollekrav på registrering, oversikt og kobling | 7 |
+| `TilgangTests` | Rollekrav på registrering, oversikt, ressurser per fylke og kobling | 8 |
 
-Siste kjøring (5. november 2026): 43 bestått, 0 feilet.
+Siste kjøring (6. november 2026): 45 bestått, 0 feilet.
 
 ### Systemtest
 
@@ -235,6 +237,7 @@ Gjennomført manuelt med appen kjørende i Docker Compose.
 | S5 | Registrer behov som KriseInnmelder | Behovet vises under *Mine behov* og på `/Kobling` | Godkjent |
 | S6 | Koble behov og ressurs, og marker som løst | Status går Ny → Vurderes → Tildelt → Løst, og ressursen blir ledig igjen | Godkjent |
 | S7 | Glemt passord | Lenken skrives i loggen, og nytt passord virker | Godkjent |
+| S8 | Velg fylke på *Ressurser per fylke* | Bare tilgjengelige ressurser i fylket vises, og lista kan skrives ut | Ikke kjørt enda |
 
 ### Sikkerhetstest
 
@@ -286,6 +289,8 @@ KI ble brukt som hjelp fra idé til koding. All kode er lest og tilpasset av gru
 ## Kjente begrensninger
 
 - KriseInnmelder ser bare egne behov, ikke ledige ressurser.
+- Behov kan registreres, men ikke endres eller slettes.
+- Sletting av konto er ikke implementert.
 - Appen sender ikke ekte e-post. Lenker skrives i loggen.
 
 ## Team
@@ -302,7 +307,7 @@ Gruppe 11
 ## Status
 
 - **Innlevering 1 (IS-202):** MVC-app i Docker med skjema, GET/POST og kart. Data ble lagret i minnet.
-- **Innlevering 2:** Lagring i MariaDB, app og database i Docker Compose, innlogging og registrering med Identity, tre roller, endring og sletting av ressurser, kart med verktøylinje og radius, koblingsside med statusflyt, nytt design og 43 enhetstester.
+- **Innlevering 2:** Lagring i MariaDB, app og database i Docker Compose, innlogging og registrering med Identity, tre roller, endring og sletting av ressurser, kart med verktøylinje og radius, ressurser per fylke, koblingsside med statusflyt, nytt design og 45 enhetstester.
 
 GitHub-lenke: https://github.com/Isak-02/gruppe11-beredskap
 
