@@ -138,6 +138,18 @@ public class RessursController : Controller
         return View("Oversikt", TilVisning(mine));
     }
 
+    // Tilgjengelige ressurser som kan filtreres på fylke i kartet og skrives ut.
+    // Selve fylkesfilteret skjer i visningen, ut fra posisjonen til hver ressurs.
+    [HttpGet]
+    [Authorize(Roles = RoleNames.Koordinator)]
+    public async Task<IActionResult> PerFylke()
+    {
+        var ressurser = await _repo.GetAllAsync();
+        var tilgjengelige = ressurser.Where(r => r.Status == RessursStatus.Tilgjengelig);
+
+        return View(TilVisning(tilgjengelige));
+    }
+
     // Fra entitet tilbake til view-modell, slik at oversikten fungerer som før
     private static List<RessursViewModel> TilVisning(IEnumerable<Ressurs> ressurser)
     {
