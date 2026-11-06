@@ -61,6 +61,12 @@ public class TilgangTests
     }
 
     [Fact]
+    public void RessurserPerFylke_KreverKoordinator()
+    {
+        Assert.Equal(RoleNames.Koordinator, RollerPåMetode(typeof(RessursController), "PerFylke"));
+    }
+
+    [Fact]
     public void Kobling_KreverKoordinator()
     {
         var authorize = typeof(MatchingController).GetCustomAttribute<AuthorizeAttribute>();

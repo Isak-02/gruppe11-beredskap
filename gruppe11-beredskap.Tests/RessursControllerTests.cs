@@ -218,4 +218,21 @@ public class RessursControllerTests
 
         Assert.Empty(repo.Lagret);
     }
+
+    [Fact]
+    public async Task PerFylke_ViserBareTilgjengeligeRessurser()
+    {
+        var repo = new FakeRessursRepository();
+        var controller = new RessursController(repo);
+        await controller.Registrer(LagModel("Mat"));
+        await controller.Registrer(LagModel("Lokaler"));
+        repo.Lagret[1].Status = RessursStatus.Tildelt;
+
+        var result = await controller.PerFylke();
+
+        var view = Assert.IsType<ViewResult>(result);
+        var liste = Assert.IsType<List<RessursViewModel>>(view.Model);
+        Assert.Single(liste);
+        Assert.Equal("Mat", liste[0].TypeRessurs);
+    }
 }

@@ -1,0 +1,212 @@
+@using System.Globalization
+@model List<gruppe11_beredskap.Models.RessursViewModel>
+@{
+    ViewData["Title"] = "Ressurser per fylke";
+}
+
+<h1>Ressurser per fylke</h1>
+
+<!-- Valg av fylke og utskrift. Vises ikke på utskriften (d-print-none). -->
+<div class="row g-2 align-items-end mb-3 d-print-none">
+    <div class="col-sm-6 col-md-4">
+        <label for="fylkeValg" class="form-label">Fylke</label>
+        <select id="fylkeValg" class="form-select">
+            <option value="">Velg fylke …</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="button" id="skrivUtKnapp" class="btn btn-primary" disabled>Skriv ut</button>
+    </div>
+</div>
+
+<p class="text-muted d-print-none">Velg et fylke i lista eller klikk på et fylke i kartet. Bare tilgjengelige ressurser vises.</p>
+
+<div class="kart-ramme mb-4 d-print-none">
+    <div id="map"></div>
+</div>
+
+<!-- Overskriften vises over tabellen, også på utskriften -->
+<h2 class="h5" id="valgtFylkeOverskrift" hidden></h2>
+
+<p id="ingenRessurser" hidden>Ingen tilgjengelige ressurser i dette fylket.</p>
+
+<table class="table table-striped" id="ressursTabell" hidden>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Beskrivelse</th>
+        <th>Drivstofftype</th>
+        <th>Lastekapasitet</th>
+        <th>Tidspunkt</th>
+        <th>Kontaktpunkt</th>
+    </tr>
+    </thead>
+    <!-- Alle radene er skjult til et fylke er valgt. Posisjonen (data-lat og data-lng)
+         brukes av skriptet til å finne ut hvilket fylke ressursen ligger i. -->
+    <tbody>
+    @foreach (var ressurs in Model)
+    {
+        <tr data-lat="@(ressurs.Latitude?.ToString(CultureInfo.InvariantCulture))"
+            data-lng="@(ressurs.Longitude?.ToString(CultureInfo.InvariantCulture))"
+            hidden>
+            <td>@ressurs.Id.ToString("D4")</td>
+            <td>@(ressurs.TypeRessurs == "Annet" && ressurs.AnnenType != null ? "Annet: " + ressurs.AnnenType : ressurs.TypeRessurs)</td>
+            <td>@ressurs.Beskrivelse</td>
+            <td>@(ressurs.Drivstofftype ?? "-")</td>
+            <td>@(ressurs.Lastekapasitet.HasValue ? $"{ressurs.Lastekapasitet} tonn" : "-")</td>
+            <td>@ressurs.Tidspunkt.ToString("g")</td>
+            <td>@ressurs.Kontaktpunkt</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        var map = L.map('map').setView([65, 13], 4);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        var fylkeValg = document.getElementById('fylkeValg');
+        var skrivUtKnapp = document.getElementById('skrivUtKnapp');
+        var overskrift = document.getElementById('valgtFylkeOverskrift');
+        var ingenRessurser = document.getElementById('ingenRessurser');
+        var tabell = document.getElementById('ressursTabell');
+        var rader = tabell.querySelectorAll('tbody tr');
+
+        var fylkeLag = null;           // Alle fylkene i kartet
+        var fylker = [];               // Fylkene fra fylker.json, i samme rekkefølge som i lista
+        var markorer = L.featureGroup().addTo(map);
+
+        var vanligStil = { color: '#555', weight: 1, fillColor: '#2e7d32', fillOpacity: 0.05 };
+        var valgtStil = { color: '#1b5e20', weight: 3, fillColor: '#2e7d32', fillOpacity: 0.2 };
+
+        // Sjekker om et punkt ligger inne i en ring (en liste med hjørner). Vanlig "ray casting":
+        // vi trekker en tenkt linje mot høyre fra punktet og teller hvor mange kanter den krysser.
+        // Oddetall betyr at punktet er inne.
+        function punktIRing(lng, lat, ring) {
+            var inne = false;
+            for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+                var xi = ring[i][0], yi = ring[i][1];
+                var xj = ring[j][0], yj = ring[j][1];
+                var krysser = (yi > lat) !== (yj > lat) &&
+                    lng < (xj - xi) * (lat - yi) / (yj - yi) + xi;
+                if (krysser) {
+                    inne = !inne;
+                }
+            }
+            return inne;
+        }
+
+        // Et polygon er en ytre ring, og eventuelle hull (f.eks. Oslo inne i Akershus)
+        function punktIPolygon(lng, lat, polygon) {
+            if (!punktIRing(lng, lat, polygon[0])) {
+                return false;
+            }
+            for (var i = 1; i < polygon.length; i++) {
+                if (punktIRing(lng, lat, polygon[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Et fylke kan bestå av flere deler (øyer), da er geometrien et MultiPolygon
+        function punktIFylke(lng, lat, fylke) {
+            var geometri = fylke.geometry;
+            if (geometri.type === 'Polygon') {
+                return punktIPolygon(lng, lat, geometri.coordinates);
+            }
+            for (var i = 0; i < geometri.coordinates.length; i++) {
+                if (punktIPolygon(lng, lat, geometri.coordinates[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Viser bare ressursene i valgt fylke, både i tabellen og som markører i kartet
+        function visFylke(indeks) {
+            markorer.clearLayers();
+
+            if (fylkeLag) {
+                fylkeLag.setStyle(vanligStil);
+            }
+
+            if (indeks === '') {
+                overskrift.hidden = true;
+                tabell.hidden = true;
+                ingenRessurser.hidden = true;
+                skrivUtKnapp.disabled = true;
+                rader.forEach(function (rad) { rad.hidden = true; });
+                return;
+            }
+
+            var fylke = fylker[indeks];
+            var antall = 0;
+
+            rader.forEach(function (rad) {
+                var lat = parseFloat(rad.getAttribute('data-lat'));
+                var lng = parseFloat(rad.getAttribute('data-lng'));
+                var iFylket = !isNaN(lat) && !isNaN(lng) && punktIFylke(lng, lat, fylke);
+
+                rad.hidden = !iFylket;
+                if (iFylket) {
+                    antall++;
+                    L.marker([lat, lng]).addTo(markorer);
+                }
+            });
+
+            overskrift.textContent = 'Tilgjengelige ressurser i ' + fylke.properties.navn + ' (' + antall + ')';
+            overskrift.hidden = false;
+            tabell.hidden = antall === 0;
+            ingenRessurser.hidden = antall > 0;
+            skrivUtKnapp.disabled = false;
+
+            // Marker valgt fylke i kartet og zoom inn på det
+            fylkeLag.eachLayer(function (lag) {
+                if (lag.feature === fylke) {
+                    lag.setStyle(valgtStil);
+                    map.fitBounds(lag.getBounds());
+                }
+            });
+        }
+
+        // Henter fylkesgrensene (GeoJSON fra Kartverket) og legger dem i kartet og i lista
+        fetch('@Url.Content("~/data/fylker.json")')
+            .then(function (svar) { return svar.json(); })
+            .then(function (data) {
+                fylker = data.features;
+
+                fylker.forEach(function (fylke, indeks) {
+                    var valg = document.createElement('option');
+                    valg.value = indeks;
+                    valg.textContent = fylke.properties.navn;
+                    fylkeValg.appendChild(valg);
+                });
+
+                fylkeLag = L.geoJSON(data, {
+                    style: vanligStil,
+                    attribution: 'Fylkesgrenser &copy; Kartverket',
+                    onEachFeature: function (fylke, lag) {
+                        lag.bindTooltip(fylke.properties.navn, { sticky: true });
+                        lag.on('click', function () {
+                            fylkeValg.value = fylker.indexOf(fylke);
+                            visFylke(fylkeValg.value);
+                        });
+                    }
+                }).addTo(map);
+            });
+
+        fylkeValg.addEventListener('change', function () {
+            visFylke(fylkeValg.value);
+        });
+
+        skrivUtKnapp.addEventListener('click', function () {
+            window.print();
+        });
+    </script>
+}

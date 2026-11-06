@@ -823,3 +823,16 @@ html {
 [hidden] {
   display: none !important;
 }
+
+/* Utskrift (f.eks. Ressurser per fylke): menyen øverst skrives ikke ut */
+@media print {
+  header {
+    display: none;
+  }
+}
+
+/* Fjerner nettleserens svarte fokusramme rundt figurer i kartet (fylker, sirkler) ved klikk.
+   Valgt fylke vises allerede med tykk grønn kant. */
+.leaflet-interactive:focus {
+  outline: none;
+}
