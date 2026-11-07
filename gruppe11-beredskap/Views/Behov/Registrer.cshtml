@@ -79,7 +79,9 @@
         <div id="map"></div>
         <input type="hidden" asp-for="Latitude" id="latitude" data-wizard-lat />
         <input type="hidden" asp-for="Longitude" id="longitude" />
-        <input type="hidden" asp-for="Radius" id="radius" />
+        <input type="hidden" asp-for="Radius" id="radius"
+               data-step-max="50000"
+               data-step-max-message="Sirkelen er for stor. Radius kan være maks 50 000 meter (50 km)." />
         <input type="hidden" asp-for="GeografiskOmrade" id="geografiskOmrade" />
         <p id="valgtStedTekst" class="text-muted mt-2 mb-0">Ingen posisjon valgt ennå</p>
         <span asp-validation-for="Latitude" class="text-danger"></span>

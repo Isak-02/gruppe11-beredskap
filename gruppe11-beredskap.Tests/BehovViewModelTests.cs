@@ -58,7 +58,19 @@ public class BehovViewModelTests
 
         var radiusFeil = Assert.Single(feil);
         Assert.Contains("Radius", radiusFeil.MemberNames);
-        Assert.Equal("Radius må være større enn 0 meter", radiusFeil.ErrorMessage);
+        Assert.Equal("Radius må være mellom 1 og 50 000 meter", radiusFeil.ErrorMessage);
+    }
+
+    [Fact]
+    public void Radius_Over50000Meter_GirFeilmelding()
+    {
+        var model = LagModel();
+        model.Radius = 50001;
+
+        var feil = Valider(model);
+
+        var radiusFeil = Assert.Single(feil);
+        Assert.Equal("Radius må være mellom 1 og 50 000 meter", radiusFeil.ErrorMessage);
     }
 
     [Fact]

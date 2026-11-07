@@ -16,11 +16,14 @@ public class RessursViewModel
     [Display(Name = "Beskrivelse")]
     public string Beskrivelse { get; set; }
 
+    [StringLength(200, ErrorMessage = "Typen kan være maks 200 tegn")]
     [Display(Name = "Spesifiser annen type")]
     public string? AnnenType { get; set; }
 
     [Display(Name = "Drivstofftype")] public string? Drivstofftype { get; set; }
 
+    // Øvre grense så ingen kan skrive inn urealistisk store tall. 60 tonn er omtrent et fullt vogntog.
+    [Range(0.01, 60.0, ErrorMessage = "Lastekapasiteten må være mellom 0,01 og 60 tonn")]
     [Display(Name = "Lastekapasitet (tonn)")]
     public decimal? Lastekapasitet { get; set; }
 
