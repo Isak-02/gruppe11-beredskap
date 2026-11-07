@@ -43,8 +43,21 @@ else
                 <td>@ressurs.Tidspunkt.ToString("g")</td>
                 <td>@ressurs.Kontaktpunkt</td>
                 <td>@ressurs.Status</td>
+                <!-- Pause og Gjenoppta er skjema med POST, som Slett. Knappen som vises avhenger av status. -->
                 <td class="text-nowrap">
                     <a asp-action="Endre" asp-route-id="@ressurs.Id">Endre</a>
+                    @if (ressurs.Status == RessursStatus.Tilgjengelig)
+                    {
+                        <form asp-action="Pause" asp-route-id="@ressurs.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Pause</button>
+                        </form>
+                    }
+                    else if (ressurs.Status == RessursStatus.Pauset)
+                    {
+                        <form asp-action="Gjenoppta" asp-route-id="@ressurs.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-success">Gjenoppta</button>
+                        </form>
+                    }
                     <form asp-action="Slett" asp-route-id="@ressurs.Id" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-sm btn-outline-danger">Slett</button>
