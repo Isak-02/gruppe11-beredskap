@@ -825,10 +825,93 @@ html {
   display: none !important;
 }
 
-/* Utskrift (f.eks. Ressurser per fylke): menyen øverst skrives ikke ut */
+/* Tabellene bruker sidens grønne bakgrunn, ikke den hvite fra Bootstrap. */
+.table-responsive {
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(26, 68, 4, 0.14);
+  border-radius: 16px;
+}
+
+.table {
+  --bs-table-color: #17251B;
+  --bs-table-bg: transparent;
+  --bs-table-border-color: rgba(26, 68, 4, 0.12);
+  --bs-table-striped-color: #17251B;
+  --bs-table-striped-bg: rgba(26, 68, 4, 0.055);
+  --bs-table-hover-color: #17251B;
+  --bs-table-hover-bg: rgba(0, 91, 39, 0.1);
+  --bs-table-active-color: #17251B;
+  --bs-table-active-bg: rgba(0, 91, 39, 0.14);
+  margin-bottom: 0;
+}
+
+.table > thead {
+  --bs-table-bg: rgba(0, 91, 39, 0.1);
+  --bs-table-color: #1A4404;
+}
+
+.table > :not(caption) > * > * {
+  padding: 0.85rem 0.95rem;
+  vertical-align: middle;
+}
+
+.table > thead > tr > th {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.table > tbody > tr:last-child > * {
+  border-bottom-color: transparent;
+}
+
+.table a {
+  color: #005B27;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.table a:hover {
+  color: #1A4404;
+  text-decoration: underline;
+}
+
+.table .btn-outline-danger,
+.table .btn-danger {
+  --bs-btn-color: #9a3412;
+  --bs-btn-border-color: rgba(218, 69, 39, 0.4);
+  --bs-btn-bg: transparent;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #DA4527;
+  --bs-btn-hover-border-color: #DA4527;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #b42318;
+  --bs-btn-active-border-color: #b42318;
+  border-radius: 8px;
+  margin-left: 0.45rem;
+  vertical-align: baseline;
+}
+
+/* Utskrift (f.eks. Ressurser per fylke): menyen øverst skrives ikke ut.
+   Tabellen skrives uten det grønne kortet. */
 @media print {
   header {
     display: none;
+  }
+
+  .table-responsive {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .table,
+  .table > thead {
+    --bs-table-color: #000;
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: #f3f3f3;
+    --bs-table-border-color: #ccc;
   }
 }
 
