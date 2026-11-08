@@ -690,3 +690,43 @@
         return isNaN(dato.getTime()) ? null : dato.getTime();
     }
 })();
+
+// Scroll zoomer bare når man holder Ctrl (Windows) eller Cmd (Mac).
+// Uten tasten vises et hint, og siden kan fortsatt scrolles forbi kartet.
+(function () {
+    if (!window.L || !L.map) return;
+
+    var lagKart = L.map;
+    var tast = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent || "") ? "Cmd" : "Ctrl";
+
+    L.map = function () {
+        var kart = lagKart.apply(this, arguments);
+        krevTastForZoom(kart);
+        return kart;
+    };
+
+    function krevTastForZoom(kart) {
+        var container = kart.getContainer();
+        var hint = document.createElement("div");
+        hint.className = "kart-zoom-hint";
+        hint.textContent = "Hold " + tast + " og scroll for å zoome";
+        hint.setAttribute("aria-hidden", "true");
+        container.appendChild(hint);
+
+        var skjulTimer = null;
+
+        container.addEventListener("wheel", function (e) {
+            if (e.ctrlKey || e.metaKey) {
+                hint.classList.remove("er-synlig");
+                return;
+            }
+
+            e.stopPropagation();
+            hint.classList.add("er-synlig");
+            window.clearTimeout(skjulTimer);
+            skjulTimer = window.setTimeout(function () {
+                hint.classList.remove("er-synlig");
+            }, 1000);
+        }, true);
+    }
+})();
