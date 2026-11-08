@@ -46,7 +46,7 @@
         <h2 id="steg-annet">Spesifiser type</h2>
         <p class="wizard-lead">Skriv inn type ressurs.</p>
         <label asp-for="AnnenType" class="form-label">Spesifiser type</label>
-        <input asp-for="AnnenType" class="form-control" placeholder="Skriv inn type ressurs"
+        <input asp-for="AnnenType" class="form-control" placeholder="Skriv inn type ressurs" maxlength="200"
                data-summary="Spesifisert type"
                data-step-required="true"
                data-step-message="Skriv inn type ressurs." />
@@ -83,10 +83,12 @@
         <h2 id="steg-last">Lastekapasitet</h2>
         <p class="wizard-lead">Hvor mye kan den laste?</p>
         <label asp-for="Lastekapasitet" class="form-label"></label>
-        <input asp-for="Lastekapasitet" class="form-control" type="number" min="0.01" step="0.01"
+        <input asp-for="Lastekapasitet" class="form-control" type="number" min="0.01" max="60" step="0.01"
                data-summary="Lastekapasitet (tonn)"
                data-step-required="true"
-               data-step-message="Du må skrive inn en lastekapasitet som er større enn 0." />
+               data-step-message="Du må skrive inn en lastekapasitet som er større enn 0."
+               data-step-max="60"
+               data-step-max-message="Lastekapasiteten kan være maks 60 tonn." />
         <span asp-validation-for="Lastekapasitet" class="text-danger"></span>
     </section>
 
