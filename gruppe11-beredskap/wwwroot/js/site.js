@@ -205,6 +205,7 @@
 
         form.addEventListener("keydown", function (e) {
             if (e.key !== "Enter" || e.target.tagName === "TEXTAREA") return;
+            if (e.target.closest && e.target.closest(".sokvalg")) return;
             if (nesteSynlige(index, 1) < 0) return;
             e.preventDefault();
             nextBtn.click();
@@ -284,5 +285,254 @@
         }
 
         show(index, false);
+    }
+})();
+
+/* Nedtrekkslister som kan åpnes og søkes i. Selecten blir liggende, så skjemaet fortsatt sender verdien. */
+(function () {
+    var aapen = null;
+
+    document.querySelectorAll("select.form-select").forEach(lagSokvalg);
+
+    document.addEventListener("mousedown", function (e) {
+        if (!aapen || aapen.contains(e.target)) return;
+        aapen.lukk();
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && aapen) aapen.lukk(true);
+    });
+
+    function lagSokvalg(select) {
+        if (select.multiple || select.closest(".sokvalg")) return;
+
+        var rot = document.createElement("div");
+        rot.className = "sokvalg";
+        select.parentNode.insertBefore(rot, select);
+        rot.appendChild(select);
+        select.classList.add("sokvalg-original");
+        select.tabIndex = -1;
+
+        var knapp = document.createElement("button");
+        knapp.type = "button";
+        knapp.className = "sokvalg-knapp";
+        knapp.setAttribute("aria-haspopup", "listbox");
+        knapp.setAttribute("aria-expanded", "false");
+
+        var verdi = document.createElement("span");
+        verdi.className = "sokvalg-verdi";
+
+        var hint = document.createElement("span");
+        hint.className = "sokvalg-hint";
+        hint.appendChild(sokIkon());
+        hint.appendChild(document.createTextNode("Søk"));
+
+        var pil = document.createElement("span");
+        pil.className = "sokvalg-pil";
+        pil.setAttribute("aria-hidden", "true");
+        pil.appendChild(pilIkon());
+
+        knapp.appendChild(verdi);
+        knapp.appendChild(hint);
+        knapp.appendChild(pil);
+
+        var panel = document.createElement("div");
+        panel.className = "sokvalg-panel";
+        panel.hidden = true;
+
+        var sokFelt = document.createElement("label");
+        sokFelt.className = "sokvalg-sok";
+        sokFelt.appendChild(sokIkon());
+
+        var sok = document.createElement("input");
+        sok.type = "search";
+        sok.placeholder = "Søk i listen";
+        sok.autocomplete = "off";
+        sok.setAttribute("aria-label", "Søk i listen");
+        sokFelt.appendChild(sok);
+
+        var liste = document.createElement("ul");
+        liste.className = "sokvalg-liste";
+        liste.setAttribute("role", "listbox");
+
+        var tom = document.createElement("p");
+        tom.className = "sokvalg-tom";
+        tom.textContent = "Ingen treff";
+        tom.hidden = true;
+
+        panel.appendChild(sokFelt);
+        panel.appendChild(liste);
+        panel.appendChild(tom);
+        rot.appendChild(knapp);
+        rot.appendChild(panel);
+
+        var label = select.id ? document.querySelector('label[for="' + CSS.escape(select.id) + '"]') : null;
+        if (label) {
+            if (!label.id) label.id = select.id + "-etikett";
+            knapp.setAttribute("aria-labelledby", label.id);
+            sok.setAttribute("aria-labelledby", label.id);
+        }
+
+        var aktiv = -1;
+
+        function apne() {
+            if (select.disabled) return;
+            if (aapen && aapen !== api) aapen.lukk();
+            panel.hidden = false;
+            rot.classList.add("er-apen");
+            knapp.setAttribute("aria-expanded", "true");
+            sok.value = "";
+            tegn("");
+            aapen = api;
+            sok.focus();
+        }
+
+        function lukk(fokusTilbake) {
+            panel.hidden = true;
+            rot.classList.remove("er-apen");
+            knapp.setAttribute("aria-expanded", "false");
+            if (aapen === api) aapen = null;
+            if (fokusTilbake) knapp.focus();
+        }
+
+        function oppdaterVerdi() {
+            var valgt = select.options[select.selectedIndex];
+            var tomVerdi = !valgt || valgt.value === "";
+            verdi.textContent = valgt ? valgt.text : "";
+            verdi.classList.toggle("er-tom", tomVerdi);
+            knapp.disabled = select.disabled;
+        }
+
+        function synlige() {
+            return Array.prototype.filter.call(liste.children, function (rad) {
+                return !rad.hidden;
+            });
+        }
+
+        function markerAktiv(neste, rull) {
+            var rader = synlige();
+            if (!rader.length) {
+                aktiv = -1;
+                return;
+            }
+            if (neste < 0) neste = rader.length - 1;
+            if (neste >= rader.length) neste = 0;
+            aktiv = neste;
+            rader.forEach(function (rad, i) {
+                rad.classList.toggle("is-aktiv", i === aktiv);
+            });
+            var boks = rader[aktiv].getBoundingClientRect();
+            var ramme = liste.getBoundingClientRect();
+            if (boks.top < ramme.top) liste.scrollTop -= ramme.top - boks.top;
+            else if (boks.bottom > ramme.bottom) liste.scrollTop += boks.bottom - ramme.bottom;
+        }
+
+        function tegn(q) {
+            var sokeord = q.trim().toLocaleLowerCase("nb");
+            liste.replaceChildren();
+            Array.prototype.forEach.call(select.options, function (opt) {
+                if (opt.disabled) return;
+                if (sokeord && opt.text.toLocaleLowerCase("nb").indexOf(sokeord) === -1) return;
+
+                var rad = document.createElement("li");
+                var valg = document.createElement("button");
+                valg.type = "button";
+                valg.className = "sokvalg-valg";
+                valg.setAttribute("role", "option");
+                valg.setAttribute("aria-selected", opt.value === select.value ? "true" : "false");
+                valg.textContent = opt.text;
+                valg.addEventListener("mousedown", function (e) {
+                    e.preventDefault();
+                });
+                valg.addEventListener("click", function () {
+                    select.value = opt.value;
+                    select.dispatchEvent(new Event("change", { bubbles: true }));
+                    oppdaterVerdi();
+                    lukk(true);
+                });
+                rad.appendChild(valg);
+                liste.appendChild(rad);
+            });
+            tom.hidden = liste.children.length > 0;
+            var valgtRad = Array.prototype.findIndex.call(liste.children, function (rad) {
+                return rad.firstChild.getAttribute("aria-selected") === "true";
+            });
+            markerAktiv(valgtRad >= 0 ? valgtRad : 0, false);
+        }
+
+        knapp.addEventListener("click", function () {
+            if (panel.hidden) apne();
+            else lukk(true);
+        });
+
+        knapp.addEventListener("keydown", function (e) {
+            if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                e.stopPropagation();
+                apne();
+                return;
+            }
+            if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
+                e.preventDefault();
+                e.stopPropagation();
+                apne();
+                sok.value = e.key;
+                tegn(e.key);
+            }
+        });
+
+        sok.addEventListener("input", function () {
+            tegn(sok.value);
+        });
+
+        sok.addEventListener("keydown", function (e) {
+            var rader = synlige();
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                markerAktiv(aktiv + 1, true);
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                markerAktiv(aktiv - 1, true);
+            } else if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                if (rader[aktiv]) rader[aktiv].firstChild.click();
+            } else if (e.key === "Escape") {
+                e.stopPropagation();
+                lukk(true);
+            }
+        });
+
+        select.addEventListener("focus", function () {
+            knapp.focus();
+            if (panel.hidden) apne();
+        });
+
+        select.addEventListener("change", oppdaterVerdi);
+
+        var observer = new MutationObserver(function () {
+            oppdaterVerdi();
+            if (!panel.hidden) tegn(sok.value);
+        });
+        observer.observe(select, { childList: true });
+
+        var api = { contains: function (node) { return rot.contains(node); }, lukk: lukk };
+        oppdaterVerdi();
+    }
+
+    function sokIkon() {
+        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 16 16");
+        svg.setAttribute("aria-hidden", "true");
+        svg.innerHTML = '<circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M10.5 10.5 L14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>';
+        return svg;
+    }
+
+    function pilIkon() {
+        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 16 16");
+        svg.setAttribute("aria-hidden", "true");
+        svg.innerHTML = '<path d="M3 6 L8 11 L13 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>';
+        return svg;
     }
 })();

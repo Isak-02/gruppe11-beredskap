@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<p class="text-muted d-print-none">Velg et fylke i lista eller klikk på et fylke i kartet. Bare tilgjengelige ressurser vises.</p>
+<p class="text-muted d-print-none">Søk eller velg et fylke i lista, eller klikk på et fylke i kartet. Bare tilgjengelige ressurser vises.</p>
 
 <div class="kart-ramme mb-4 d-print-none">
     <div id="map"></div>
@@ -197,7 +197,7 @@
                         lag.bindTooltip(fylke.properties.navn, { sticky: true });
                         lag.on('click', function () {
                             fylkeValg.value = fylker.indexOf(fylke);
-                            visFylke(fylkeValg.value);
+                            fylkeValg.dispatchEvent(new Event('change', { bubbles: true }));
                         });
                     }
                 }).addTo(map);
