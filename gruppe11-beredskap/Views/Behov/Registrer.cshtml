@@ -13,8 +13,7 @@
 
     <section class="wizard-panel is-active" data-wizard-panel data-wizard-label="Type">
         <h2 id="steg-type">Type</h2>
-        <p class="wizard-lead">Hva trenger dere hjelp til?</p>
-        <label asp-for="TypeBehov" class="form-label"></label>
+        <label asp-for="TypeBehov" class="form-label visually-hidden"></label>
         <select asp-for="TypeBehov" class="form-select"
                 data-summary="Type"
                 data-step-required="true"
@@ -36,8 +35,7 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Beskrivelse">
         <h2 id="steg-beskrivelse">Beskrivelse</h2>
-        <p class="wizard-lead">Beskriv hva som trengs.</p>
-        <label asp-for="Beskrivelse" class="form-label"></label>
+        <label asp-for="Beskrivelse" class="form-label visually-hidden"></label>
         <textarea asp-for="Beskrivelse" class="form-control" rows="4" placeholder="Beskriv behovet"
                   data-summary="Beskrivelse"
                   data-step-required="true"
@@ -47,8 +45,7 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Tidspunkt">
         <h2 id="steg-tid">Tidspunkt/frist</h2>
-        <p class="wizard-lead">Når må det være på plass?</p>
-        <label asp-for="Tidspunkt" class="form-label"></label>
+        <label asp-for="Tidspunkt" class="form-label visually-hidden"></label>
         <input asp-for="Tidspunkt" class="form-control" type="datetime-local"
                asp-format="{0:yyyy-MM-ddTHH:mm}" step="60"
                data-summary="Tidspunkt/frist"
@@ -59,8 +56,7 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Prioritet">
         <h2 id="steg-prioritet">Prioritet</h2>
-        <p class="wizard-lead">Hvor viktig er det?</p>
-        <label asp-for="Prioritet" class="form-label"></label>
+        <label asp-for="Prioritet" class="form-label visually-hidden"></label>
         <select asp-for="Prioritet" class="form-select"
                 data-summary="Prioritet"
                 data-step-required="true"
@@ -75,7 +71,6 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Kart" data-wizard-map="true">
         <h2 id="steg-kart">Hvor på kartet</h2>
-        <p class="wizard-lead">Bruk markør eller sirkel i verktøylinjen for å velge sted.</p>
         <div id="map"></div>
         <input type="hidden" asp-for="Latitude" id="latitude" data-wizard-lat />
         <input type="hidden" asp-for="Longitude" id="longitude" />
@@ -90,8 +85,7 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Kontakt">
         <h2 id="steg-kontakt">Kontaktpunkt</h2>
-        <p class="wizard-lead">Hvem kan kriseledelsen ringe? Skriv navn og telefonnummer.</p>
-        <label asp-for="Kontaktpunkt" class="form-label"></label>
+        <label asp-for="Kontaktpunkt" class="form-label visually-hidden"></label>
         <input asp-for="Kontaktpunkt" class="form-control" placeholder="F.eks. Kari Nordmann, 900 00 000"
                data-summary="Kontaktpunkt"
                data-step-required="true"
@@ -101,7 +95,6 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Oversikt" data-wizard-summary="true">
         <h2 id="steg-oversikt">Oversikt</h2>
-        <p class="wizard-lead">Se over valgene. Endre sender deg tilbake til det steget.</p>
         <dl class="wizard-summary" data-wizard-summary-list></dl>
     </section>
 

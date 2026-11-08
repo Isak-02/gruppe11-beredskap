@@ -15,8 +15,7 @@
 
     <section class="wizard-panel is-active" data-wizard-panel data-wizard-label="Type">
         <h2 id="steg-type">Type</h2>
-        <p class="wizard-lead">Hva kan dere stille med?</p>
-        <label asp-for="TypeRessurs" class="form-label"></label>
+        <label asp-for="TypeRessurs" class="form-label visually-hidden"></label>
         <select asp-for="TypeRessurs" class="form-select" id="typeRessursSelect" onchange="toggleAnnetFelt()"
                 data-summary="Type"
                 data-step-required="true"
@@ -44,8 +43,7 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Annen type" id="annetSteg" hidden>
         <h2 id="steg-annet">Spesifiser type</h2>
-        <p class="wizard-lead">Skriv inn type ressurs.</p>
-        <label asp-for="AnnenType" class="form-label">Spesifiser type</label>
+        <label asp-for="AnnenType" class="form-label visually-hidden">Spesifiser type</label>
         <input asp-for="AnnenType" class="form-control" placeholder="Skriv inn type ressurs" maxlength="200"
                data-summary="Spesifisert type"
                data-step-required="true"
@@ -54,8 +52,7 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Beskrivelse">
         <h2 id="steg-beskrivelse">Beskrivelse</h2>
-        <p class="wizard-lead">Beskriv ressursen.</p>
-        <label asp-for="Beskrivelse" class="form-label"></label>
+        <label asp-for="Beskrivelse" class="form-label visually-hidden"></label>
         <textarea asp-for="Beskrivelse" class="form-control" rows="4" placeholder="Beskriv ressursen"
                   data-summary="Beskrivelse"
                   data-step-required="true"
@@ -65,8 +62,7 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Drivstoff" id="drivstoffSteg" hidden>
         <h2 id="steg-drivstoff">Drivstofftype</h2>
-        <p class="wizard-lead">Hvilken drivstofftype bruker den?</p>
-        <label asp-for="Drivstofftype" class="form-label"></label>
+        <label asp-for="Drivstofftype" class="form-label visually-hidden"></label>
         <select asp-for="Drivstofftype" class="form-select"
                 data-summary="Drivstofftype"
                 data-step-required="true"
@@ -81,8 +77,7 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Last" id="lastSteg" hidden>
         <h2 id="steg-last">Lastekapasitet</h2>
-        <p class="wizard-lead">Hvor mye kan den laste?</p>
-        <label asp-for="Lastekapasitet" class="form-label"></label>
+        <label asp-for="Lastekapasitet" class="form-label visually-hidden"></label>
         <input asp-for="Lastekapasitet" class="form-control" type="number" min="0.01" max="60" step="0.01"
                data-summary="Lastekapasitet (tonn)"
                data-step-required="true"
@@ -94,8 +89,7 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Tidspunkt">
         <h2 id="steg-tid">Tidspunkt/frist</h2>
-        <p class="wizard-lead">Når er ressursen tilgjengelig?</p>
-        <label asp-for="Tidspunkt" class="form-label"></label>
+        <label asp-for="Tidspunkt" class="form-label visually-hidden"></label>
         <input asp-for="Tidspunkt" class="form-control" type="datetime-local"
                asp-format="{0:yyyy-MM-ddTHH:mm}" step="60"
                data-summary="Tidspunkt/frist"
@@ -107,7 +101,7 @@
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Kontakt">
         <h2 id="steg-kontakt">Kontaktpunkt</h2>
         <p class="wizard-lead">Hvem disponerer ressursen? Skriv navn og telefonnummer.</p>
-        <label asp-for="Kontaktpunkt" class="form-label"></label>
+        <label asp-for="Kontaktpunkt" class="form-label visually-hidden"></label>
         <input asp-for="Kontaktpunkt" class="form-control" placeholder="F.eks. Kari Nordmann, 900 00 000"
                data-summary="Kontaktpunkt"
                data-step-required="true"
@@ -118,7 +112,6 @@
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Kart" data-wizard-map="true"
              data-step-message="Du må sette en markør på kartet for å velge sted.">
         <h2 id="steg-kart">Hvor på kartet</h2>
-        <p class="wizard-lead">Bruk markøren i verktøylinjen på kartet for å velge sted.</p>
         <div id="map"></div>
         <input type="hidden" asp-for="Latitude" id="latitude" data-wizard-lat />
         <input type="hidden" asp-for="Longitude" id="longitude" />
@@ -129,7 +122,6 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Oversikt" data-wizard-summary="true">
         <h2 id="steg-oversikt">Oversikt</h2>
-        <p class="wizard-lead">Se over valgene. Endre sender deg tilbake til det steget.</p>
         <dl class="wizard-summary" data-wizard-summary-list></dl>
     </section>
 
