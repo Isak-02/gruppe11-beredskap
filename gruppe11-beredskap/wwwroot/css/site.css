@@ -862,6 +862,53 @@ html {
   white-space: nowrap;
 }
 
+/* Klikk på kolonnetittelen sorterer. Pil ned = høy til lav, pil opp = lav til høy. */
+.table > thead > tr > th:has(.tabell-sort) {
+  padding: 0;
+}
+
+.tabell-sort {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.85rem 0.95rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tabell-sort:hover {
+  color: #005B27;
+}
+
+.tabell-sort:focus-visible {
+  outline: 2px solid #005B27;
+  outline-offset: -2px;
+}
+
+.tabell-sort-pil {
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+  margin-left: 0.45rem;
+  border-style: solid;
+  border-width: 6px 5px 0;
+  border-color: transparent;
+}
+
+th.er-synkende .tabell-sort-pil {
+  border-top-color: currentColor;
+}
+
+th.er-stigende .tabell-sort-pil {
+  border-width: 0 5px 6px;
+  border-bottom-color: currentColor;
+}
+
 .table > tbody > tr:last-child > * {
   border-bottom-color: transparent;
 }

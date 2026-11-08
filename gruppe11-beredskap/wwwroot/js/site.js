@@ -536,3 +536,137 @@
         return svg;
     }
 })();
+
+/* Klikk på kolonnetittelen: først høy til lav (pil ned), så lav til høy (pil opp), så tilbake til opprinnelig rekkefølge. */
+(function () {
+    var prioritet = { "akutt": 4, "høy": 3, "middels": 2, "lav": 1 };
+
+    document.querySelectorAll("table").forEach(initTabellSort);
+
+    function initTabellSort(table) {
+        var hode = table.tHead && table.tHead.rows[0];
+        var kropp = table.tBodies[0];
+        if (!hode || !kropp || !kropp.rows.length) return;
+
+        var rader = Array.prototype.map.call(kropp.rows, function (rad, i) {
+            rad.dataset.sortOpprinnelig = String(i);
+            return rad;
+        });
+
+        Array.prototype.forEach.call(hode.cells, function (th, indeks) {
+            if (!th.textContent.trim()) return;
+
+            var knapp = document.createElement("button");
+            knapp.type = "button";
+            knapp.className = "tabell-sort";
+            knapp.textContent = th.textContent.trim();
+
+            var pil = document.createElement("span");
+            pil.className = "tabell-sort-pil";
+            pil.setAttribute("aria-hidden", "true");
+            knapp.appendChild(pil);
+
+            th.textContent = "";
+            th.appendChild(knapp);
+            th.setAttribute("aria-sort", "none");
+
+            knapp.addEventListener("click", function () {
+                var neste = nesteRetning(th.getAttribute("aria-sort"));
+                Array.prototype.forEach.call(hode.cells, function (annen) {
+                    annen.classList.remove("er-synkende", "er-stigende");
+                    if (annen.querySelector(".tabell-sort")) annen.setAttribute("aria-sort", "none");
+                });
+
+                if (!neste) {
+                    rader.sort(function (a, b) {
+                        return Number(a.dataset.sortOpprinnelig) - Number(b.dataset.sortOpprinnelig);
+                    });
+                } else {
+                    th.classList.add(neste === "descending" ? "er-synkende" : "er-stigende");
+                    th.setAttribute("aria-sort", neste);
+                    var retning = neste === "descending" ? "desc" : "asc";
+                    rader.sort(function (a, b) {
+                        return sammenlign(a, b, indeks, retning);
+                    });
+                }
+
+                rader.forEach(function (rad) {
+                    kropp.appendChild(rad);
+                });
+            });
+        });
+    }
+
+    function nesteRetning(na) {
+        if (na === "none") return "descending";
+        if (na === "descending") return "ascending";
+        return null;
+    }
+
+    function sammenlign(a, b, indeks, retning) {
+        var va = lesVerdi(celleTekst(a, indeks));
+        var vb = lesVerdi(celleTekst(b, indeks));
+        var opprinnelig = Number(a.dataset.sortOpprinnelig) - Number(b.dataset.sortOpprinnelig);
+        if (va.tom && vb.tom) return opprinnelig;
+        if (va.tom) return 1;
+        if (vb.tom) return -1;
+
+        var diff = va.type === "tall" && vb.type === "tall"
+            ? va.n - vb.n
+            : va.tekst.localeCompare(vb.tekst, "nb", { numeric: true, sensitivity: "base" });
+        if (diff === 0) return opprinnelig;
+        return retning === "desc" ? -diff : diff;
+    }
+
+    function celleTekst(rad, indeks) {
+        var celle = rad.cells[indeks];
+        return celle ? celle.textContent : "";
+    }
+
+    function lesVerdi(tekst) {
+        var ren = tekst.replace(/\s+/g, " ").trim();
+        var lav = ren.toLocaleLowerCase("nb");
+        if (ren === "" || ren === "-" || ren === "–") {
+            return { tom: true, type: "tekst", tekst: "" };
+        }
+
+        if (Object.prototype.hasOwnProperty.call(prioritet, lav)) {
+            return { tom: false, type: "tall", n: prioritet[lav], tekst: lav };
+        }
+
+        var tid = lesTidspunkt(ren);
+        if (tid !== null) return { tom: false, type: "tall", n: tid, tekst: lav };
+
+        var tall = ren.match(/^(-?\d+(?:[.,]\d+)?)(?:\s*(?:tonn|t))?$/i);
+        if (tall) {
+            return { tom: false, type: "tall", n: parseFloat(tall[1].replace(",", ".")), tekst: lav };
+        }
+
+        return { tom: false, type: "tekst", tekst: lav };
+    }
+
+    function lesTidspunkt(tekst) {
+        var us = tekst.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM))?$/i);
+        if (us) {
+            var time = +(us[4] || 0);
+            if (us[7]) {
+                var ap = us[7].toUpperCase();
+                if (ap === "PM" && time < 12) time += 12;
+                if (ap === "AM" && time === 12) time = 0;
+            }
+            return tidsstempel(+us[3], +us[1] - 1, +us[2], time, +(us[5] || 0), +(us[6] || 0));
+        }
+
+        var no = tekst.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:\s+(?:kl\.\s*)?(\d{1,2}):(\d{2}))?$/);
+        if (no) {
+            return tidsstempel(+no[3], +no[2] - 1, +no[1], +(no[4] || 0), +(no[5] || 0), 0);
+        }
+
+        return null;
+    }
+
+    function tidsstempel(ar, mnd, dag, time, min, sek) {
+        var dato = new Date(ar, mnd, dag, time, min, sek);
+        return isNaN(dato.getTime()) ? null : dato.getTime();
+    }
+})();
