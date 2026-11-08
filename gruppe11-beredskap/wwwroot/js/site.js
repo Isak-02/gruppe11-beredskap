@@ -94,7 +94,20 @@
                 if (!lat || lat.value === "") return true;
             }
 
+            if (forStorVerdi(panel)) return true;
+
             return false;
+        }
+
+        // Finner første felt i steget med data-step-max der verdien er større enn maks. Gir null hvis alt er innenfor.
+        // Brukes for lastekapasitet (maks 60 tonn) og radius (maks 50 000 meter).
+        function forStorVerdi(panel) {
+            var felter = panel.querySelectorAll("[data-step-max]");
+            for (var i = 0; i < felter.length; i++) {
+                var el = felter[i];
+                if (el.value !== "" && Number(el.value) > Number(el.dataset.stepMax)) return el;
+            }
+            return null;
         }
 
         function erFullfort(panel) {
@@ -163,6 +176,13 @@
                     fail(panel.dataset.stepMessage || "Tegn en markør eller sirkel på kartet for å velge sted.");
                     return false;
                 }
+            }
+
+            var forStor = forStorVerdi(panel);
+            if (forStor) {
+                fail(forStor.dataset.stepMaxMessage || "Verdien er for stor.");
+                if (forStor.type !== "hidden") forStor.focus();
+                return false;
             }
 
             if (error) error.hidden = true;

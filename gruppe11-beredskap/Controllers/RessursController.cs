@@ -117,6 +117,43 @@ public class RessursController : Controller
         return RedirectToAction(nameof(Mine));
     }
 
+    // Setter en tilgjengelig ressurs på pause. Den vises da ikke på Kobling eller Ressurser per fylke.
+    // En tildelt ressurs kan ikke pauses, siden den allerede er i bruk.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
+    public async Task<IActionResult> Pause(int id)
+    {
+        var ressurs = await _repo.GetByIdAsync(id);
+        if (ressurs == null)
+            return NotFound();
+        if (!EierEllerKoordinator(ressurs))
+            return Forbid();
+
+        if (ressurs.Status == RessursStatus.Tilgjengelig)
+            await _repo.UpdateStatusAsync(id, RessursStatus.Pauset);
+
+        return RedirectToAction(nameof(Mine));
+    }
+
+    // Gjør en pauset ressurs tilgjengelig igjen
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
+    public async Task<IActionResult> Gjenoppta(int id)
+    {
+        var ressurs = await _repo.GetByIdAsync(id);
+        if (ressurs == null)
+            return NotFound();
+        if (!EierEllerKoordinator(ressurs))
+            return Forbid();
+
+        if (ressurs.Status == RessursStatus.Pauset)
+            await _repo.UpdateStatusAsync(id, RessursStatus.Tilgjengelig);
+
+        return RedirectToAction(nameof(Mine));
+    }
+
     [HttpGet]
     [Authorize(Roles = RoleNames.Koordinator)]
     public async Task<IActionResult> Oversikt()

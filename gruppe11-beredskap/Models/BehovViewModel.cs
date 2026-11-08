@@ -41,7 +41,8 @@ public class BehovViewModel
     public double? Longitude { get; set; }
 
     // Valgfri. Settes bare når brukeren tegner en sirkel på kartet.
-    [Range(1, double.MaxValue, ErrorMessage = "Radius må være større enn 0 meter")]
+    // Maks 50 km, så ingen kan tegne en sirkel over store deler av landet
+    [Range(1.0, 50000.0, ErrorMessage = "Radius må være mellom 1 og 50 000 meter")]
     [Display(Name = "Radius (meter)")]
     public double? Radius { get; set; }
 }
