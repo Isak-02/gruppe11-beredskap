@@ -78,15 +78,43 @@
             error.textContent = message;
         }
 
+        function erSkjult(el) {
+            return !!el.closest("[hidden]");
+        }
+
+        function erValggruppe(el) {
+            return el.hasAttribute("data-choice-group");
+        }
+
+        function feltErTomt(el) {
+            if (erSkjult(el)) return false;
+            if (erValggruppe(el)) return !el.querySelector("input:checked");
+            if (el.type === "number") return el.value === "" || Number(el.value) <= 0;
+            return (el.value || "").trim() === "";
+        }
+
+        function fokuserFelt(el) {
+            if (erValggruppe(el)) {
+                var forste = el.querySelector("input");
+                if (forste) forste.focus();
+                return;
+            }
+            if (el.classList && el.classList.contains("sokvalg-original")) {
+                var knapp = el.parentNode && el.parentNode.querySelector(".sokvalg-knapp");
+                if (knapp) {
+                    knapp.focus();
+                    return;
+                }
+            }
+            el.focus();
+        }
+
         function manglerIPanel(panel) {
             if (panel.hidden || panel.dataset.wizardSummary === "true") return false;
 
             var requiredBits = panel.querySelectorAll("[data-step-required]");
             for (var i = 0; i < requiredBits.length; i++) {
-                var el = requiredBits[i];
-                var emptyNumber = el.type === "number" && (el.value === "" || Number(el.value) <= 0);
-                var emptyText = el.type !== "number" && el.value.trim() === "";
-                if (emptyNumber || emptyText) return true;
+                if (feltErTomt(requiredBits[i])) return true;
             }
 
             if (panel.dataset.wizardMap === "true") {
@@ -105,6 +133,7 @@
             var felter = panel.querySelectorAll("[data-step-max]");
             for (var i = 0; i < felter.length; i++) {
                 var el = felter[i];
+                if (erSkjult(el)) continue;
                 if (el.value !== "" && Number(el.value) > Number(el.dataset.stepMax)) return el;
             }
             return null;
@@ -161,13 +190,10 @@
             var requiredBits = panel.querySelectorAll("[data-step-required]");
             for (var i = 0; i < requiredBits.length; i++) {
                 var el = requiredBits[i];
-                var emptyNumber = el.type === "number" && (el.value === "" || Number(el.value) <= 0);
-                var emptyText = el.type !== "number" && el.value.trim() === "";
-                if (emptyNumber || emptyText) {
-                    fail(el.dataset.stepMessage || "Feltet må fylles ut.");
-                    el.focus();
-                    return false;
-                }
+                if (!feltErTomt(el)) continue;
+                fail(el.dataset.stepMessage || "Feltet må fylles ut.");
+                fokuserFelt(el);
+                return false;
             }
 
             if (panel.dataset.wizardMap === "true") {
@@ -225,6 +251,16 @@
 
         form.addEventListener("keydown", function (e) {
             if (e.key !== "Enter" || e.target.tagName === "TEXTAREA") return;
+            if (e.target.closest && e.target.closest(".sokvalg")) return;
+            var pakrevd = panels[index].querySelectorAll("[data-step-required]");
+            var synlige = 0;
+            for (var i = 0; i < pakrevd.length; i++) {
+                if (!erSkjult(pakrevd[i])) synlige++;
+            }
+            if (synlige > 1) {
+                e.preventDefault();
+                return;
+            }
             if (nesteSynlige(index, 1) < 0) return;
             e.preventDefault();
             nextBtn.click();
@@ -244,6 +280,12 @@
             }
         });
 
+        function formatDato(value) {
+            var del = (value || "").split("-");
+            if (del.length !== 3) return value || "";
+            return del[2] + "." + del[1] + "." + del[0];
+        }
+
         function formatTid(value) {
             if (!value) return "";
             var date = new Date(value);
@@ -255,8 +297,14 @@
         }
 
         function lesVerdi(el) {
+            if (el.hasAttribute("data-choice-group")) {
+                var valgt = el.querySelector("input:checked");
+                return valgt ? valgt.value.trim() : "";
+            }
+            if (el.type === "date") return formatDato(el.value);
+            if (el.type === "time") return (el.value || "").slice(0, 5);
             if (el.type === "datetime-local") return formatTid(el.value);
-            return el.value.trim();
+            return (el.value || "").trim();
         }
 
         function oversiktsrad(label, value, panelIndex) {
@@ -297,6 +345,7 @@
                     return;
                 }
                 panel.querySelectorAll("[data-summary]").forEach(function (el) {
+                    if (erSkjult(el)) return;
                     var verdi = lesVerdi(el);
                     list.appendChild(oversiktsrad(el.dataset.summary, verdi || "Ikke fylt ut", panelIndex));
                 });
@@ -304,5 +353,498 @@
         }
 
         show(index, false);
+    }
+})();
+
+/* Dato og tid er to felt. De skrives sammen til Tidspunkt før skjemaet sendes. */
+(function () {
+    document.querySelectorAll("[data-wizard]").forEach(kobleTid);
+
+    function kobleTid(form) {
+        var dato = form.querySelector("[data-dato]");
+        var tid = form.querySelector("[data-tid]");
+        var skjult = form.querySelector("[data-tidspunkt]");
+        if (!dato || !tid || !skjult) return;
+
+        function skriv() {
+            skjult.value = dato.value && tid.value ? dato.value + "T" + tid.value : "";
+        }
+
+        var delt = (skjult.value || "").trim().replace(" ", "T").split("T");
+        if (/^\d{4}-\d{2}-\d{2}/.test(delt[0] || "")) dato.value = delt[0].slice(0, 10);
+        if (delt[1]) {
+            var klokke = delt[1].slice(0, 5);
+            var minutt = Number(klokke.slice(3, 5));
+            if (!tid.hasAttribute("data-tid-noyaktig") && minutt % 15 !== 0) {
+                var totalt = Number(klokke.slice(0, 2)) * 60 + minutt;
+                var avrundet = Math.round(totalt / 15) * 15;
+                var timer = Math.floor(avrundet / 60) % 24;
+                var minutter = avrundet % 60;
+                klokke = String(timer).padStart(2, "0") + ":" + String(minutter).padStart(2, "0");
+            } else if (minutt % 15 !== 0) {
+                tid.step = "60";
+            }
+            tid.value = klokke;
+        }
+        skriv();
+
+        dato.addEventListener("input", skriv);
+        dato.addEventListener("change", skriv);
+        tid.addEventListener("input", skriv);
+        tid.addEventListener("change", skriv);
+        form.addEventListener("submit", skriv, true);
+    }
+})();
+
+/* Spørsmålstegn viser en kort forklaring. Ett om gangen. */
+(function () {
+    document.querySelectorAll(".hjelp").forEach(function (knapp) {
+        var tekst = document.getElementById(knapp.getAttribute("aria-controls"));
+        if (!tekst) return;
+        knapp.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var apne = tekst.hidden;
+            lukkAlle();
+            tekst.hidden = !apne;
+            knapp.setAttribute("aria-expanded", apne ? "true" : "false");
+        });
+    });
+
+    document.addEventListener("click", lukkAlle);
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") lukkAlle();
+    });
+
+    function lukkAlle() {
+        document.querySelectorAll(".hjelp-tekst").forEach(function (tekst) {
+            tekst.hidden = true;
+        });
+        document.querySelectorAll(".hjelp").forEach(function (knapp) {
+            knapp.setAttribute("aria-expanded", "false");
+        });
+    }
+})();
+
+/* Nedtrekkslister som kan åpnes og søkes i. Selecten blir liggende, så skjemaet fortsatt sender verdien. */
+(function () {
+    var aapen = null;
+
+    document.querySelectorAll("select.form-select").forEach(lagSokvalg);
+
+    document.addEventListener("mousedown", function (e) {
+        if (!aapen || aapen.contains(e.target)) return;
+        aapen.lukk();
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && aapen) aapen.lukk(true);
+    });
+
+    function lagSokvalg(select) {
+        if (select.multiple || select.closest(".sokvalg")) return;
+
+        var rot = document.createElement("div");
+        rot.className = "sokvalg";
+        select.parentNode.insertBefore(rot, select);
+        rot.appendChild(select);
+        select.classList.add("sokvalg-original");
+        select.tabIndex = -1;
+
+        var knapp = document.createElement("button");
+        knapp.type = "button";
+        knapp.className = "sokvalg-knapp";
+        knapp.setAttribute("aria-haspopup", "listbox");
+        knapp.setAttribute("aria-expanded", "false");
+
+        var verdi = document.createElement("span");
+        verdi.className = "sokvalg-verdi";
+
+        var hint = document.createElement("span");
+        hint.className = "sokvalg-hint";
+        hint.appendChild(sokIkon());
+        hint.appendChild(document.createTextNode("Søk"));
+
+        var pil = document.createElement("span");
+        pil.className = "sokvalg-pil";
+        pil.setAttribute("aria-hidden", "true");
+        pil.appendChild(pilIkon());
+
+        knapp.appendChild(verdi);
+        knapp.appendChild(hint);
+        knapp.appendChild(pil);
+
+        var panel = document.createElement("div");
+        panel.className = "sokvalg-panel";
+        panel.hidden = true;
+
+        var sokFelt = document.createElement("label");
+        sokFelt.className = "sokvalg-sok";
+        sokFelt.appendChild(sokIkon());
+
+        var sok = document.createElement("input");
+        sok.type = "search";
+        sok.placeholder = "Søk i listen";
+        sok.autocomplete = "off";
+        sok.setAttribute("aria-label", "Søk i listen");
+        sokFelt.appendChild(sok);
+
+        var liste = document.createElement("ul");
+        liste.className = "sokvalg-liste";
+        liste.setAttribute("role", "listbox");
+
+        var tom = document.createElement("p");
+        tom.className = "sokvalg-tom";
+        tom.textContent = "Ingen treff";
+        tom.hidden = true;
+
+        panel.appendChild(sokFelt);
+        panel.appendChild(liste);
+        panel.appendChild(tom);
+        rot.appendChild(knapp);
+        rot.appendChild(panel);
+
+        var label = select.id ? document.querySelector('label[for="' + CSS.escape(select.id) + '"]') : null;
+        if (label) {
+            if (!label.id) label.id = select.id + "-etikett";
+            knapp.setAttribute("aria-labelledby", label.id);
+            sok.setAttribute("aria-labelledby", label.id);
+        }
+
+        var aktiv = -1;
+
+        function apne() {
+            if (select.disabled) return;
+            if (aapen && aapen !== api) aapen.lukk();
+            panel.hidden = false;
+            rot.classList.add("er-apen");
+            knapp.setAttribute("aria-expanded", "true");
+            sok.value = "";
+            tegn("");
+            aapen = api;
+            sok.focus();
+        }
+
+        function lukk(fokusTilbake) {
+            panel.hidden = true;
+            rot.classList.remove("er-apen");
+            knapp.setAttribute("aria-expanded", "false");
+            if (aapen === api) aapen = null;
+            if (fokusTilbake) knapp.focus();
+        }
+
+        function oppdaterVerdi() {
+            var valgt = select.options[select.selectedIndex];
+            var tomVerdi = !valgt || valgt.value === "";
+            verdi.textContent = valgt ? valgt.text : "";
+            verdi.classList.toggle("er-tom", tomVerdi);
+            knapp.disabled = select.disabled;
+        }
+
+        function synlige() {
+            return Array.prototype.filter.call(liste.children, function (rad) {
+                return !rad.hidden;
+            });
+        }
+
+        function markerAktiv(neste, rull) {
+            var rader = synlige();
+            if (!rader.length) {
+                aktiv = -1;
+                return;
+            }
+            if (neste < 0) neste = rader.length - 1;
+            if (neste >= rader.length) neste = 0;
+            aktiv = neste;
+            rader.forEach(function (rad, i) {
+                rad.classList.toggle("is-aktiv", i === aktiv);
+            });
+            var boks = rader[aktiv].getBoundingClientRect();
+            var ramme = liste.getBoundingClientRect();
+            if (boks.top < ramme.top) liste.scrollTop -= ramme.top - boks.top;
+            else if (boks.bottom > ramme.bottom) liste.scrollTop += boks.bottom - ramme.bottom;
+        }
+
+        function tegn(q) {
+            var sokeord = q.trim().toLocaleLowerCase("nb");
+            liste.replaceChildren();
+            Array.prototype.forEach.call(select.options, function (opt) {
+                if (opt.disabled) return;
+                if (sokeord && opt.text.toLocaleLowerCase("nb").indexOf(sokeord) === -1) return;
+
+                var rad = document.createElement("li");
+                var valg = document.createElement("button");
+                valg.type = "button";
+                valg.className = "sokvalg-valg";
+                valg.setAttribute("role", "option");
+                valg.setAttribute("aria-selected", opt.value === select.value ? "true" : "false");
+                valg.textContent = opt.text;
+                valg.addEventListener("mousedown", function (e) {
+                    e.preventDefault();
+                });
+                valg.addEventListener("click", function () {
+                    select.value = opt.value;
+                    select.dispatchEvent(new Event("change", { bubbles: true }));
+                    oppdaterVerdi();
+                    lukk(true);
+                });
+                rad.appendChild(valg);
+                liste.appendChild(rad);
+            });
+            tom.hidden = liste.children.length > 0;
+            var valgtRad = Array.prototype.findIndex.call(liste.children, function (rad) {
+                return rad.firstChild.getAttribute("aria-selected") === "true";
+            });
+            markerAktiv(valgtRad >= 0 ? valgtRad : 0, false);
+        }
+
+        knapp.addEventListener("click", function () {
+            if (panel.hidden) apne();
+            else lukk(true);
+        });
+
+        knapp.addEventListener("keydown", function (e) {
+            if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                e.stopPropagation();
+                apne();
+                return;
+            }
+            if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
+                e.preventDefault();
+                e.stopPropagation();
+                apne();
+                sok.value = e.key;
+                tegn(e.key);
+            }
+        });
+
+        sok.addEventListener("input", function () {
+            tegn(sok.value);
+        });
+
+        sok.addEventListener("keydown", function (e) {
+            var rader = synlige();
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                markerAktiv(aktiv + 1, true);
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                markerAktiv(aktiv - 1, true);
+            } else if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                if (rader[aktiv]) rader[aktiv].firstChild.click();
+            } else if (e.key === "Escape") {
+                e.stopPropagation();
+                lukk(true);
+            }
+        });
+
+        select.addEventListener("focus", function () {
+            knapp.focus();
+            if (panel.hidden) apne();
+        });
+
+        select.addEventListener("change", oppdaterVerdi);
+
+        var observer = new MutationObserver(function () {
+            oppdaterVerdi();
+            if (!panel.hidden) tegn(sok.value);
+        });
+        observer.observe(select, { childList: true });
+
+        var api = { contains: function (node) { return rot.contains(node); }, lukk: lukk };
+        oppdaterVerdi();
+    }
+
+    function sokIkon() {
+        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 16 16");
+        svg.setAttribute("aria-hidden", "true");
+        svg.innerHTML = '<circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M10.5 10.5 L14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>';
+        return svg;
+    }
+
+    function pilIkon() {
+        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 16 16");
+        svg.setAttribute("aria-hidden", "true");
+        svg.innerHTML = '<path d="M3 6 L8 11 L13 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>';
+        return svg;
+    }
+})();
+
+/* Klikk på kolonnetittelen: først høy til lav (pil ned), så lav til høy (pil opp), så tilbake til opprinnelig rekkefølge. */
+(function () {
+    var prioritet = { "akutt": 4, "høy": 3, "middels": 2, "lav": 1 };
+
+    document.querySelectorAll("table").forEach(initTabellSort);
+
+    function initTabellSort(table) {
+        var hode = table.tHead && table.tHead.rows[0];
+        var kropp = table.tBodies[0];
+        if (!hode || !kropp || !kropp.rows.length) return;
+
+        var rader = Array.prototype.map.call(kropp.rows, function (rad, i) {
+            rad.dataset.sortOpprinnelig = String(i);
+            return rad;
+        });
+
+        Array.prototype.forEach.call(hode.cells, function (th, indeks) {
+            if (!th.textContent.trim()) return;
+
+            var knapp = document.createElement("button");
+            knapp.type = "button";
+            knapp.className = "tabell-sort";
+            knapp.textContent = th.textContent.trim();
+
+            var pil = document.createElement("span");
+            pil.className = "tabell-sort-pil";
+            pil.setAttribute("aria-hidden", "true");
+            knapp.appendChild(pil);
+
+            th.textContent = "";
+            th.appendChild(knapp);
+            th.setAttribute("aria-sort", "none");
+
+            knapp.addEventListener("click", function () {
+                var neste = nesteRetning(th.getAttribute("aria-sort"));
+                Array.prototype.forEach.call(hode.cells, function (annen) {
+                    annen.classList.remove("er-synkende", "er-stigende");
+                    if (annen.querySelector(".tabell-sort")) annen.setAttribute("aria-sort", "none");
+                });
+
+                if (!neste) {
+                    rader.sort(function (a, b) {
+                        return Number(a.dataset.sortOpprinnelig) - Number(b.dataset.sortOpprinnelig);
+                    });
+                } else {
+                    th.classList.add(neste === "descending" ? "er-synkende" : "er-stigende");
+                    th.setAttribute("aria-sort", neste);
+                    var retning = neste === "descending" ? "desc" : "asc";
+                    rader.sort(function (a, b) {
+                        return sammenlign(a, b, indeks, retning);
+                    });
+                }
+
+                rader.forEach(function (rad) {
+                    kropp.appendChild(rad);
+                });
+            });
+        });
+    }
+
+    function nesteRetning(na) {
+        if (na === "none") return "descending";
+        if (na === "descending") return "ascending";
+        return null;
+    }
+
+    function sammenlign(a, b, indeks, retning) {
+        var va = lesVerdi(celleTekst(a, indeks));
+        var vb = lesVerdi(celleTekst(b, indeks));
+        var opprinnelig = Number(a.dataset.sortOpprinnelig) - Number(b.dataset.sortOpprinnelig);
+        if (va.tom && vb.tom) return opprinnelig;
+        if (va.tom) return 1;
+        if (vb.tom) return -1;
+
+        var diff = va.type === "tall" && vb.type === "tall"
+            ? va.n - vb.n
+            : va.tekst.localeCompare(vb.tekst, "nb", { numeric: true, sensitivity: "base" });
+        if (diff === 0) return opprinnelig;
+        return retning === "desc" ? -diff : diff;
+    }
+
+    function celleTekst(rad, indeks) {
+        var celle = rad.cells[indeks];
+        return celle ? celle.textContent : "";
+    }
+
+    function lesVerdi(tekst) {
+        var ren = tekst.replace(/\s+/g, " ").trim();
+        var lav = ren.toLocaleLowerCase("nb");
+        if (ren === "" || ren === "-" || ren === "–") {
+            return { tom: true, type: "tekst", tekst: "" };
+        }
+
+        if (Object.prototype.hasOwnProperty.call(prioritet, lav)) {
+            return { tom: false, type: "tall", n: prioritet[lav], tekst: lav };
+        }
+
+        var tid = lesTidspunkt(ren);
+        if (tid !== null) return { tom: false, type: "tall", n: tid, tekst: lav };
+
+        var tall = ren.match(/^(-?\d+(?:[.,]\d+)?)(?:\s*(?:tonn|t))?$/i);
+        if (tall) {
+            return { tom: false, type: "tall", n: parseFloat(tall[1].replace(",", ".")), tekst: lav };
+        }
+
+        return { tom: false, type: "tekst", tekst: lav };
+    }
+
+    function lesTidspunkt(tekst) {
+        var us = tekst.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM))?$/i);
+        if (us) {
+            var time = +(us[4] || 0);
+            if (us[7]) {
+                var ap = us[7].toUpperCase();
+                if (ap === "PM" && time < 12) time += 12;
+                if (ap === "AM" && time === 12) time = 0;
+            }
+            return tidsstempel(+us[3], +us[1] - 1, +us[2], time, +(us[5] || 0), +(us[6] || 0));
+        }
+
+        var no = tekst.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:\s+(?:kl\.\s*)?(\d{1,2}):(\d{2}))?$/);
+        if (no) {
+            return tidsstempel(+no[3], +no[2] - 1, +no[1], +(no[4] || 0), +(no[5] || 0), 0);
+        }
+
+        return null;
+    }
+
+    function tidsstempel(ar, mnd, dag, time, min, sek) {
+        var dato = new Date(ar, mnd, dag, time, min, sek);
+        return isNaN(dato.getTime()) ? null : dato.getTime();
+    }
+})();
+
+// Scroll zoomer bare når man holder Ctrl (Windows) eller Cmd (Mac).
+// Uten tasten vises et hint, og siden kan fortsatt scrolles forbi kartet.
+(function () {
+    if (!window.L || !L.map) return;
+
+    var lagKart = L.map;
+    var tast = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent || "") ? "Cmd" : "Ctrl";
+
+    L.map = function () {
+        var kart = lagKart.apply(this, arguments);
+        krevTastForZoom(kart);
+        return kart;
+    };
+
+    function krevTastForZoom(kart) {
+        var container = kart.getContainer();
+        var hint = document.createElement("div");
+        hint.className = "kart-zoom-hint";
+        hint.textContent = "Hold " + tast + " og scroll for å zoome";
+        hint.setAttribute("aria-hidden", "true");
+        container.appendChild(hint);
+
+        var skjulTimer = null;
+
+        container.addEventListener("wheel", function (e) {
+            if (e.ctrlKey || e.metaKey) {
+                hint.classList.remove("er-synlig");
+                return;
+            }
+
+            e.stopPropagation();
+            hint.classList.add("er-synlig");
+            window.clearTimeout(skjulTimer);
+            skjulTimer = window.setTimeout(function () {
+                hint.classList.remove("er-synlig");
+            }, 1000);
+        }, true);
     }
 })();

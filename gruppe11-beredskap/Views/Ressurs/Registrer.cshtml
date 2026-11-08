@@ -13,112 +13,132 @@
     <nav class="wizard-progress" data-wizard-progress aria-label="Fremdrift"></nav>
     <p class="wizard-status" data-wizard-status></p>
 
-    <section class="wizard-panel is-active" data-wizard-panel data-wizard-label="Type">
-        <h2 id="steg-type">Type</h2>
-        <p class="wizard-lead">Hva kan dere stille med?</p>
-        <label asp-for="TypeRessurs" class="form-label"></label>
-        <select asp-for="TypeRessurs" class="form-select" id="typeRessursSelect" onchange="toggleAnnetFelt()"
-                data-summary="Type"
-                data-step-required="true"
-                data-step-message="Du må velge type ressurs.">
-            <option value="">Velg type</option>
-            <option>Drone og droneoperatør</option>
-            <option>ATV</option>
-            <option>Traktor</option>
-            <option>Gravemaskin</option>
-            <option>Hjullaster</option>
-            <option>Skogsmaskin</option>
-            <option>Snøskuter</option>
-            <option>Lastebil</option>
-            <option>Henger</option>
-            <option>Sand/grus</option>
-            <option>Aggregat</option>
-            <option>Lokaler</option>
-            <option>Sambandsutstyr</option>
-            <option>Båt</option>
-            <option>Mannskap/frivillige</option>
-            <option value="Annet">Annet</option>
-        </select>
-        <span asp-validation-for="TypeRessurs" class="text-danger"></span>
-    </section>
+    <section class="wizard-panel is-active" data-wizard-panel data-wizard-label="Opplysninger">
+        <h2 id="steg-opplysninger">Opplysninger</h2>
 
-    <section class="wizard-panel" data-wizard-panel data-wizard-label="Annen type" id="annetSteg" hidden>
-        <h2 id="steg-annet">Spesifiser type</h2>
-        <p class="wizard-lead">Skriv inn type ressurs.</p>
-        <label asp-for="AnnenType" class="form-label">Spesifiser type</label>
-        <input asp-for="AnnenType" class="form-control" placeholder="Skriv inn type ressurs" maxlength="200"
-               data-summary="Spesifisert type"
-               data-step-required="true"
-               data-step-message="Skriv inn type ressurs." />
-    </section>
+        <div class="wizard-chunk">
+            <div class="wizard-field">
+                <div class="form-label-row">
+                    <label asp-for="TypeRessurs" class="form-label"></label>
+                    <button type="button" class="hjelp" aria-expanded="false" aria-controls="hjelp-type" aria-label="Hjelp om type">?</button>
+                </div>
+                <p class="hjelp-tekst" id="hjelp-type" hidden>Velg hvilken type ressurs du kan bidra med.</p>
+                <select asp-for="TypeRessurs" class="form-select" id="typeRessursSelect" onchange="toggleAnnetFelt()"
+                        data-summary="Type"
+                        data-step-required="true"
+                        data-step-message="Du må velge type ressurs.">
+                    <option value="">Velg type</option>
+                    <option>Drone og droneoperatør</option>
+                    <option>ATV</option>
+                    <option>Traktor</option>
+                    <option>Gravemaskin</option>
+                    <option>Hjullaster</option>
+                    <option>Skogsmaskin</option>
+                    <option>Snøskuter</option>
+                    <option>Lastebil</option>
+                    <option>Henger</option>
+                    <option>Sand/grus</option>
+                    <option>Aggregat</option>
+                    <option>Lokaler</option>
+                    <option>Sambandsutstyr</option>
+                    <option>Båt</option>
+                    <option>Mannskap/frivillige</option>
+                    <option value="Annet">Annet</option>
+                </select>
+                <span asp-validation-for="TypeRessurs" class="text-danger"></span>
+            </div>
 
-    <section class="wizard-panel" data-wizard-panel data-wizard-label="Beskrivelse">
-        <h2 id="steg-beskrivelse">Beskrivelse</h2>
-        <p class="wizard-lead">Beskriv ressursen.</p>
-        <label asp-for="Beskrivelse" class="form-label"></label>
-        <textarea asp-for="Beskrivelse" class="form-control" rows="4" placeholder="Beskriv ressursen"
-                  data-summary="Beskrivelse"
-                  data-step-required="true"
-                  data-step-message="Du må skrive en beskrivelse av ressursen."></textarea>
-        <span asp-validation-for="Beskrivelse" class="text-danger"></span>
-    </section>
+            <div class="wizard-field" id="annetSteg" hidden>
+                <label asp-for="AnnenType" class="form-label"></label>
+                <input asp-for="AnnenType" class="form-control" placeholder="Skriv inn type ressurs" maxlength="200"
+                       data-summary="Spesifisert type"
+                       data-step-required="true"
+                       data-step-message="Skriv inn type ressurs." />
+                <span asp-validation-for="AnnenType" class="text-danger"></span>
+            </div>
 
-    <section class="wizard-panel" data-wizard-panel data-wizard-label="Drivstoff" id="drivstoffSteg" hidden>
-        <h2 id="steg-drivstoff">Drivstofftype</h2>
-        <p class="wizard-lead">Hvilken drivstofftype bruker den?</p>
-        <label asp-for="Drivstofftype" class="form-label"></label>
-        <select asp-for="Drivstofftype" class="form-select"
-                data-summary="Drivstofftype"
-                data-step-required="true"
-                data-step-message="Du må velge drivstofftype for denne ressursen.">
-            <option value="">Velg drivstofftype</option>
-            <option>Bensin</option>
-            <option>Diesel</option>
-            <option>Elektrisk</option>
-        </select>
-        <span asp-validation-for="Drivstofftype" class="text-danger"></span>
-    </section>
+            <div class="wizard-field">
+                <label asp-for="Beskrivelse" class="form-label"></label>
+                <textarea asp-for="Beskrivelse" class="form-control" rows="3" placeholder="Beskriv ressursen"
+                          data-summary="Beskrivelse"
+                          data-step-required="true"
+                          data-step-message="Du må skrive en beskrivelse av ressursen."></textarea>
+                <span asp-validation-for="Beskrivelse" class="text-danger"></span>
+            </div>
 
-    <section class="wizard-panel" data-wizard-panel data-wizard-label="Last" id="lastSteg" hidden>
-        <h2 id="steg-last">Lastekapasitet</h2>
-        <p class="wizard-lead">Hvor mye kan den laste?</p>
-        <label asp-for="Lastekapasitet" class="form-label"></label>
-        <input asp-for="Lastekapasitet" class="form-control" type="number" min="0.01" max="60" step="0.01"
-               data-summary="Lastekapasitet (tonn)"
-               data-step-required="true"
-               data-step-message="Du må skrive inn en lastekapasitet som er større enn 0."
-               data-step-max="60"
-               data-step-max-message="Lastekapasiteten kan være maks 60 tonn." />
-        <span asp-validation-for="Lastekapasitet" class="text-danger"></span>
-    </section>
+            <div class="wizard-inline">
+                <div class="wizard-field" id="drivstoffSteg" hidden>
+                    <span class="form-label" id="drivstoff-label">Drivstofftype</span>
+                    <div class="wizard-choices" role="radiogroup" aria-labelledby="drivstoff-label"
+                         data-choice-group
+                         data-summary="Drivstofftype"
+                         data-step-required="true"
+                         data-step-message="Du må velge drivstofftype for denne ressursen.">
+                        <label class="wizard-choice" for="drivstoffBensin">
+                            <input type="radio" name="Drivstofftype" id="drivstoffBensin" value="Bensin" @(Model.Drivstofftype == "Bensin" ? "checked" : null) />
+                            Bensin
+                        </label>
+                        <label class="wizard-choice" for="drivstoffDiesel">
+                            <input type="radio" name="Drivstofftype" id="drivstoffDiesel" value="Diesel" @(Model.Drivstofftype == "Diesel" ? "checked" : null) />
+                            Diesel
+                        </label>
+                        <label class="wizard-choice" for="drivstoffElektrisk">
+                            <input type="radio" name="Drivstofftype" id="drivstoffElektrisk" value="Elektrisk" @(Model.Drivstofftype == "Elektrisk" ? "checked" : null) />
+                            Elektrisk
+                        </label>
+                    </div>
+                    <span asp-validation-for="Drivstofftype" class="text-danger"></span>
+                </div>
 
-    <section class="wizard-panel" data-wizard-panel data-wizard-label="Tidspunkt">
-        <h2 id="steg-tid">Tidspunkt/frist</h2>
-        <p class="wizard-lead">Når er ressursen tilgjengelig?</p>
-        <label asp-for="Tidspunkt" class="form-label"></label>
-        <input asp-for="Tidspunkt" class="form-control" type="datetime-local"
-               asp-format="{0:yyyy-MM-ddTHH:mm}" step="60"
-               data-summary="Tidspunkt/frist"
-               data-step-required="true"
-               data-step-message="Du må velge tidspunkt." />
-        <span asp-validation-for="Tidspunkt" class="text-danger"></span>
-    </section>
+                <div class="wizard-field" id="lastSteg" hidden>
+                    <label asp-for="Lastekapasitet" class="form-label"></label>
+                    <input asp-for="Lastekapasitet" class="form-control" type="number" min="0.01" max="60" step="0.01"
+                           data-summary="Lastekapasitet (tonn)"
+                           data-step-required="true"
+                           data-step-message="Du må skrive inn en lastekapasitet som er større enn 0."
+                           data-step-max="60"
+                           data-step-max-message="Lastekapasiteten kan være maks 60 tonn." />
+                    <span asp-validation-for="Lastekapasitet" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
 
-    <section class="wizard-panel" data-wizard-panel data-wizard-label="Kontakt">
-        <h2 id="steg-kontakt">Kontaktpunkt</h2>
-        <p class="wizard-lead">Hvem disponerer ressursen? Skriv navn og telefonnummer.</p>
-        <label asp-for="Kontaktpunkt" class="form-label"></label>
-        <input asp-for="Kontaktpunkt" class="form-control" placeholder="F.eks. Kari Nordmann, 900 00 000"
-               data-summary="Kontaktpunkt"
-               data-step-required="true"
-               data-step-message="Du må skrive inn et kontaktpunkt." />
-        <span asp-validation-for="Kontaktpunkt" class="text-danger"></span>
+        <div class="wizard-chunk">
+            <div class="wizard-split">
+                <div class="wizard-field">
+                    <label class="form-label" for="dato">Dato</label>
+                    <input id="dato" class="form-control" type="date" data-dato
+                           data-summary="Dato"
+                           data-step-required="true"
+                           data-step-message="Du må velge dato." />
+                </div>
+                <div class="wizard-field">
+                    <label class="form-label" for="tid">Tid</label>
+                    <input id="tid" class="form-control" type="time" step="900" data-tid @(endrer ? "data-tid-noyaktig" : null)
+                           data-summary="Tid"
+                           data-step-required="true"
+                           data-step-message="Du må velge klokkeslett." />
+                </div>
+            </div>
+            <input type="hidden" asp-for="Tidspunkt" asp-format="{0:yyyy-MM-ddTHH:mm}" data-tidspunkt />
+            <span asp-validation-for="Tidspunkt" class="text-danger"></span>
+            <div class="wizard-field wizard-felt-under">
+                <label asp-for="Kontaktpunkt" class="form-label"></label>
+                <input asp-for="Kontaktpunkt" class="form-control" placeholder="Navn og telefon"
+                       data-summary="Kontaktpunkt"
+                       data-step-required="true"
+                       data-step-message="Du må skrive inn et kontaktpunkt." />
+                <span asp-validation-for="Kontaktpunkt" class="text-danger"></span>
+            </div>
+        </div>
     </section>
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Kart" data-wizard-map="true"
              data-step-message="Du må sette en markør på kartet for å velge sted.">
-        <h2 id="steg-kart">Hvor på kartet</h2>
-        <p class="wizard-lead">Bruk markøren i verktøylinjen på kartet for å velge sted.</p>
+        <h2 id="steg-kart">Hvor på kartet
+            <button type="button" class="hjelp" aria-expanded="false" aria-controls="hjelp-kart" aria-label="Hjelp om kartet">?</button>
+        </h2>
+        <p class="hjelp-tekst" id="hjelp-kart" hidden>Klikk i kartet for å sette markør.</p>
         <div id="map"></div>
         <input type="hidden" asp-for="Latitude" id="latitude" data-wizard-lat />
         <input type="hidden" asp-for="Longitude" id="longitude" />
@@ -129,7 +149,6 @@
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Oversikt" data-wizard-summary="true">
         <h2 id="steg-oversikt">Oversikt</h2>
-        <p class="wizard-lead">Se over valgene. Endre sender deg tilbake til det steget.</p>
         <dl class="wizard-summary" data-wizard-summary-list></dl>
     </section>
 
@@ -138,7 +157,7 @@
         <div class="wizard-buttons">
             <button type="button" class="btn btn-outline-primary" data-wizard-back hidden>Tilbake</button>
             <button type="button" class="btn btn-primary" data-wizard-next>Neste</button>
-            <button type="submit" class="btn btn-primary" data-wizard-submit hidden>Registrer ressurs</button>
+            <button type="submit" class="btn btn-primary" data-wizard-submit hidden>@(endrer ? "Lagre endringer" : "Registrer ressurs")</button>
         </div>
     </div>
 </form>
@@ -175,7 +194,9 @@
             drivstoffSteg.hidden = !trengerDrivstoff;
 
             if (!trengerDrivstoff) {
-                document.getElementById("Drivstofftype").value = "";
+                drivstoffSteg.querySelectorAll("input[type=radio]").forEach(function (input) {
+                    input.checked = false;
+                });
             }
 
             var ressurserMedLastekapasitet = [
