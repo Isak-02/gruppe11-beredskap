@@ -220,6 +220,62 @@ public class RessursControllerTests
     }
 
     [Fact]
+    public async Task Pause_SetterTilgjengeligRessursPåPause()
+    {
+        var repo = new FakeRessursRepository();
+        var controller = new RessursController(repo);
+        LoggInnSom(controller, "bruker-1");
+        await controller.Registrer(LagModel("Mat"));
+
+        await controller.Pause(1);
+
+        Assert.Equal(RessursStatus.Pauset, repo.Lagret[0].Status);
+    }
+
+    [Fact]
+    public async Task Gjenoppta_GjørPausetRessursTilgjengeligIgjen()
+    {
+        var repo = new FakeRessursRepository();
+        var controller = new RessursController(repo);
+        LoggInnSom(controller, "bruker-1");
+        await controller.Registrer(LagModel("Mat"));
+        await controller.Pause(1);
+
+        await controller.Gjenoppta(1);
+
+        Assert.Equal(RessursStatus.Tilgjengelig, repo.Lagret[0].Status);
+    }
+
+    [Fact]
+    public async Task Pause_TildeltRessurs_EndresIkke()
+    {
+        var repo = new FakeRessursRepository();
+        var controller = new RessursController(repo);
+        LoggInnSom(controller, "bruker-1");
+        await controller.Registrer(LagModel("Mat"));
+        repo.Lagret[0].Status = RessursStatus.Tildelt;
+
+        await controller.Pause(1);
+
+        Assert.Equal(RessursStatus.Tildelt, repo.Lagret[0].Status);
+    }
+
+    [Fact]
+    public async Task Pause_AnnenBrukersRessurs_GirForbid()
+    {
+        var repo = new FakeRessursRepository();
+        var controller = new RessursController(repo);
+        LoggInnSom(controller, "bruker-1");
+        await controller.Registrer(LagModel("Mat"));
+        LoggInnSom(controller, "bruker-2");
+
+        var result = await controller.Pause(1);
+
+        Assert.IsType<ForbidResult>(result);
+        Assert.Equal(RessursStatus.Tilgjengelig, repo.Lagret[0].Status);
+    }
+
+    [Fact]
     public async Task PerFylke_ViserBareTilgjengeligeRessurser()
     {
         var repo = new FakeRessursRepository();

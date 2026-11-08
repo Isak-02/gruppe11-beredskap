@@ -54,6 +54,13 @@ public class TilgangTests
     }
 
     [Fact]
+    public void Ressurs_PauseOgGjenoppta_KreverKanRegistrereRessurs()
+    {
+        Assert.Equal(RoleNames.KanRegistrereRessurs, RollerPåMetode(typeof(RessursController), "Pause", typeof(int)));
+        Assert.Equal(RoleNames.KanRegistrereRessurs, RollerPåMetode(typeof(RessursController), "Gjenoppta", typeof(int)));
+    }
+
+    [Fact]
     public void AlleBehovOgAlleRessurser_KreverKoordinator()
     {
         Assert.Equal(RoleNames.Koordinator, RollerPåMetode(typeof(BehovController), "Oversikt"));
