@@ -64,7 +64,7 @@
 
     .profile-stats {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 1fr;
         gap: 18px;
     }
 
@@ -151,37 +151,22 @@
             </div>
         </div>
 
-        <a asp-controller="Account"
-           asp-action="Innstillinger"
-           class="btn btn-outline-success">
-            Innstillinger
-        </a>
     </div>
 
-    <!-- Min aktivitet -->
-    <h2 class="profile-section-title">Min aktivitet</h2>
+   <!-- Min aktivitet -->
+<h2 class="profile-section-title">Min aktivitet</h2>
 
-    <div class="profile-stats">
+<div class="profile-stats">
 
-        <div class="profile-card profile-stat">
-            <h3>Mine behov</h3>
-            <div class="profile-stat-number">—</div>
-            <p>Antall registrerte behov</p>
-        </div>
-
-        <div class="profile-card profile-stat">
-            <h3>Mine ressurser</h3>
-            <div class="profile-stat-number">—</div>
-            <p>Antall registrerte ressurser</p>
-        </div>
-
-        <div class="profile-card profile-stat">
-            <h3>Aktive registreringer</h3>
-            <div class="profile-stat-number">—</div>
-            <p>Registreringer som fortsatt er aktive</p>
-        </div>
-
+    <div class="profile-card profile-stat">
+        <h3>Aktive registreringer</h3>
+        <div class="profile-stat-number">—</div>
+        <p>Registreringer som fortsatt er aktive</p>
     </div>
+
+</div>
+
+        
 
     <!-- Personlig informasjon -->
     <div class="profile-card">
@@ -225,9 +210,9 @@
     <div class="profile-card">
         <h2>Mine siste registreringer</h2>
         <hr />
-        <p class="text-muted">
-            Her vil dine siste behov og ressurser vises.
-        </p>
+       <p class="text-muted">
+    Her vil dine siste registrerte behov vises.
+</p>
     </div>
 
 </div>
