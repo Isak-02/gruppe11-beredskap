@@ -10,12 +10,31 @@ html {
 }
 
 .btn:focus,
+.btn:focus-visible,
 .btn:active:focus,
+.btn:active:focus-visible,
+.btn-check:focus-visible + .btn,
+.btn-check:checked + .btn:focus-visible,
+.btn:first-child:active:focus-visible,
+.btn.active:focus-visible,
+.btn.show:focus-visible,
 .btn-link.nav-link:focus,
+.btn-link.nav-link:focus-visible,
+.nav-link:focus,
+.nav-link:focus-visible,
 .form-control:focus,
-.form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white,
-  0 0 0 0.25rem #258cfb;
+.form-control:focus-visible,
+.form-select:focus,
+.form-select:focus-visible,
+.form-check-input:focus,
+.form-check-input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--bs-border-color);
 }
 
 html {
@@ -162,10 +181,6 @@ body {
   background: #005B27;
   color: #fff;
   outline: none;
-}
-
-.kart-info-knapp:focus-visible {
-  box-shadow: 0 0 0 0.2rem rgba(0, 91, 39, 0.35);
 }
 
 /* Fullskjermknappen ser ut som infoknappen og står innerst i hjørnet, 12px inn på kartet */
@@ -511,11 +526,6 @@ body {
   color: #1A4404;
 }
 
-.kk-login-button:focus-visible {
-  outline: 3px solid #DCECAC;
-  outline-offset: 3px;
-}
-
 /* ====================================
    KARTKRISE INNLOGGINGSSEKSJON
    ==================================== */
@@ -592,11 +602,6 @@ html {
   border: 1px solid #D7E3D5;
 }
 
-.kk-login-form .form-control:focus {
-  border-color: #005B27;
-  box-shadow: 0 0 0 3px rgba(0, 91, 39, 0.12);
-}
-
 .kk-login-submit {
   width: 100%;
   background-color: #005B27;
@@ -661,12 +666,6 @@ html {
 .kk-switch-button:hover {
   color: #1A4404;
   text-decoration: underline;
-}
-
-.kk-switch-button:focus-visible {
-  outline: 2px solid #005B27;
-  outline-offset: 4px;
-  border-radius: 3px;
 }
 
 [hidden] {
@@ -906,14 +905,8 @@ html {
   opacity: 0;
 }
 
-.wizard-choice:focus-within {
-  outline: 2px solid #005B27;
-  outline-offset: 2px;
-}
-
 .wizard-choice:has(input:checked) {
   background: #CCE193;
-  border-color: #005B27;
   color: #1A4404;
 }
 
@@ -1053,11 +1046,6 @@ html {
 
 .tabell-sort:hover {
   color: #005B27;
-}
-
-.tabell-sort:focus-visible {
-  outline: 2px solid #005B27;
-  outline-offset: -2px;
 }
 
 .tabell-sort-pil {
@@ -1244,7 +1232,6 @@ th.er-stigende .tabell-sort-pil {
 .sokvalg-knapp:focus-visible {
   outline: none;
   border-color: #005B27;
-  box-shadow: 0 0 0 3px rgba(0, 91, 39, 0.12);
 }
 
 .sokvalg-verdi {
