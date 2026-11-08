@@ -78,15 +78,43 @@
             error.textContent = message;
         }
 
+        function erSkjult(el) {
+            return !!el.closest("[hidden]");
+        }
+
+        function erValggruppe(el) {
+            return el.hasAttribute("data-choice-group");
+        }
+
+        function feltErTomt(el) {
+            if (erSkjult(el)) return false;
+            if (erValggruppe(el)) return !el.querySelector("input:checked");
+            if (el.type === "number") return el.value === "" || Number(el.value) <= 0;
+            return (el.value || "").trim() === "";
+        }
+
+        function fokuserFelt(el) {
+            if (erValggruppe(el)) {
+                var forste = el.querySelector("input");
+                if (forste) forste.focus();
+                return;
+            }
+            if (el.classList && el.classList.contains("sokvalg-original")) {
+                var knapp = el.parentNode && el.parentNode.querySelector(".sokvalg-knapp");
+                if (knapp) {
+                    knapp.focus();
+                    return;
+                }
+            }
+            el.focus();
+        }
+
         function manglerIPanel(panel) {
             if (panel.hidden || panel.dataset.wizardSummary === "true") return false;
 
             var requiredBits = panel.querySelectorAll("[data-step-required]");
             for (var i = 0; i < requiredBits.length; i++) {
-                var el = requiredBits[i];
-                var emptyNumber = el.type === "number" && (el.value === "" || Number(el.value) <= 0);
-                var emptyText = el.type !== "number" && el.value.trim() === "";
-                if (emptyNumber || emptyText) return true;
+                if (feltErTomt(requiredBits[i])) return true;
             }
 
             if (panel.dataset.wizardMap === "true") {
@@ -105,6 +133,7 @@
             var felter = panel.querySelectorAll("[data-step-max]");
             for (var i = 0; i < felter.length; i++) {
                 var el = felter[i];
+                if (erSkjult(el)) continue;
                 if (el.value !== "" && Number(el.value) > Number(el.dataset.stepMax)) return el;
             }
             return null;
@@ -161,13 +190,10 @@
             var requiredBits = panel.querySelectorAll("[data-step-required]");
             for (var i = 0; i < requiredBits.length; i++) {
                 var el = requiredBits[i];
-                var emptyNumber = el.type === "number" && (el.value === "" || Number(el.value) <= 0);
-                var emptyText = el.type !== "number" && el.value.trim() === "";
-                if (emptyNumber || emptyText) {
-                    fail(el.dataset.stepMessage || "Feltet må fylles ut.");
-                    el.focus();
-                    return false;
-                }
+                if (!feltErTomt(el)) continue;
+                fail(el.dataset.stepMessage || "Feltet må fylles ut.");
+                fokuserFelt(el);
+                return false;
             }
 
             if (panel.dataset.wizardMap === "true") {
@@ -226,6 +252,15 @@
         form.addEventListener("keydown", function (e) {
             if (e.key !== "Enter" || e.target.tagName === "TEXTAREA") return;
             if (e.target.closest && e.target.closest(".sokvalg")) return;
+            var pakrevd = panels[index].querySelectorAll("[data-step-required]");
+            var synlige = 0;
+            for (var i = 0; i < pakrevd.length; i++) {
+                if (!erSkjult(pakrevd[i])) synlige++;
+            }
+            if (synlige > 1) {
+                e.preventDefault();
+                return;
+            }
             if (nesteSynlige(index, 1) < 0) return;
             e.preventDefault();
             nextBtn.click();
@@ -245,6 +280,12 @@
             }
         });
 
+        function formatDato(value) {
+            var del = (value || "").split("-");
+            if (del.length !== 3) return value || "";
+            return del[2] + "." + del[1] + "." + del[0];
+        }
+
         function formatTid(value) {
             if (!value) return "";
             var date = new Date(value);
@@ -256,8 +297,14 @@
         }
 
         function lesVerdi(el) {
+            if (el.hasAttribute("data-choice-group")) {
+                var valgt = el.querySelector("input:checked");
+                return valgt ? valgt.value.trim() : "";
+            }
+            if (el.type === "date") return formatDato(el.value);
+            if (el.type === "time") return (el.value || "").slice(0, 5);
             if (el.type === "datetime-local") return formatTid(el.value);
-            return el.value.trim();
+            return (el.value || "").trim();
         }
 
         function oversiktsrad(label, value, panelIndex) {
@@ -298,6 +345,7 @@
                     return;
                 }
                 panel.querySelectorAll("[data-summary]").forEach(function (el) {
+                    if (erSkjult(el)) return;
                     var verdi = lesVerdi(el);
                     list.appendChild(oversiktsrad(el.dataset.summary, verdi || "Ikke fylt ut", panelIndex));
                 });
@@ -305,6 +353,76 @@
         }
 
         show(index, false);
+    }
+})();
+
+/* Dato og tid er to felt. De skrives sammen til Tidspunkt før skjemaet sendes. */
+(function () {
+    document.querySelectorAll("[data-wizard]").forEach(kobleTid);
+
+    function kobleTid(form) {
+        var dato = form.querySelector("[data-dato]");
+        var tid = form.querySelector("[data-tid]");
+        var skjult = form.querySelector("[data-tidspunkt]");
+        if (!dato || !tid || !skjult) return;
+
+        function skriv() {
+            skjult.value = dato.value && tid.value ? dato.value + "T" + tid.value : "";
+        }
+
+        var delt = (skjult.value || "").trim().replace(" ", "T").split("T");
+        if (/^\d{4}-\d{2}-\d{2}/.test(delt[0] || "")) dato.value = delt[0].slice(0, 10);
+        if (delt[1]) {
+            var klokke = delt[1].slice(0, 5);
+            var minutt = Number(klokke.slice(3, 5));
+            if (!tid.hasAttribute("data-tid-noyaktig") && minutt % 15 !== 0) {
+                var totalt = Number(klokke.slice(0, 2)) * 60 + minutt;
+                var avrundet = Math.round(totalt / 15) * 15;
+                var timer = Math.floor(avrundet / 60) % 24;
+                var minutter = avrundet % 60;
+                klokke = String(timer).padStart(2, "0") + ":" + String(minutter).padStart(2, "0");
+            } else if (minutt % 15 !== 0) {
+                tid.step = "60";
+            }
+            tid.value = klokke;
+        }
+        skriv();
+
+        dato.addEventListener("input", skriv);
+        dato.addEventListener("change", skriv);
+        tid.addEventListener("input", skriv);
+        tid.addEventListener("change", skriv);
+        form.addEventListener("submit", skriv, true);
+    }
+})();
+
+/* Spørsmålstegn viser en kort forklaring. Ett om gangen. */
+(function () {
+    document.querySelectorAll(".hjelp").forEach(function (knapp) {
+        var tekst = document.getElementById(knapp.getAttribute("aria-controls"));
+        if (!tekst) return;
+        knapp.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var apne = tekst.hidden;
+            lukkAlle();
+            tekst.hidden = !apne;
+            knapp.setAttribute("aria-expanded", apne ? "true" : "false");
+        });
+    });
+
+    document.addEventListener("click", lukkAlle);
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") lukkAlle();
+    });
+
+    function lukkAlle() {
+        document.querySelectorAll(".hjelp-tekst").forEach(function (tekst) {
+            tekst.hidden = true;
+        });
+        document.querySelectorAll(".hjelp").forEach(function (knapp) {
+            knapp.setAttribute("aria-expanded", "false");
+        });
     }
 })();
 

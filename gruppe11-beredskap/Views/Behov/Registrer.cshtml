@@ -11,66 +11,102 @@
     <nav class="wizard-progress" data-wizard-progress aria-label="Fremdrift"></nav>
     <p class="wizard-status" data-wizard-status></p>
 
-    <section class="wizard-panel is-active" data-wizard-panel data-wizard-label="Type">
-        <h2 id="steg-type">Type</h2>
-        <label asp-for="TypeBehov" class="form-label visually-hidden"></label>
-        <select asp-for="TypeBehov" class="form-select"
-                data-summary="Type"
-                data-step-required="true"
-                data-step-message="Du må velge type behov.">
-            <option value="">Velg type</option>
-            <option>Transport</option>
-            <option>Droneobservasjon</option>
-            <option>Strøm/aggregat</option>
-            <option>Snørydding</option>
-            <option>Sand/grus</option>
-            <option>Maskiner</option>
-            <option>Evakuering</option>
-            <option>Samband</option>
-            <option>Mannskap</option>
-            <option>Lokaler</option>
-        </select>
-        <span asp-validation-for="TypeBehov" class="text-danger"></span>
-    </section>
+    <section class="wizard-panel is-active" data-wizard-panel data-wizard-label="Opplysninger">
+        <h2 id="steg-opplysninger">Opplysninger</h2>
 
-    <section class="wizard-panel" data-wizard-panel data-wizard-label="Beskrivelse">
-        <h2 id="steg-beskrivelse">Beskrivelse</h2>
-        <label asp-for="Beskrivelse" class="form-label visually-hidden"></label>
-        <textarea asp-for="Beskrivelse" class="form-control" rows="4" placeholder="Beskriv behovet"
-                  data-summary="Beskrivelse"
-                  data-step-required="true"
-                  data-step-message="Du må skrive en beskrivelse av behovet."></textarea>
-        <span asp-validation-for="Beskrivelse" class="text-danger"></span>
-    </section>
+        <div class="wizard-chunk">
+            <div class="wizard-field">
+                <label asp-for="TypeBehov" class="form-label"></label>
+                <select asp-for="TypeBehov" class="form-select"
+                        data-summary="Type"
+                        data-step-required="true"
+                        data-step-message="Du må velge type behov.">
+                    <option value="">Velg type</option>
+                    <option>Transport</option>
+                    <option>Droneobservasjon</option>
+                    <option>Strøm/aggregat</option>
+                    <option>Snørydding</option>
+                    <option>Sand/grus</option>
+                    <option>Maskiner</option>
+                    <option>Evakuering</option>
+                    <option>Samband</option>
+                    <option>Mannskap</option>
+                    <option>Lokaler</option>
+                </select>
+                <span asp-validation-for="TypeBehov" class="text-danger"></span>
+            </div>
 
-    <section class="wizard-panel" data-wizard-panel data-wizard-label="Tidspunkt">
-        <h2 id="steg-tid">Tidspunkt/frist</h2>
-        <label asp-for="Tidspunkt" class="form-label visually-hidden"></label>
-        <input asp-for="Tidspunkt" class="form-control" type="datetime-local"
-               asp-format="{0:yyyy-MM-ddTHH:mm}" step="60"
-               data-summary="Tidspunkt/frist"
-               data-step-required="true"
-               data-step-message="Du må velge tidspunkt." />
-        <span asp-validation-for="Tidspunkt" class="text-danger"></span>
-    </section>
+            <div class="wizard-field">
+                <label asp-for="Beskrivelse" class="form-label"></label>
+                <textarea asp-for="Beskrivelse" class="form-control" rows="3" placeholder="Beskriv behovet"
+                          data-summary="Beskrivelse"
+                          data-step-required="true"
+                          data-step-message="Du må skrive en beskrivelse av behovet."></textarea>
+                <span asp-validation-for="Beskrivelse" class="text-danger"></span>
+            </div>
 
-    <section class="wizard-panel" data-wizard-panel data-wizard-label="Prioritet">
-        <h2 id="steg-prioritet">Prioritet</h2>
-        <label asp-for="Prioritet" class="form-label visually-hidden"></label>
-        <select asp-for="Prioritet" class="form-select"
-                data-summary="Prioritet"
-                data-step-required="true"
-                data-step-message="Du må velge prioritet.">
-            <option value="">Velg prioritet</option>
-            <option>Lav</option>
-            <option>Middels</option>
-            <option>Høy</option>
-        </select>
-        <span asp-validation-for="Prioritet" class="text-danger"></span>
+            <div class="wizard-field">
+                <span class="form-label" id="prioritet-label">Prioritet</span>
+                <div class="wizard-choices" role="radiogroup" aria-labelledby="prioritet-label"
+                     data-choice-group
+                     data-summary="Prioritet"
+                     data-step-required="true"
+                     data-step-message="Du må velge prioritet.">
+                    <label class="wizard-choice" for="prioritetLav">
+                        <input type="radio" name="Prioritet" id="prioritetLav" value="Lav" @(Model.Prioritet == "Lav" ? "checked" : null) />
+                        <span class="wizard-choice-dot behov-lav" aria-hidden="true"></span>
+                        Lav
+                    </label>
+                    <label class="wizard-choice" for="prioritetMiddels">
+                        <input type="radio" name="Prioritet" id="prioritetMiddels" value="Middels" @(Model.Prioritet == "Middels" ? "checked" : null) />
+                        <span class="wizard-choice-dot behov-middels" aria-hidden="true"></span>
+                        Middels
+                    </label>
+                    <label class="wizard-choice" for="prioritetHoy">
+                        <input type="radio" name="Prioritet" id="prioritetHoy" value="Høy" @(Model.Prioritet == "Høy" ? "checked" : null) />
+                        <span class="wizard-choice-dot behov-hoy" aria-hidden="true"></span>
+                        Høy
+                    </label>
+                </div>
+                <span asp-validation-for="Prioritet" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="wizard-chunk">
+            <div class="wizard-split">
+                <div class="wizard-field">
+                    <label class="form-label" for="dato">Dato</label>
+                    <input id="dato" class="form-control" type="date" data-dato
+                           data-summary="Dato"
+                           data-step-required="true"
+                           data-step-message="Du må velge dato." />
+                </div>
+                <div class="wizard-field">
+                    <label class="form-label" for="tid">Tid</label>
+                    <input id="tid" class="form-control" type="time" step="900" data-tid
+                           data-summary="Tid"
+                           data-step-required="true"
+                           data-step-message="Du må velge klokkeslett." />
+                </div>
+            </div>
+            <input type="hidden" asp-for="Tidspunkt" asp-format="{0:yyyy-MM-ddTHH:mm}" data-tidspunkt />
+            <span asp-validation-for="Tidspunkt" class="text-danger"></span>
+            <div class="wizard-field wizard-felt-under">
+                <label asp-for="Kontaktpunkt" class="form-label"></label>
+                <input asp-for="Kontaktpunkt" class="form-control" placeholder="Navn og telefon"
+                       data-summary="Kontaktpunkt"
+                       data-step-required="true"
+                       data-step-message="Du må skrive inn et kontaktpunkt." />
+                <span asp-validation-for="Kontaktpunkt" class="text-danger"></span>
+            </div>
+        </div>
     </section>
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Kart" data-wizard-map="true">
-        <h2 id="steg-kart">Hvor på kartet</h2>
+        <h2 id="steg-kart">Hvor på kartet
+            <button type="button" class="hjelp" aria-expanded="false" aria-controls="hjelp-kart" aria-label="Hjelp om kartet">?</button>
+        </h2>
+        <p class="hjelp-tekst" id="hjelp-kart" hidden>Klikk for markør, eller tegn en sirkel.</p>
         <div id="map"></div>
         <input type="hidden" asp-for="Latitude" id="latitude" data-wizard-lat />
         <input type="hidden" asp-for="Longitude" id="longitude" />
@@ -81,16 +117,6 @@
         <p id="valgtStedTekst" class="text-muted mt-2 mb-0">Ingen posisjon valgt ennå</p>
         <span asp-validation-for="Latitude" class="text-danger"></span>
         <span asp-validation-for="Radius" class="text-danger"></span>
-    </section>
-
-    <section class="wizard-panel" data-wizard-panel data-wizard-label="Kontakt">
-        <h2 id="steg-kontakt">Kontaktpunkt</h2>
-        <label asp-for="Kontaktpunkt" class="form-label visually-hidden"></label>
-        <input asp-for="Kontaktpunkt" class="form-control" placeholder="F.eks. Kari Nordmann, 900 00 000"
-               data-summary="Kontaktpunkt"
-               data-step-required="true"
-               data-step-message="Du må skrive inn et kontaktpunkt." />
-        <span asp-validation-for="Kontaktpunkt" class="text-danger"></span>
     </section>
 
     <section class="wizard-panel" data-wizard-panel data-wizard-label="Oversikt" data-wizard-summary="true">

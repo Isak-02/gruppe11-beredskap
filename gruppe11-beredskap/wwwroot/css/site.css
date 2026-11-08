@@ -769,13 +769,159 @@ html {
 }
 
 .wizard-panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   font-size: 1.35rem;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.85rem;
   color: #005B27;
 }
 
-.wizard-lead {
-  margin: 0 0 1rem;
+.wizard-chunk + .wizard-chunk {
+  margin-top: 1.15rem;
+  padding-top: 1.05rem;
+  border-top: 1px solid #e4e4e0;
+}
+
+.wizard-field + .wizard-field,
+.wizard-split + .wizard-field {
+  margin-top: 0.9rem;
+}
+
+.wizard-felt-under {
+  margin-top: 1.75rem;
+}
+
+.wizard-field .form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.form-label-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.form-label-row .form-label {
+  margin-bottom: 0;
+  width: auto;
+}
+
+.hjelp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid #005B27;
+  border-radius: 50%;
+  background: #fff;
+  color: #005B27;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.hjelp[aria-expanded="true"] {
+  background: #005B27;
+  color: #fff;
+}
+
+.hjelp-tekst {
+  margin: 0.35rem 0 0.5rem;
+  color: #3d4a40;
+  font-size: 0.875rem;
+}
+
+.wizard-split,
+.wizard-inline {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.wizard-inline {
+  margin-top: 0.9rem;
+}
+
+.wizard-inline:not(:has(> :not([hidden]))) {
+  display: none;
+}
+
+.wizard-split > .wizard-field {
+  min-width: 0;
+}
+
+.wizard input[type="date"],
+.wizard input[type="time"],
+.wizard input[type="datetime-local"] {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .wizard-split {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  .wizard-split .wizard-field + .wizard-field {
+    margin-top: 0;
+  }
+}
+
+.wizard-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.wizard-choice {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.95rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  background: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wizard-choice input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.wizard-choice:focus-within {
+  outline: 2px solid #005B27;
+  outline-offset: 2px;
+}
+
+.wizard-choice:has(input:checked) {
+  background: #CCE193;
+  border-color: #005B27;
+  color: #1A4404;
+}
+
+.wizard-choice-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  flex: 0 0 auto;
 }
 
 .wizard-error {
