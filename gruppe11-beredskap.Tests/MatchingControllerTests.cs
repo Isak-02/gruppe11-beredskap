@@ -80,7 +80,7 @@ public class MatchingControllerTests
         var ressursRepo = new FakeRessursRepository();
         var matchingRepo = new FakeMatchingRepository();
         behovRepo.Lagret.Add(LagBehov(1));
-        behovRepo.Lagret[0].Status = BehovStatus.Tildelt;
+        behovRepo.Lagret[0].Status = BehovStatus.Løst;
         behovRepo.Lagret.Add(LagBehov(2));
         ressursRepo.Lagret.Add(LagRessurs(1));
         ressursRepo.Lagret[0].Status = RessursStatus.Tildelt;
@@ -130,7 +130,7 @@ public class MatchingControllerTests
         ressursRepo.Lagret.Add(LagRessurs(1));
         var controller = new MatchingController(behovRepo, ressursRepo, matchingRepo);
 
-        var result = await controller.Koble(new MatchingViewModel { BehovId = 1, RessursId = 1 });
+        var result = await controller.Koble(new MatchingViewModel { BehovId = 1, RessursIder = new() { 1 } });
 
         var redirect = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Index", redirect.ActionName);
@@ -151,6 +151,80 @@ public class MatchingControllerTests
         var view = Assert.IsType<ViewResult>(result);
         Assert.Equal("Index", view.ViewName);
         Assert.Empty(matchingRepo.Lagret);
+    }
+
+    [Fact]
+    public async Task Koble_Post_FlereRessurser_LagerÉnKoblingPerRessurs()
+    {
+        var behovRepo = new FakeBehovRepository();
+        var ressursRepo = new FakeRessursRepository();
+        var matchingRepo = new FakeMatchingRepository();
+        behovRepo.Lagret.Add(LagBehov(1));
+        ressursRepo.Lagret.Add(LagRessurs(1));
+        ressursRepo.Lagret.Add(LagRessurs(2));
+        var controller = new MatchingController(behovRepo, ressursRepo, matchingRepo);
+
+        await controller.Koble(new MatchingViewModel { BehovId = 1, RessursIder = new() { 1, 2 } });
+
+        Assert.Equal(2, matchingRepo.Lagret.Count);
+        Assert.All(matchingRepo.Lagret, m => Assert.Equal(1, m.BehovId));
+        Assert.All(ressursRepo.Lagret, r => Assert.Equal(RessursStatus.Tildelt, r.Status));
+        Assert.Equal(BehovStatus.Tildelt, behovRepo.Lagret[0].Status);
+    }
+
+    [Fact]
+    public async Task Koble_Post_TildeltBehov_KanFåFlereRessurserSenere()
+    {
+        var behovRepo = new FakeBehovRepository();
+        var ressursRepo = new FakeRessursRepository();
+        var matchingRepo = new FakeMatchingRepository();
+        behovRepo.Lagret.Add(LagBehov(1));
+        ressursRepo.Lagret.Add(LagRessurs(1));
+        ressursRepo.Lagret.Add(LagRessurs(2));
+        var controller = new MatchingController(behovRepo, ressursRepo, matchingRepo);
+        await controller.Koble(new MatchingViewModel { BehovId = 1, RessursIder = new() { 1 } });
+
+        var result = await controller.Koble(new MatchingViewModel { BehovId = 1, RessursIder = new() { 2 } });
+
+        Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal(2, matchingRepo.Lagret.Count);
+    }
+
+    [Fact]
+    public async Task Koble_Post_RessursSomIkkeErLedig_LagrerIkke()
+    {
+        var behovRepo = new FakeBehovRepository();
+        var ressursRepo = new FakeRessursRepository();
+        var matchingRepo = new FakeMatchingRepository();
+        behovRepo.Lagret.Add(LagBehov(1));
+        ressursRepo.Lagret.Add(LagRessurs(1));
+        ressursRepo.Lagret.Add(LagRessurs(2));
+        ressursRepo.Lagret[1].Status = RessursStatus.Tildelt;
+        var controller = new MatchingController(behovRepo, ressursRepo, matchingRepo);
+
+        var result = await controller.Koble(new MatchingViewModel { BehovId = 1, RessursIder = new() { 1, 2 } });
+
+        Assert.IsType<ViewResult>(result);
+        Assert.Empty(matchingRepo.Lagret);
+    }
+
+    [Fact]
+    public async Task Løs_GjørAlleRessurseneLedigeOgBehovetLøst()
+    {
+        var behovRepo = new FakeBehovRepository();
+        var ressursRepo = new FakeRessursRepository();
+        var matchingRepo = new FakeMatchingRepository();
+        behovRepo.Lagret.Add(LagBehov(1));
+        ressursRepo.Lagret.Add(LagRessurs(1));
+        ressursRepo.Lagret.Add(LagRessurs(2));
+        var controller = new MatchingController(behovRepo, ressursRepo, matchingRepo);
+        await controller.Koble(new MatchingViewModel { BehovId = 1, RessursIder = new() { 1, 2 } });
+
+        await controller.Løs(1);
+
+        Assert.Equal(BehovStatus.Løst, behovRepo.Lagret[0].Status);
+        Assert.All(ressursRepo.Lagret, r => Assert.Equal(RessursStatus.Tilgjengelig, r.Status));
+        Assert.All(matchingRepo.Lagret, m => Assert.NotNull(m.LostTidspunkt));
     }
 
     [Fact]

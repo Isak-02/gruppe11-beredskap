@@ -41,25 +41,31 @@ public class MatchingController : Controller
         var behovene = await _behovRepo.GetAllAsync();
         var ressursene = await _ressursRepo.GetAllAsync();
         var valgtBehov = behovene.FirstOrDefault(b => b.Id == model.BehovId);
-        var valgtRessurs = ressursene.FirstOrDefault(r => r.Id == model.RessursId);
+        var valgteRessurser = ressursene.Where(r => model.RessursIder.Contains(r.Id)).ToList();
 
-        if (valgtBehov == null || (valgtBehov.Status != BehovStatus.Ny && valgtBehov.Status != BehovStatus.Vurderes))
+        // Et behov kan kobles så lenge det ikke er løst. Et tildelt behov kan altså få flere ressurser senere.
+        if (valgtBehov == null || valgtBehov.Status == BehovStatus.Løst)
             ModelState.AddModelError(nameof(model.BehovId), "Behovet kan ikke kobles");
-        if (valgtRessurs == null || valgtRessurs.Status != RessursStatus.Tilgjengelig)
-            ModelState.AddModelError(nameof(model.RessursId), "Ressursen er ikke ledig");
+        // Alle de valgte ressursene må finnes og være ledige
+        if (valgteRessurser.Count != model.RessursIder.Distinct().Count() ||
+            valgteRessurser.Any(r => r.Status != RessursStatus.Tilgjengelig))
+            ModelState.AddModelError(nameof(model.RessursIder), "En eller flere av ressursene er ikke ledige");
 
         if (!ModelState.IsValid)
             return View("Index", await ByggModell(model));
 
-        var matching = new Matching
+        // Én kobling per ressurs, alle til samme behov
+        foreach (var ressurs in valgteRessurser)
         {
-            BehovId = model.BehovId!.Value,
-            RessursId = model.RessursId!.Value
-        };
+            await _matchingRepo.AddAsync(new Matching
+            {
+                BehovId = valgtBehov!.Id,
+                RessursId = ressurs.Id
+            });
+            await _ressursRepo.UpdateStatusAsync(ressurs.Id, RessursStatus.Tildelt);
+        }
 
-        await _matchingRepo.AddAsync(matching);
-        await _behovRepo.UpdateStatusAsync(matching.BehovId, BehovStatus.Tildelt);
-        await _ressursRepo.UpdateStatusAsync(matching.RessursId, RessursStatus.Tildelt);
+        await _behovRepo.UpdateStatusAsync(valgtBehov!.Id, BehovStatus.Tildelt);
         return RedirectToAction(nameof(Index));
     }
     // Behov går fra Ny til Vurderes
@@ -71,18 +77,24 @@ public class MatchingController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // Behov er løst: ressursen blir ledig igjen
+    // Behov er løst: alle ressursene som var koblet til det, blir ledige igjen
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Løs(int behovId, int ressursId)
+    public async Task<IActionResult> Løs(int behovId)
     {
+        var matchinger = await _matchingRepo.GetAllAsync();
+        var aktiveKoblinger = matchinger.Where(m => m.BehovId == behovId && m.LostTidspunkt == null);
+
+        foreach (var kobling in aktiveKoblinger)
+            await _ressursRepo.UpdateStatusAsync(kobling.RessursId, RessursStatus.Tilgjengelig);
+
         await _behovRepo.UpdateStatusAsync(behovId, BehovStatus.Løst);
-        await _ressursRepo.UpdateStatusAsync(ressursId, RessursStatus.Tilgjengelig);
         await _matchingRepo.MarkerLostAsync(behovId);
         return RedirectToAction(nameof(Index));
     }
 
-    // Fyller listene: bare behov og ressurser som kan kobles, pluss eksisterende koblinger
+    // Fyller listene: behov som ikke er løst (også tildelte, så de kan få flere ressurser),
+    // ledige ressurser og eksisterende koblinger
     private async Task<MatchingViewModel> ByggModell(MatchingViewModel model)
     {
 
@@ -91,7 +103,7 @@ public class MatchingController : Controller
         var matchinger = await _matchingRepo.GetAllAsync();
 
         model.ÅpneBehov = behov
-            .Where(b => b.Status == BehovStatus.Ny || b.Status == BehovStatus.Vurderes)
+            .Where(b => b.Status != BehovStatus.Løst)
             .Select(b => new BehovViewModel
             {
                 Id = b.Id,
