@@ -59,9 +59,6 @@
                     @if (erKoordinator)
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Ressurs" asp-action="PerFylke">Ressurser per fylke</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Matching" asp-action="Index">Kobling</a>
                         </li>
                     }
@@ -171,9 +168,10 @@
 @{
     var isHomePage = ViewContext.RouteData.Values["controller"]?.ToString() == "Home"
                      && ViewContext.RouteData.Values["action"]?.ToString() == "Index";
+    var erKobling = ViewContext.RouteData.Values["controller"]?.ToString() == "Matching";
 }
 
-<div class="@(isHomePage ? "container-fluid px-3 px-lg-4" : "container")">
+<div class="@(isHomePage || erKobling ? "container-fluid px-3 px-lg-4" : "container")">
     <main role="main" class="pb-3">
         @RenderBody()
     </main>

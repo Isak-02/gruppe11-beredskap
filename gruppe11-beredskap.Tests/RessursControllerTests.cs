@@ -276,19 +276,14 @@ public class RessursControllerTests
     }
 
     [Fact]
-    public async Task PerFylke_ViserBareTilgjengeligeRessurser()
+    public void PerFylke_SenderVidereTilKobling()
     {
-        var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
-        await controller.Registrer(LagModel("Mat"));
-        await controller.Registrer(LagModel("Lokaler"));
-        repo.Lagret[1].Status = RessursStatus.Tildelt;
+        var controller = new RessursController(new FakeRessursRepository());
 
-        var result = await controller.PerFylke();
+        var result = controller.PerFylke();
 
-        var view = Assert.IsType<ViewResult>(result);
-        var liste = Assert.IsType<List<RessursViewModel>>(view.Model);
-        Assert.Single(liste);
-        Assert.Equal("Mat", liste[0].TypeRessurs);
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirect.ActionName);
+        Assert.Equal("Matching", redirect.ControllerName);
     }
 }
