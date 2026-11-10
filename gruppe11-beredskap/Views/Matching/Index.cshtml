@@ -1,11 +1,38 @@
+@using gruppe11_beredskap.Services
 @model gruppe11_beredskap.Models.MatchingViewModel
 @{
     ViewData["Title"] = "Kobling";
 }
 
-<h1>Kobling av behov og ressurser</h1>
+<div class="kobling-side">
+<h1 class="d-print-none">Kobling av behov og ressurser</h1>
+<p class="d-print-none">Velg ett eller flere fylker i listen eller i kartet. Listene viser behov og ressurser der. Bare behov og bare ressurser filtrerer kartet. Skriv ut henter bare ressursene. Finn match viser ressurser som kan passe, for eksempel lastebil til et transportbehov.</p>
 
-<div class="kart-ramme mb-4">
+<h1 id="utskriftOverskrift" class="kobling-bare-utskrift" hidden></h1>
+<p id="utskriftTom" class="kobling-bare-utskrift" hidden></p>
+
+<div class="kobling-filter mb-3 d-print-none">
+    <div class="fylke-velger" id="fylkeVelger">
+        <label class="form-label" id="fylkeLabel" for="fylkeKnapp">Fylker</label>
+        <button type="button" id="fylkeKnapp" class="fylke-knapp" aria-expanded="false" aria-controls="fylkePanel">
+            Velg fylker …
+        </button>
+        <div id="fylkePanel" class="fylke-panel" hidden role="group" aria-labelledby="fylkeLabel">
+            <div id="fylkeListe"></div>
+        </div>
+    </div>
+    <div>
+        <div class="form-label">Vis i kartet</div>
+        <div class="btn-group" role="group" aria-label="Visning i kartet">
+            <button type="button" class="btn btn-outline-primary active" data-visning="alle" aria-pressed="true">Begge</button>
+            <button type="button" class="btn btn-outline-primary" data-visning="behov" aria-pressed="false">Bare behov</button>
+            <button type="button" class="btn btn-outline-primary" data-visning="ressurser" aria-pressed="false">Bare ressurser</button>
+        </div>
+    </div>
+    <button type="button" id="skrivUtKnapp" class="btn btn-primary" disabled>Skriv ut ressurser</button>
+</div>
+
+<div class="kart-ramme mb-4 d-print-none">
     <div id="map"></div>
     <button type="button"
             id="fullskjermKnapp"
@@ -34,115 +61,106 @@
     </div>
 </div>
 
-<form asp-action="Koble" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div id="treffBanner" class="alert alert-secondary d-flex flex-wrap align-items-center gap-2 d-print-none" hidden>
+    <span>Viser ressurser som kan treffe <strong id="treffTekst"></strong>.</span>
+    <button type="button" id="nullstillTreff" class="btn btn-sm btn-outline-primary">Vis alle ressurser</button>
+</div>
 
-    <div class="row g-4">
-        <div class="col-lg-6">
-            <!-- Behov som ikke er løst. Tildelte behov står også her, så de kan få flere ressurser. -->
-            <h2 class="h5">Åpne behov</h2>
-            @if (!Model.ÅpneBehov.Any())
-            {
-                <p>Ingen åpne behov.</p>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table table-sm table-hover align-top">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>Behov</th>
-                            <th>Prioritet</th>
-                            <th>Status</th>
-                            <th>Område</th>
-                            <th>Frist</th>
-                            <th>Kontakt</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var b in Model.ÅpneBehov)
-                        {
-                            <tr>
-                                <td><input type="radio" name="BehovId" value="@b.Id" class="form-check-input" /></td>
-                                <td>
-                                    #@b.Id @b.TypeBehov
-                                    @if (!string.IsNullOrWhiteSpace(b.Beskrivelse))
+<form asp-action="Koble" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger d-print-none"></div>
+
+    <p id="ingenFylke" class="d-print-none">Velg ett eller flere fylker for å se behov og ressurser.</p>
+
+    <div class="kobling-lister" id="koblingLister">
+        <div class="d-print-none" id="behovKolonne">
+            <h2 class="h5" id="behovOverskrift">Åpne behov</h2>
+            <p id="ingenBehov" hidden>Ingen åpne behov i valgte fylker.</p>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle kobling-tabell" id="behovTabell" hidden>
+                    <tbody>
+                    @foreach (var b in Model.ÅpneBehov)
+                    {
+                        <tr data-id="@b.Id" hidden>
+                            <td class="kobling-valg"><input type="radio" name="BehovId" value="@b.Id" class="form-check-input" aria-label="Velg behov #@b.Id" /></td>
+                            <td>
+                                <div class="kobling-kort-hode">
+                                    <strong>#@b.Id @b.TypeBehov</strong>
+                                    <button type="button" class="btn btn-sm btn-outline-primary finn-match" data-behov-id="@b.Id">Finn match</button>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(b.Beskrivelse))
+                                {
+                                    <p class="kobling-kort-tekst">@b.Beskrivelse</p>
+                                }
+                                <p class="kobling-kort-meta">
+                                    <span>@b.Prioritet</span>
+                                    <span>@b.Status</span>
+                                    @if (!string.IsNullOrWhiteSpace(b.GeografiskOmrade))
                                     {
-                                        <div class="small text-muted">Beskrivelse:</div>
-                                        <div class="small text-muted">@b.Beskrivelse</div>
+                                        <span>@b.GeografiskOmrade</span>
                                     }
-                                </td>
-                                <td>@b.Prioritet</td>
-                                <td>@b.Status</td>
-                                <td>@b.GeografiskOmrade</td>
-                                <td>@b.Tidspunkt.ToString("g")</td>
-                                <td>@b.Kontaktpunkt</td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </div>
-            }
+                                    <span>@b.Tidspunkt.ToString("g")</span>
+                                    <span>@b.Kontaktpunkt</span>
+                                </p>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
             <span asp-validation-for="BehovId" class="text-danger"></span>
         </div>
 
-        <div class="col-lg-6">
-            <!-- Avkrysningsbokser, så flere ressurser kan kobles til samme behov på én gang -->
-            <h2 class="h5">Ledige ressurser</h2>
-            @if (!Model.LedigeRessurser.Any())
-            {
-                <p>Ingen ledige ressurser.</p>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table table-sm table-hover align-top">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>Ressurs</th>
-                            <th>Drivstoff</th>
-                            <th>Last</th>
-                            <th>Område</th>
-                            <th>Kontakt</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var r in Model.LedigeRessurser)
-                        {
-                            <tr>
-                                <td><input type="checkbox" name="RessursIder" value="@r.Id" class="form-check-input" /></td>
-                                <td>
+        <div id="ressursKolonne">
+            <h2 class="h5 d-print-none" id="ressursOverskrift">Ledige ressurser</h2>
+            <p id="ingenRessurser" class="d-print-none" hidden>Ingen ledige ressurser i valgte fylker.</p>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle kobling-tabell" id="koblingRessursTabell" hidden>
+                    <tbody>
+                    @foreach (var r in Model.LedigeRessurser)
+                    {
+                        <tr data-id="@r.Id" hidden>
+                            <td class="kobling-valg skjul-ved-utskrift"><input type="checkbox" name="RessursIder" value="@r.Id" class="form-check-input" aria-label="Velg ressurs #@r.Id" /></td>
+                            <td>
+                                <strong>
                                     #@r.Id
                                     @(r.TypeRessurs == "Annet" && !string.IsNullOrWhiteSpace(r.AnnenType)
                                         ? $"Annet: {r.AnnenType}"
                                         : r.TypeRessurs)
-                                    @if (!string.IsNullOrWhiteSpace(r.Beskrivelse))
+                                </strong>
+                                @if (!string.IsNullOrWhiteSpace(r.Beskrivelse))
+                                {
+                                    <p class="kobling-kort-tekst">@r.Beskrivelse</p>
+                                }
+                                <p class="kobling-kort-meta">
+                                    @if (!string.IsNullOrWhiteSpace(r.Drivstofftype))
                                     {
-                                        <div class="small text-muted">Beskrivelse:</div>
-                                        <div class="small text-muted">@r.Beskrivelse</div>
+                                        <span>@r.Drivstofftype</span>
                                     }
-                                </td>
-                                <td>@(r.Drivstofftype ?? "-")</td>
-                                <td>@(r.Lastekapasitet.HasValue ? $"{r.Lastekapasitet} t" : "-")</td>
-                                <td>@r.GeografiskOmrade</td>
-                                <td>@r.Kontaktpunkt</td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            <span asp-validation-for="RessursIder" class="text-danger"></span>
+                                    @if (r.Lastekapasitet.HasValue)
+                                    {
+                                        <span>@r.Lastekapasitet t</span>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(r.GeografiskOmrade))
+                                    {
+                                        <span>@r.GeografiskOmrade</span>
+                                    }
+                                    <span>@r.Tidspunkt.ToString("g")</span>
+                                    <span>@r.Kontaktpunkt</span>
+                                </p>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <span asp-validation-for="RessursIder" class="text-danger d-print-none"></span>
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary mt-3 mb-4">Koble valgt behov og ressurser</button>
+    <button type="submit" id="kobleKnapp" class="btn btn-primary mt-3 mb-4 d-print-none" hidden>Koble valgt behov og ressurser</button>
 </form>
 
 @{
-    // Aktive koblinger samles per behov, så et behov med flere ressurser står i én rad
     var aktive = Model.Matchinger
         .Where(m => m.LostTidspunkt == null)
         .GroupBy(m => m.BehovId)
@@ -150,6 +168,7 @@
     var løste = Model.Matchinger.Where(m => m.LostTidspunkt != null).ToList();
 }
 
+<div class="d-print-none">
 <h2 class="h5">Aktive koblinger</h2>
 
 @if (!aktive.Any())
@@ -181,7 +200,6 @@ else
                     </td>
                     <td>@gruppe.Min(m => m.OpprettetTidspunkt).ToString("g")</td>
                     <td>
-                        <!-- Løst: behovet blir Løst, og alle ressursene blir Tilgjengelig igjen -->
                         <form asp-action="Løs" method="post">
                             <input type="hidden" name="behovId" value="@gruppe.Key" />
                             <button type="submit" class="btn btn-sm btn-danger">Løst</button>
@@ -226,28 +244,61 @@ else
         </table>
     </div>
 }
+</div>
+</div>
 
 @section Scripts {
     <script>
-        var map = L.map('map').setView([58.1467, 7.9956], 13);
+        var map = L.map('map').setView([65, 13], 4);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
-        // Åpne behov og ledige ressurser fra controlleren (de samme som i tabellene under kartet)
         var åpneBehov = @Json.Serialize(Model.ÅpneBehov);
         var ledigeRessurser = @Json.Serialize(Model.LedigeRessurser);
+        // Samme typekart som BehovRessursTreff. Treff-regelen under holdes lik den klassen.
+        var treffKart = @Json.Serialize(BehovRessursTreff.Kart);
 
-        // Lager utropstegn-ikonet for et behov, med farge etter prioritet:
-        // høy = rød, middels = oransje, lav = gul. Utseendet, også selve "!", ligger i site.css.
-        // Ikonet er rundt, så midten peker på posisjonen, og popupen åpnes rett over.
+        var visning = 'alle';
+        var treffBehovId = null;
+        var fylker = [];
+        var fylkeLag = null;
+        var markorer = L.featureGroup().addTo(map);
+
+        var vanligStil = { color: '#5E615C', weight: 1, fillColor: '#1E4A38', fillOpacity: 0.05 };
+        var valgtStil = { color: '#12241C', weight: 3, fillColor: '#1E4A38', fillOpacity: 0.2 };
+
+        var fylkeVelger = document.getElementById('fylkeVelger');
+        var fylkeKnapp = document.getElementById('fylkeKnapp');
+        var fylkePanel = document.getElementById('fylkePanel');
+        var fylkeListe = document.getElementById('fylkeListe');
+        var skrivUtKnapp = document.getElementById('skrivUtKnapp');
+        var ingenFylke = document.getElementById('ingenFylke');
+        var behovKolonne = document.getElementById('behovKolonne');
+        var ressursKolonne = document.getElementById('ressursKolonne');
+        var behovTabell = document.getElementById('behovTabell');
+        var ressursTabell = document.getElementById('koblingRessursTabell');
+        var ingenBehov = document.getElementById('ingenBehov');
+        var ingenRessurser = document.getElementById('ingenRessurser');
+        var behovOverskrift = document.getElementById('behovOverskrift');
+        var ressursOverskrift = document.getElementById('ressursOverskrift');
+        var treffBanner = document.getElementById('treffBanner');
+        var treffTekst = document.getElementById('treffTekst');
+        var kobleKnapp = document.getElementById('kobleKnapp');
+        var utskriftOverskrift = document.getElementById('utskriftOverskrift');
+        var utskriftTom = document.getElementById('utskriftTom');
+
+        function harGyldigPosisjon(lat, lng) {
+            return typeof lat === 'number' && typeof lng === 'number' &&
+                lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+        }
+
         function lagBehovIkon(prioritet) {
             var fargeKlasse = 'behov-hoy';
-
-            if (prioritet === "Middels") {
+            if (prioritet === 'Middels') {
                 fargeKlasse = 'behov-middels';
-            } else if (prioritet === "Lav") {
+            } else if (prioritet === 'Lav') {
                 fargeKlasse = 'behov-lav';
             }
 
@@ -260,94 +311,385 @@ else
             });
         }
 
-        // Gruppe med alle markørene, slik at kartet kan zoome så alle vises
-        var alleMarkorer = L.featureGroup().addTo(map);
-
-        // Sjekker at posisjonen finnes og er innenfor gyldige verdier
-        function harGyldigPosisjon(lat, lng) {
-            return typeof lat === 'number' && typeof lng === 'number' &&
-                lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
-        }
-
-        // Lager innholdet i popupen. textContent gjør at tekst fra skjemaene vises som tekst, ikke som HTML.
-        function lagPopup(overskrift, linjer) {
+        function lagPopup(overskrift, linjer, knapp) {
             var innhold = document.createElement('div');
-
             var tittel = document.createElement('strong');
             tittel.textContent = overskrift;
             innhold.appendChild(tittel);
 
             linjer.forEach(function (tekst) {
+                if (!tekst) return;
                 var linje = document.createElement('div');
                 linje.textContent = tekst;
                 innhold.appendChild(linje);
             });
 
+            if (knapp) {
+                innhold.appendChild(knapp);
+            }
+
             return innhold;
         }
 
-        // Behov: utropstegn-ikon. Behov uten gyldig posisjon hoppes over.
-        åpneBehov.forEach(function (behov) {
-            if (!harGyldigPosisjon(behov.latitude, behov.longitude)) {
-                return;
+        function punktIRing(lng, lat, ring) {
+            var inne = false;
+            for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+                var xi = ring[i][0], yi = ring[i][1];
+                var xj = ring[j][0], yj = ring[j][1];
+                var krysser = (yi > lat) !== (yj > lat) &&
+                    lng < (xj - xi) * (lat - yi) / (yj - yi) + xi;
+                if (krysser) {
+                    inne = !inne;
+                }
             }
-
-            L.marker([behov.latitude, behov.longitude], { icon: lagBehovIkon(behov.prioritet) })
-                .bindPopup(lagPopup("Behov #" + behov.id + ": " + behov.typeBehov, [
-                    behov.beskrivelse,
-                    "Prioritet: " + behov.prioritet,
-                    "Kontakt: " + behov.kontaktpunkt
-                ]))
-                .addTo(alleMarkorer);
-        });
-
-        // Ressurser: samme markør som på Registrer ressurs-siden (standardmarkøren i Leaflet)
-        ledigeRessurser.forEach(function (ressurs) {
-            if (!harGyldigPosisjon(ressurs.latitude, ressurs.longitude)) {
-                return;
-            }
-
-            var type = ressurs.typeRessurs;
-            if (type === "Annet" && ressurs.annenType) {
-                type = "Annet: " + ressurs.annenType;
-            }
-
-            L.marker([ressurs.latitude, ressurs.longitude])
-                .bindPopup(lagPopup("Ressurs #" + ressurs.id + ": " + type, [
-                    ressurs.beskrivelse,
-                    "Kontakt: " + ressurs.kontaktpunkt
-                ]))
-                .addTo(alleMarkorer);
-        });
-
-        // Zoomer så alle markørene vises. Er det ingen, beholdes standardvisningen.
-        // maxZoom hindrer at kartet zoomer helt inn når det bare er én markør.
-        if (alleMarkorer.getLayers().length > 0) {
-            map.fitBounds(alleMarkorer.getBounds(), { padding: [30, 30], maxZoom: 13 });
+            return inne;
         }
 
-        var kartInfo = document.querySelector(".kart-info");
-        var kartInfoKnapp = kartInfo && kartInfo.querySelector(".kart-info-knapp");
-        if (kartInfo && kartInfoKnapp) {
-            kartInfoKnapp.addEventListener("click", function (event) {
-                event.stopPropagation();
-                var apen = kartInfo.classList.toggle("is-open");
-                kartInfoKnapp.setAttribute("aria-expanded", apen ? "true" : "false");
+        function punktIPolygon(lng, lat, polygon) {
+            if (!punktIRing(lng, lat, polygon[0])) {
+                return false;
+            }
+            for (var i = 1; i < polygon.length; i++) {
+                if (punktIRing(lng, lat, polygon[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function punktIFylke(lng, lat, fylke) {
+            var geometri = fylke.geometry;
+            if (geometri.type === 'Polygon') {
+                return punktIPolygon(lng, lat, geometri.coordinates);
+            }
+            for (var i = 0; i < geometri.coordinates.length; i++) {
+                if (punktIPolygon(lng, lat, geometri.coordinates[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function valgteIndekser() {
+            return Array.from(fylkeListe.querySelectorAll('input:checked')).map(function (boks) {
+                return Number(boks.value);
+            });
+        }
+
+        function iValgteFylker(lat, lng) {
+            var valgt = valgteIndekser();
+            if (valgt.length === 0 || !harGyldigPosisjon(lat, lng)) {
+                return false;
+            }
+            for (var i = 0; i < valgt.length; i++) {
+                if (punktIFylke(lng, lat, fylker[valgt[i]])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function finnBehov(id) {
+            id = Number(id);
+            return åpneBehov.find(function (behov) { return behov.id === id; }) || null;
+        }
+
+        function finnRessurs(id) {
+            id = Number(id);
+            return ledigeRessurser.find(function (ressurs) { return ressurs.id === id; }) || null;
+        }
+
+        function liten(tekst) {
+            return (tekst || '').toLocaleLowerCase('nb').trim();
+        }
+
+        // Lik BehovRessursTreff.Treffer: teksten inneholder ordet, eller et ord på minst 4 tegn
+        // er selv en del av et kjent ressursnavn.
+        function treffer(tekst, mulig) {
+            var a = liten(tekst);
+            var b = liten(mulig);
+            if (!a || !b) return false;
+            if (a.indexOf(b) >= 0) return true;
+            return a.length >= 4 && b.indexOf(a) >= 0;
+        }
+
+        function ressursNavn(ressurs) {
+            if (ressurs.typeRessurs === 'Annet' && ressurs.annenType && ressurs.annenType.trim()) {
+                return ressurs.annenType;
+            }
+            return ressurs.typeRessurs || '';
+        }
+
+        function matcherBehov(behov, ressurs) {
+            if (!behov || !behov.typeBehov) return false;
+            var navn = ressursNavn(ressurs);
+            var beskrivelse = ressurs.beskrivelse || '';
+            var nokkel = Object.keys(treffKart).find(function (k) {
+                return liten(k) === liten(behov.typeBehov);
+            });
+            var mulige = nokkel ? treffKart[nokkel] : null;
+            if (mulige) {
+                for (var i = 0; i < mulige.length; i++) {
+                    if (treffer(navn, mulige[i]) || treffer(beskrivelse, mulige[i])) {
+                        return true;
+                    }
+                }
+            }
+            return treffer(navn, behov.typeBehov) || treffer(beskrivelse, behov.typeBehov);
+        }
+
+        function fylkeTekst(navn) {
+            if (navn.length === 0) return '';
+            if (navn.length === 1) return navn[0];
+            if (navn.length === 2) return navn[0] + ' og ' + navn[1];
+            return navn.slice(0, -1).join(', ') + ' og ' + navn[navn.length - 1];
+        }
+
+        function settFylkePanel(apen) {
+            fylkePanel.hidden = !apen;
+            fylkeVelger.classList.toggle('er-apen', apen);
+            fylkeKnapp.setAttribute('aria-expanded', apen ? 'true' : 'false');
+        }
+
+        function finnMatch(id) {
+            var radio = document.querySelector('input[name="BehovId"][value="' + id + '"]');
+            if (radio) radio.checked = true;
+            treffBehovId = Number(id);
+            oppdater(false);
+        }
+
+        function settVisning(ny) {
+            visning = ny;
+            document.querySelectorAll('[data-visning]').forEach(function (knapp) {
+                var valgt = knapp.getAttribute('data-visning') === ny;
+                knapp.classList.toggle('active', valgt);
+                knapp.setAttribute('aria-pressed', valgt ? 'true' : 'false');
+            });
+            oppdater(false);
+        }
+
+        function oppdater(zoomTilFylker) {
+            var valgt = valgteIndekser();
+            var harFylke = valgt.length > 0;
+            var navn = valgt.map(function (indeks) { return fylker[indeks].properties.navn; });
+            var tekst = fylkeTekst(navn);
+
+            fylkeKnapp.textContent = tekst || 'Velg fylker …';
+            skrivUtKnapp.disabled = !harFylke;
+            ingenFylke.hidden = harFylke;
+            kobleKnapp.hidden = !harFylke;
+
+            if (treffBehovId != null) {
+                var valgtBehov = finnBehov(treffBehovId);
+                if (!valgtBehov || !iValgteFylker(valgtBehov.latitude, valgtBehov.longitude)) {
+                    treffBehovId = null;
+                }
+            }
+
+            var treffBehov = treffBehovId == null ? null : finnBehov(treffBehovId);
+            treffBanner.hidden = treffBehov == null;
+            if (treffBehov) {
+                treffTekst.textContent = '#' + treffBehov.id + ' ' + treffBehov.typeBehov;
+            }
+
+            var visBehov = visning !== 'ressurser';
+            var visRessurser = visning !== 'behov';
+            behovKolonne.classList.toggle('er-skjult-pa-skjerm', !harFylke);
+            ressursKolonne.classList.toggle('er-skjult-pa-skjerm', !harFylke);
+
+            markorer.clearLayers();
+            var behovAntall = 0;
+            var ressursAntall = 0;
+            var utskriftAntall = 0;
+
+            behovTabell.querySelectorAll('tbody tr').forEach(function (rad) {
+                var behov = finnBehov(rad.getAttribute('data-id'));
+                var iFylket = behov && iValgteFylker(behov.latitude, behov.longitude);
+                var synlig = harFylke && iFylket;
+                rad.hidden = !synlig;
+                rad.classList.toggle('er-valgt-treff', synlig && treffBehov && behov.id === treffBehov.id);
+                var radio = rad.querySelector('input[type="radio"]');
+                if (radio && !iFylket) radio.checked = false;
+                if (synlig) {
+                    behovAntall++;
+                }
+                if (synlig && visBehov) {
+                    var knapp = document.createElement('button');
+                    knapp.type = 'button';
+                    knapp.className = 'btn btn-sm btn-primary mt-2';
+                    knapp.textContent = 'Finn match';
+                    knapp.addEventListener('click', function () { finnMatch(behov.id); });
+                    L.marker([behov.latitude, behov.longitude], { icon: lagBehovIkon(behov.prioritet) })
+                        .bindPopup(lagPopup('Behov #' + behov.id + ': ' + behov.typeBehov, [
+                            behov.beskrivelse,
+                            'Prioritet: ' + behov.prioritet,
+                            'Kontakt: ' + behov.kontaktpunkt
+                        ], knapp))
+                        .addTo(markorer);
+                }
             });
 
-            document.addEventListener("click", function (event) {
+            ressursTabell.querySelectorAll('tbody tr').forEach(function (rad) {
+                var ressurs = finnRessurs(rad.getAttribute('data-id'));
+                var iFylket = ressurs && iValgteFylker(ressurs.latitude, ressurs.longitude);
+                var erTreff = !treffBehov || (ressurs && matcherBehov(treffBehov, ressurs));
+                var kanSkrivesUt = harFylke && iFylket && erTreff;
+                rad.hidden = !kanSkrivesUt;
+                rad.classList.toggle('kan-skrives-ut', kanSkrivesUt);
+                var boks = rad.querySelector('input[type="checkbox"]');
+                if (boks && !kanSkrivesUt) boks.checked = false;
+                if (!kanSkrivesUt) return;
+                utskriftAntall++;
+                ressursAntall++;
+                if (!visRessurser || !harGyldigPosisjon(ressurs.latitude, ressurs.longitude)) return;
+                var type = ressursNavn(ressurs);
+                if (ressurs.typeRessurs === 'Annet') type = 'Annet: ' + type;
+                L.marker([ressurs.latitude, ressurs.longitude])
+                    .bindPopup(lagPopup('Ressurs #' + ressurs.id + ': ' + type, [
+                        ressurs.beskrivelse,
+                        'Kontakt: ' + ressurs.kontaktpunkt
+                    ]))
+                    .addTo(markorer);
+            });
+
+            if (markorer.getLayers().length > 0) {
+                markorer.bringToFront();
+            }
+
+            behovOverskrift.textContent = harFylke ? 'Åpne behov (' + behovAntall + ')' : 'Åpne behov';
+            ressursOverskrift.textContent = treffBehov
+                ? 'Ressurser som kan treffe (' + ressursAntall + ')'
+                : (harFylke ? 'Ledige ressurser (' + ressursAntall + ')' : 'Ledige ressurser');
+
+            ingenBehov.hidden = !harFylke || behovAntall > 0;
+            ingenBehov.textContent = 'Ingen åpne behov i valgte fylker.';
+            behovTabell.hidden = !harFylke || behovAntall === 0;
+
+            var tomRessurs = treffBehov
+                ? 'Ingen ressurser i valgte fylker treffer dette behovet.'
+                : 'Ingen ledige ressurser i valgte fylker.';
+            ingenRessurser.hidden = !harFylke || ressursAntall > 0;
+            ingenRessurser.textContent = tomRessurs;
+            ressursTabell.hidden = !harFylke || ressursAntall === 0;
+            ressursTabell.classList.toggle('er-tom-utskrift', utskriftAntall === 0);
+
+            if (!harFylke) {
+                utskriftOverskrift.textContent = 'Ingen fylker er valgt.';
+                utskriftTom.hidden = false;
+                utskriftTom.textContent = 'Velg ett eller flere fylker for å skrive ut ressurser.';
+            } else if (utskriftAntall === 0) {
+                utskriftOverskrift.textContent = 'Tilgjengelige ressurser i ' + tekst;
+                utskriftTom.hidden = false;
+                utskriftTom.textContent = tomRessurs;
+            } else {
+                var heading = 'Tilgjengelige ressurser i ' + tekst + ' (' + utskriftAntall + ')';
+                if (treffBehov) heading += ', som kan treffe behov #' + treffBehov.id + ' ' + treffBehov.typeBehov;
+                utskriftOverskrift.textContent = heading;
+                utskriftTom.hidden = true;
+            }
+            utskriftOverskrift.hidden = false;
+
+            if (fylkeLag) {
+                var grenser = L.featureGroup();
+                fylkeLag.eachLayer(function (lag) {
+                    var indeks = fylker.indexOf(lag.feature);
+                    var erValgt = valgt.indexOf(indeks) >= 0;
+                    lag.setStyle(erValgt ? valgtStil : vanligStil);
+                    if (erValgt) grenser.addLayer(lag);
+                });
+                if (zoomTilFylker && grenser.getLayers().length > 0) {
+                    map.fitBounds(grenser.getBounds(), { padding: [24, 24], maxZoom: 9 });
+                }
+                if (zoomTilFylker && grenser.getLayers().length === 0) {
+                    map.setView([65, 13], 4);
+                }
+            }
+        }
+
+        document.querySelectorAll('.finn-match').forEach(function (knapp) {
+            knapp.addEventListener('click', function () {
+                finnMatch(knapp.getAttribute('data-behov-id'));
+            });
+        });
+
+        document.getElementById('nullstillTreff').addEventListener('click', function () {
+            treffBehovId = null;
+            oppdater(false);
+        });
+
+        document.querySelectorAll('[data-visning]').forEach(function (knapp) {
+            knapp.addEventListener('click', function () {
+                settVisning(knapp.getAttribute('data-visning'));
+            });
+        });
+
+        fylkeKnapp.addEventListener('click', function () {
+            settFylkePanel(fylkePanel.hidden);
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!fylkeVelger.contains(event.target)) {
+                settFylkePanel(false);
+            }
+        });
+
+        skrivUtKnapp.addEventListener('click', function () {
+            window.print();
+        });
+
+        fetch('@Url.Content("~/data/fylker.json")')
+            .then(function (svar) { return svar.json(); })
+            .then(function (data) {
+                fylker = data.features;
+                fylker.forEach(function (fylke, indeks) {
+                    var label = document.createElement('label');
+                    var boks = document.createElement('input');
+                    boks.type = 'checkbox';
+                    boks.value = String(indeks);
+                    boks.className = 'form-check-input';
+                    boks.addEventListener('change', function () { oppdater(true); });
+                    label.appendChild(boks);
+                    label.appendChild(document.createTextNode(fylke.properties.navn));
+                    fylkeListe.appendChild(label);
+                });
+
+                fylkeLag = L.geoJSON(data, {
+                    style: vanligStil,
+                    attribution: 'Fylkesgrenser © Kartverket',
+                    onEachFeature: function (fylke, lag) {
+                        lag.bindTooltip(fylke.properties.navn, { sticky: true });
+                        lag.on('click', function () {
+                            var boks = fylkeListe.querySelector('input[value="' + fylker.indexOf(fylke) + '"]');
+                            if (!boks) return;
+                            boks.checked = !boks.checked;
+                            oppdater(true);
+                        });
+                    }
+                }).addTo(map);
+
+                oppdater(false);
+            });
+
+        var kartInfo = document.querySelector('.kart-info');
+        var kartInfoKnapp = kartInfo && kartInfo.querySelector('.kart-info-knapp');
+        if (kartInfo && kartInfoKnapp) {
+            kartInfoKnapp.addEventListener('click', function (event) {
+                event.stopPropagation();
+                var apen = kartInfo.classList.toggle('is-open');
+                kartInfoKnapp.setAttribute('aria-expanded', apen ? 'true' : 'false');
+            });
+
+            document.addEventListener('click', function (event) {
                 if (kartInfo.contains(event.target)) return;
-                kartInfo.classList.remove("is-open");
-                kartInfoKnapp.setAttribute("aria-expanded", "false");
+                kartInfo.classList.remove('is-open');
+                kartInfoKnapp.setAttribute('aria-expanded', 'false');
             }, true);
         }
 
-        // Fullskjerm for kartet. Hele rammen vises i fullskjerm, så infoknappen og tegnforklaringen er med.
-        // Esc eller nytt klikk på knappen avslutter.
-        var kartRamme = document.querySelector(".kart-ramme");
-        var fullskjermKnapp = document.getElementById("fullskjermKnapp");
+        var kartRamme = document.querySelector('.kart-ramme');
+        var fullskjermKnapp = document.getElementById('fullskjermKnapp');
 
-        fullskjermKnapp.addEventListener("click", function () {
+        fullskjermKnapp.addEventListener('click', function () {
             if (document.fullscreenElement) {
                 document.exitFullscreen();
             } else {
@@ -355,13 +697,11 @@ else
             }
         });
 
-        // Når fullskjerm slås av eller på: oppdater teksten på knappen, og la kartet tilpasse seg ny størrelse
-        document.addEventListener("fullscreenchange", function () {
+        document.addEventListener('fullscreenchange', function () {
             var erFullskjerm = document.fullscreenElement === kartRamme;
-            var tekst = erFullskjerm ? "Avslutt fullskjerm" : "Vis kartet i fullskjerm";
-
-            fullskjermKnapp.setAttribute("aria-label", tekst);
-            fullskjermKnapp.setAttribute("title", tekst);
+            var fullskjermTekst = erFullskjerm ? 'Avslutt fullskjerm' : 'Vis kartet i fullskjerm';
+            fullskjermKnapp.setAttribute('aria-label', fullskjermTekst);
+            fullskjermKnapp.setAttribute('title', fullskjermTekst);
             map.invalidateSize();
         });
     </script>

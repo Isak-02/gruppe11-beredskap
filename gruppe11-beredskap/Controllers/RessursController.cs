@@ -117,7 +117,7 @@ public class RessursController : Controller
         return RedirectToAction(nameof(Mine));
     }
 
-    // Setter en tilgjengelig ressurs på pause. Den vises da ikke på Kobling eller Ressurser per fylke.
+    // Setter en tilgjengelig ressurs på pause. Den vises da ikke på Kobling.
     // En tildelt ressurs kan ikke pauses, siden den allerede er i bruk.
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -175,16 +175,12 @@ public class RessursController : Controller
         return View("Oversikt", TilVisning(mine));
     }
 
-    // Tilgjengelige ressurser som kan filtreres på fylke i kartet og skrives ut.
-    // Selve fylkesfilteret skjer i visningen, ut fra posisjonen til hver ressurs.
+    // Siden er slått sammen med Kobling. Adressen sendes videre, så gamle lenker fortsatt virker.
     [HttpGet]
     [Authorize(Roles = RoleNames.Koordinator)]
-    public async Task<IActionResult> PerFylke()
+    public IActionResult PerFylke()
     {
-        var ressurser = await _repo.GetAllAsync();
-        var tilgjengelige = ressurser.Where(r => r.Status == RessursStatus.Tilgjengelig);
-
-        return View(TilVisning(tilgjengelige));
+        return RedirectToAction("Index", "Matching");
     }
 
     // Fra entitet tilbake til view-modell, slik at oversikten fungerer som før

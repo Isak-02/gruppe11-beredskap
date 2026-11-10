@@ -1098,8 +1098,143 @@ th.er-stigende .tabell-sort-pil {
   vertical-align: baseline;
 }
 
-/* Utskrift (f.eks. Ressurser per fylke): menyen øverst skrives ikke ut.
-   Tabellen skrives uten kortet rundt. */
+/* Fylkevelger og filter på koblingssiden. */
+.kobling-filter {
+  position: relative;
+  z-index: 600;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.25rem;
+  align-items: flex-end;
+}
+
+.fylke-velger {
+  position: relative;
+  flex: 1 1 280px;
+  min-width: min(100%, 280px);
+  max-width: 420px;
+}
+
+.fylke-velger.er-apen {
+  z-index: 1300;
+}
+
+.fylke-knapp {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid #D5D8D2;
+  border-radius: 10px;
+  background: #fff;
+  color: #1A1916;
+  text-align: left;
+}
+
+.fylke-knapp:hover,
+.fylke-velger.er-apen .fylke-knapp {
+  border-color: #1E4A38;
+}
+
+.fylke-knapp:focus-visible {
+  outline: none;
+  border-color: #1E4A38;
+}
+
+.fylke-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  overflow: auto;
+  padding: 0.35rem;
+  background: #fff;
+  border: 1px solid #DDD8CC;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(18, 36, 28, 0.13);
+}
+
+.fylke-panel label {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  margin: 0;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+}
+
+.fylke-panel label:hover {
+  background: #E7EFE8;
+}
+
+.kobling-lister {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 992px) {
+  .kobling-lister {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.kobling-tabell {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.kobling-valg {
+  width: 2.4rem;
+}
+
+.kobling-tabell td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.kobling-kort-hode {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.kobling-kort-hode .btn {
+  flex: 0 0 auto;
+}
+
+.kobling-kort-tekst,
+.kobling-kort-meta {
+  margin: 0.3rem 0 0;
+}
+
+.kobling-kort-tekst {
+  color: #5E615C;
+}
+
+.kobling-kort-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.75rem;
+  color: #5E615C;
+  font-size: 0.875rem;
+}
+
+.kobling-side tr.er-valgt-treff > td {
+  background: #E7EFE8;
+}
+
+.er-skjult-pa-skjerm {
+  display: none !important;
+}
+
+.kobling-bare-utskrift {
+  display: none;
+}
+
+/* Utskrift: menyen øverst skrives ikke ut. På kobling skrives bare ressurslista. */
 @media print {
   header {
     display: none;
@@ -1117,6 +1252,45 @@ th.er-stigende .tabell-sort-pil {
     --bs-table-bg: transparent;
     --bs-table-striped-bg: #f3f3f3;
     --bs-table-border-color: #ccc;
+  }
+
+  .kobling-lister {
+    display: block;
+  }
+
+  .kobling-side #ressursKolonne.er-skjult-pa-skjerm {
+    display: block !important;
+  }
+
+  .kobling-side #ressursKolonne {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+
+  .kobling-side .kobling-bare-utskrift:not([hidden]) {
+    display: block !important;
+  }
+
+  .kobling-side #koblingRessursTabell {
+    display: table !important;
+    width: 100%;
+  }
+
+  .kobling-side #koblingRessursTabell.er-tom-utskrift {
+    display: none !important;
+  }
+
+  .kobling-side #koblingRessursTabell tbody tr {
+    display: none !important;
+  }
+
+  .kobling-side #koblingRessursTabell tbody tr.kan-skrives-ut {
+    display: table-row !important;
+  }
+
+  .kobling-side .skjul-ved-utskrift {
+    display: none !important;
   }
 }
 
