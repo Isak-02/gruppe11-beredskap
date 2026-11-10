@@ -39,6 +39,7 @@
 
     <div class="row g-4">
         <div class="col-lg-6">
+            <!-- Behov som ikke er løst. Tildelte behov står også her, så de kan få flere ressurser. -->
             <h2 class="h5">Åpne behov</h2>
             @if (!Model.ÅpneBehov.Any())
             {
@@ -53,6 +54,7 @@
                             <th></th>
                             <th>Behov</th>
                             <th>Prioritet</th>
+                            <th>Status</th>
                             <th>Område</th>
                             <th>Frist</th>
                             <th>Kontakt</th>
@@ -72,6 +74,7 @@
                                     }
                                 </td>
                                 <td>@b.Prioritet</td>
+                                <td>@b.Status</td>
                                 <td>@b.GeografiskOmrade</td>
                                 <td>@b.Tidspunkt.ToString("g")</td>
                                 <td>@b.Kontaktpunkt</td>
@@ -85,6 +88,7 @@
         </div>
 
         <div class="col-lg-6">
+            <!-- Avkrysningsbokser, så flere ressurser kan kobles til samme behov på én gang -->
             <h2 class="h5">Ledige ressurser</h2>
             @if (!Model.LedigeRessurser.Any())
             {
@@ -108,7 +112,7 @@
                         @foreach (var r in Model.LedigeRessurser)
                         {
                             <tr>
-                                <td><input type="radio" name="RessursId" value="@r.Id" class="form-check-input" /></td>
+                                <td><input type="checkbox" name="RessursIder" value="@r.Id" class="form-check-input" /></td>
                                 <td>
                                     #@r.Id
                                     @(r.TypeRessurs == "Annet" && !string.IsNullOrWhiteSpace(r.AnnenType)
@@ -130,15 +134,19 @@
                     </table>
                 </div>
             }
-            <span asp-validation-for="RessursId" class="text-danger"></span>
+            <span asp-validation-for="RessursIder" class="text-danger"></span>
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary mt-3 mb-4">Koble valgt behov og ressurs</button>
+    <button type="submit" class="btn btn-primary mt-3 mb-4">Koble valgt behov og ressurser</button>
 </form>
 
 @{
-    var aktive = Model.Matchinger.Where(m => m.LostTidspunkt == null).ToList();
+    // Aktive koblinger samles per behov, så et behov med flere ressurser står i én rad
+    var aktive = Model.Matchinger
+        .Where(m => m.LostTidspunkt == null)
+        .GroupBy(m => m.BehovId)
+        .ToList();
     var løste = Model.Matchinger.Where(m => m.LostTidspunkt != null).ToList();
 }
 
@@ -155,22 +163,27 @@ else
             <thead>
             <tr>
                 <th>Behov</th>
-                <th>Ressurs</th>
+                <th>Ressurser</th>
                 <th>Koblet</th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
-            @foreach (var m in aktive)
+            @foreach (var gruppe in aktive)
             {
                 <tr>
-                    <td>@m.Behov</td>
-                    <td>@m.Ressurs</td>
-                    <td>@m.OpprettetTidspunkt.ToString("g")</td>
+                    <td>@gruppe.First().Behov</td>
                     <td>
+                        @foreach (var m in gruppe)
+                        {
+                            <div>@m.Ressurs</div>
+                        }
+                    </td>
+                    <td>@gruppe.Min(m => m.OpprettetTidspunkt).ToString("g")</td>
+                    <td>
+                        <!-- Løst: behovet blir Løst, og alle ressursene blir Tilgjengelig igjen -->
                         <form asp-action="Løs" method="post">
-                            <input type="hidden" name="behovId" value="@m.BehovId" />
-                            <input type="hidden" name="ressursId" value="@m.RessursId" />
+                            <input type="hidden" name="behovId" value="@gruppe.Key" />
                             <button type="submit" class="btn btn-sm btn-danger">Løst</button>
                         </form>
                     </td>

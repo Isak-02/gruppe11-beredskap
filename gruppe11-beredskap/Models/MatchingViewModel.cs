@@ -9,9 +9,10 @@ public class MatchingViewModel
     [Display(Name = "Behov")]
     public int? BehovId { get; set; }
 
-    [Required(ErrorMessage = "Du må velge en ressurs")]
-    [Display(Name = "Ressurs")]
-    public int? RessursId { get; set; }
+    // Ett behov kan få flere ressurser. Avkrysningsboksene i ressurslista sendes som en liste med Id-er.
+    [MinLength(1, ErrorMessage = "Du må velge minst én ressurs")]
+    [Display(Name = "Ressurser")]
+    public List<int> RessursIder { get; set; } = new();
 
     public List<BehovViewModel> ÅpneBehov { get; set; } = new();
     public List<RessursViewModel> LedigeRessurser { get; set; } = new();
