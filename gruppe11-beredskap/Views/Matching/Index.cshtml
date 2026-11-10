@@ -1,9 +1,20 @@
+@using System.Globalization
 @model gruppe11_beredskap.Models.MatchingViewModel
 @{
     ViewData["Title"] = "Kobling";
 }
 
 <h1>Kobling av behov og ressurser</h1>
+
+<!-- Fylkesfilter: viser bare behov og ressurser som ligger i valgt fylke, både i kartet og i tabellene -->
+<div class="row g-2 align-items-end mb-3">
+    <div class="col-sm-6 col-md-4">
+        <label for="fylkeFilter" class="form-label">Fylke</label>
+        <select id="fylkeFilter" class="form-select">
+            <option value="">Alle fylker</option>
+        </select>
+    </div>
+</div>
 
 <div class="kart-ramme mb-4">
     <div id="map"></div>
@@ -63,7 +74,10 @@
                         <tbody>
                         @foreach (var b in Model.ÅpneBehov)
                         {
-                            <tr>
+                            <!-- Posisjonen brukes av fylkesfilteret -->
+                            <tr data-fylke-rad
+                                data-lat="@(b.Latitude?.ToString(CultureInfo.InvariantCulture))"
+                                data-lng="@(b.Longitude?.ToString(CultureInfo.InvariantCulture))">
                                 <td><input type="radio" name="BehovId" value="@b.Id" class="form-check-input" /></td>
                                 <td>
                                     #@b.Id @b.TypeBehov
@@ -111,7 +125,10 @@
                         <tbody>
                         @foreach (var r in Model.LedigeRessurser)
                         {
-                            <tr>
+                            <!-- Posisjonen brukes av fylkesfilteret -->
+                            <tr data-fylke-rad
+                                data-lat="@(r.Latitude?.ToString(CultureInfo.InvariantCulture))"
+                                data-lng="@(r.Longitude?.ToString(CultureInfo.InvariantCulture))">
                                 <td><input type="checkbox" name="RessursIder" value="@r.Id" class="form-check-input" /></td>
                                 <td>
                                     #@r.Id
@@ -363,6 +380,119 @@ else
             fullskjermKnapp.setAttribute("aria-label", tekst);
             fullskjermKnapp.setAttribute("title", tekst);
             map.invalidateSize();
+        });
+
+        // ---------- Fylkesfilter ----------
+        // Samme fylkesgrenser og samme sjekk som på Ressurser per fylke (Views/Ressurs/PerFylke.cshtml)
+
+        var fylkeFilter = document.getElementById('fylkeFilter');
+        var fylker = [];          // Fylkene fra fylker.json, i samme rekkefølge som i lista
+        var valgtFylkeLag = null; // Grensen til valgt fylke i kartet
+
+        // Sjekker om et punkt ligger inne i en ring (en liste med hjørner). Vanlig "ray casting":
+        // vi trekker en tenkt linje mot høyre fra punktet og teller hvor mange kanter den krysser.
+        // Oddetall betyr at punktet er inne.
+        function punktIRing(lng, lat, ring) {
+            var inne = false;
+            for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+                var xi = ring[i][0], yi = ring[i][1];
+                var xj = ring[j][0], yj = ring[j][1];
+                var krysser = (yi > lat) !== (yj > lat) &&
+                    lng < (xj - xi) * (lat - yi) / (yj - yi) + xi;
+                if (krysser) {
+                    inne = !inne;
+                }
+            }
+            return inne;
+        }
+
+        // Et polygon er en ytre ring, og eventuelle hull (f.eks. Oslo inne i Akershus)
+        function punktIPolygon(lng, lat, polygon) {
+            if (!punktIRing(lng, lat, polygon[0])) {
+                return false;
+            }
+            for (var i = 1; i < polygon.length; i++) {
+                if (punktIRing(lng, lat, polygon[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Et fylke kan bestå av flere deler (øyer), da er geometrien et MultiPolygon
+        function punktIFylke(lng, lat, fylke) {
+            var geometri = fylke.geometry;
+            if (geometri.type === 'Polygon') {
+                return punktIPolygon(lng, lat, geometri.coordinates);
+            }
+            for (var i = 0; i < geometri.coordinates.length; i++) {
+                if (punktIPolygon(lng, lat, geometri.coordinates[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Viser bare det som ligger i valgt fylke. Tom verdi betyr alle fylker.
+        function filtrerPaFylke(indeks) {
+            var fylke = indeks === '' ? null : fylker[indeks];
+
+            // Tabellradene. En rad som skjules, får også fjernet haken, så den ikke sendes med skjemaet.
+            document.querySelectorAll('[data-fylke-rad]').forEach(function (rad) {
+                var lat = parseFloat(rad.getAttribute('data-lat'));
+                var lng = parseFloat(rad.getAttribute('data-lng'));
+                var vis = !fylke || (!isNaN(lat) && !isNaN(lng) && punktIFylke(lng, lat, fylke));
+
+                rad.hidden = !vis;
+                if (!vis) {
+                    var valg = rad.querySelector('input');
+                    if (valg) valg.checked = false;
+                }
+            });
+
+            // Markørene i kartet
+            alleMarkorer.eachLayer(function (markor) {
+                var posisjon = markor.getLatLng();
+                var vis = !fylke || punktIFylke(posisjon.lng, posisjon.lat, fylke);
+                if (vis) {
+                    markor.addTo(map);
+                } else {
+                    map.removeLayer(markor);
+                }
+            });
+
+            // Grensen til valgt fylke, og zoom inn på det. Uten fylke zoomes det ut til alle markørene igjen.
+            if (valgtFylkeLag) {
+                map.removeLayer(valgtFylkeLag);
+                valgtFylkeLag = null;
+            }
+            if (fylke) {
+                valgtFylkeLag = L.geoJSON(fylke, {
+                    style: { color: '#1b5e20', weight: 3, fillColor: '#2e7d32', fillOpacity: 0.08 },
+                    interactive: false,
+                    attribution: 'Fylkesgrenser &copy; Kartverket'
+                }).addTo(map);
+                map.fitBounds(valgtFylkeLag.getBounds());
+            } else if (alleMarkorer.getLayers().length > 0) {
+                map.fitBounds(alleMarkorer.getBounds(), { padding: [30, 30], maxZoom: 13 });
+            }
+        }
+
+        // Henter fylkesgrensene (GeoJSON fra Kartverket) og fyller lista
+        fetch('@Url.Content("~/data/fylker.json")')
+            .then(function (svar) { return svar.json(); })
+            .then(function (data) {
+                fylker = data.features;
+                fylker.forEach(function (fylke, indeks) {
+                    var valg = document.createElement('option');
+                    valg.value = indeks;
+                    valg.textContent = fylke.properties.navn;
+                    fylkeFilter.appendChild(valg);
+                });
+            });
+
+        fylkeFilter.addEventListener('change', function () {
+            filtrerPaFylke(fylkeFilter.value);
         });
     </script>
 }
