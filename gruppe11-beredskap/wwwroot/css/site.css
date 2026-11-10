@@ -44,7 +44,7 @@ html {
 
 body {
   margin-bottom: 60px;
-  background-color: #DCECAC;
+  background-color: #EFECE4;
 }
 
 .form-floating > .form-control-plaintext::placeholder,
@@ -114,7 +114,7 @@ body {
   position: relative;
   /* Hvitt kort rundt kartet, likt som på Registrer behov og Registrer ressurs (.wizard-panel) */
   background: #fff;
-  border: 1px solid #d5e0c4;
+  border: 1px solid #DDD8CC;
   border-radius: 0.25rem;
   padding: 1.25rem;
 }
@@ -162,10 +162,10 @@ body {
   width: 36px;
   height: 36px;
   padding: 0;
-  border: 2px solid #005B27;
+  border: 2px solid #1E4A38;
   border-radius: 50%;
   background: #fff;
-  color: #005B27;
+  color: #1E4A38;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 18px;
   font-style: italic;
@@ -178,7 +178,7 @@ body {
 .kart-info-knapp:hover,
 .kart-info-knapp:focus-visible,
 .kart-info.is-open .kart-info-knapp {
-  background: #005B27;
+  background: #1E4A38;
   color: #fff;
   outline: none;
 }
@@ -227,7 +227,7 @@ body {
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-  color: #17251B;
+  color: #1A1916;
   font-size: 14px;
   font-style: normal;
 }
@@ -274,10 +274,10 @@ body {
   background:
           linear-gradient(
                   90deg,
-                  rgba(26, 68, 4, 0.97) 0%,
-                  rgba(0, 70, 30, 0.88) 35%,
-                  rgba(0, 70, 30, 0.55) 65%,
-                  rgba(0, 40, 20, 0.15) 100%
+                  rgba(18, 28, 22, 0.97) 0%,
+                  rgba(28, 48, 38, 0.88) 35%,
+                  rgba(36, 58, 46, 0.55) 65%,
+                  rgba(20, 32, 26, 0.15) 100%
           ),
           url('../images/kartkrise-bg.jpg');
 
@@ -302,7 +302,7 @@ body {
 }
 
 .kk-eyebrow {
-  color: #CCE193;
+  color: #E3D7B8;
   font-weight: 700;
   letter-spacing: 2px;
   font-size: 13px;
@@ -328,7 +328,7 @@ body {
 
 .kk-card {
   background: rgba(255, 255, 255, 0.97);
-  color: #17251B;
+  color: #1A1916;
   border-radius: 15px;
   padding: 26px;
   height: 100%;
@@ -344,7 +344,7 @@ body {
 }
 
 .kk-card p {
-  color: #526057;
+  color: #4E524C;
   line-height: 1.5;
   flex-grow: 1;
 }
@@ -366,18 +366,18 @@ body {
    ==================================== */
 
 .kk-red {
-  background: #FBE5DF;
-  color: #DA4527;
+  background: #F6E4DE;
+  color: #B8432F;
 }
 
 .kk-green {
-  background: #DCEEE2;
-  color: #005B27;
+  background: #D5E4D8;
+  color: #1E4A38;
 }
 
 .kk-light {
-  background: #CCE193;
-  color: #1A4404;
+  background: #E3D7B8;
+  color: #12241C;
 }
 
 
@@ -396,18 +396,18 @@ body {
 }
 
 .kk-button-red {
-  background: #DA4527;
+  background: #B8432F;
   color: white;
 }
 
 .kk-button-green {
-  background: #005B27;
+  background: #1E4A38;
   color: white;
 }
 
 .kk-button-light {
-  background: #CCE193;
-  color: #1A4404;
+  background: #E3D7B8;
+  color: #12241C;
 }
 
 .kk-button:hover {
@@ -441,7 +441,7 @@ body {
    ==================================== */
 
 .kk-navbar {
-  background-color: #2e8833;
+  background-color: #1C2822;
   padding: 12px 32px;
 }
 
@@ -467,8 +467,8 @@ body {
 }
 
 .kk-navbar .nav-link:hover {
-  background-color: rgba(204, 225, 147, 0.18);
-  color: #CCE193 !important;
+  background-color: rgba(227, 215, 184, 0.18);
+  color: #E3D7B8 !important;
 }
 
 .kk-navbar .navbar-toggler {
@@ -484,35 +484,35 @@ body {
     height: 40px;
   }
 }
-/* Grønne Bootstrap-knapper */
+/* Primærknapper */
 
 .btn-primary {
-  --bs-btn-bg: #005B27;
-  --bs-btn-border-color: #005B27;
-  --bs-btn-hover-bg: #1A4404;
-  --bs-btn-hover-border-color: #1A4404;
-  --bs-btn-active-bg: #1A4404;
-  --bs-btn-active-border-color: #1A4404;
+  --bs-btn-bg: #1E4A38;
+  --bs-btn-border-color: #1E4A38;
+  --bs-btn-hover-bg: #12241C;
+  --bs-btn-hover-border-color: #12241C;
+  --bs-btn-active-bg: #12241C;
+  --bs-btn-active-border-color: #12241C;
   --bs-btn-color: #FFFFFF;
   --bs-btn-hover-color: #FFFFFF;
 }
 
 .btn-outline-primary {
-  --bs-btn-color: #005B27;
-  --bs-btn-border-color: #005B27;
+  --bs-btn-color: #1E4A38;
+  --bs-btn-border-color: #1E4A38;
   --bs-btn-hover-color: #FFFFFF;
-  --bs-btn-hover-bg: #005B27;
-  --bs-btn-hover-border-color: #005B27;
+  --bs-btn-hover-bg: #1E4A38;
+  --bs-btn-hover-border-color: #1E4A38;
   --bs-btn-active-color: #FFFFFF;
-  --bs-btn-active-bg: #1A4404;
-  --bs-btn-active-border-color: #1A4404;
+  --bs-btn-active-bg: #12241C;
+  --bs-btn-active-border-color: #12241C;
 }
 
 /* KartKrise innloggingsknapp */
 
 .kk-login-button {
   background-color: #FFFFFF;
-  color: #005B27;
+  color: #1E4A38;
   border: 1px solid #FFFFFF;
   border-radius: 9px;
   padding: 9px 22px;
@@ -521,9 +521,9 @@ body {
 }
 
 .kk-login-button:hover {
-  background-color: #DCECAC;
-  border-color: #DCECAC;
-  color: #1A4404;
+  background-color: #EFECE4;
+  border-color: #EFECE4;
+  color: #12241C;
 }
 
 /* ====================================
@@ -548,10 +548,10 @@ html {
   width: 100%;
   max-width: 550px;
   background-color: #FFFFFF;
-  border: 1px solid rgba(0, 91, 39, 0.10);
+  border: 1px solid rgba(30, 74, 56, 0.10);
   border-radius: 22px;
   padding: 55px 50px;
-  box-shadow: 0 18px 50px rgba(26, 68, 4, 0.10);
+  box-shadow: 0 18px 50px rgba(18, 36, 28, 0.10);
 }
 
 .kk-login-heading {
@@ -563,7 +563,7 @@ html {
   width: 62px;
   height: 62px;
   border-radius: 18px;
-  background-color: #E8F3CE;
+  background-color: #E7EFE8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -575,36 +575,36 @@ html {
   font-size: 11px;
   letter-spacing: 2px;
   font-weight: 700;
-  color: #005B27;
+  color: #1E4A38;
 }
 
 .kk-login-heading h2 {
-  color: #1A4404;
+  color: #12241C;
   font-size: 29px;
   font-weight: 750;
   margin-bottom: 10px;
 }
 
 .kk-login-heading > p:last-child {
-  color: #64748B;
+  color: #5E615C;
   font-size: 14px;
 }
 
 .kk-login-form .form-label {
   font-weight: 600;
-  color: #263B2B;
+  color: #24302A;
   font-size: 14px;
 }
 
 .kk-login-form .form-control {
   border-radius: 10px;
   padding: 13px 14px;
-  border: 1px solid #D7E3D5;
+  border: 1px solid #D5D8D2;
 }
 
 .kk-login-submit {
   width: 100%;
-  background-color: #005B27;
+  background-color: #1E4A38;
   color: #FFFFFF;
   border: 0;
   border-radius: 10px;
@@ -625,18 +625,18 @@ html {
 }
 
 .kk-login-footer p {
-  color: #64748B;
+  color: #5E615C;
   margin-bottom: 5px;
 }
 
 .kk-register-placeholder {
-  color: #005B27;
+  color: #1E4A38;
   font-weight: 600;
 }
 
 .kk-login-notice {
   text-align: center;
-  color: #64748B;
+  color: #5E615C;
   font-size: 12px;
   margin-top: 25px;
   margin-bottom: 0;
@@ -656,7 +656,7 @@ html {
 .kk-switch-button {
   background: none;
   border: none;
-  color: #005B27;
+  color: #1E4A38;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -664,7 +664,7 @@ html {
 }
 
 .kk-switch-button:hover {
-  color: #1A4404;
+  color: #12241C;
   text-decoration: underline;
 }
 
@@ -676,18 +676,18 @@ html {
 .kk-profile-menu {
   min-width: 260px;
   padding: 12px 0;
-  border: 1px solid #E2EBDD;
+  border: 1px solid #DDD9D0;
   border-radius: 14px;
   box-shadow: 0 14px 35px rgba(0, 0, 0, 0.13);
 }
 
 .kk-profile-menu strong {
-  color: #1A4404;
+  color: #12241C;
   font-size: 14px;
 }
 
 .kk-profile-email {
-  color: #64748B;
+  color: #5E615C;
   font-size: 12px;
   margin-top: 4px;
 }
@@ -698,12 +698,12 @@ html {
 }
 
 .kk-profile-menu .dropdown-item:not(:disabled):hover {
-  background-color: #E8F3CE;
-  color: #005B27;
+  background-color: #E7EFE8;
+  color: #1E4A38;
 }
 
 .kk-profile-menu .dropdown-divider {
-  border-color: #E2EBDD;
+  border-color: #DDD9D0;
 }
 
 .wizard-progress {
@@ -718,7 +718,7 @@ html {
   font-family: inherit;
   border: 1px solid #ced4da;
   background: #fff;
-  color: #3d4a40;
+  color: #3E4641;
   border-radius: 0.25rem;
   padding: 0.4rem 0.7rem;
   font-size: 0.875rem;
@@ -728,37 +728,37 @@ html {
 }
 
 .wizard-progress button.is-current {
-  background: #005B27;
-  border-color: #005B27;
+  background: #1E4A38;
+  border-color: #1E4A38;
   color: #fff;
 }
 
 .wizard-progress button.is-done {
-  background: #CCE193;
-  border-color: #005B27;
-  color: #1A4404;
+  background: #E3D7B8;
+  border-color: #1E4A38;
+  color: #12241C;
 }
 
 .wizard-progress button.is-missing {
-  border-color: #DA4527;
-  color: #DA4527;
+  border-color: #B8432F;
+  color: #B8432F;
 }
 
 .wizard-progress button.is-current.is-missing {
-  background: #DA4527;
-  border-color: #DA4527;
+  background: #B8432F;
+  border-color: #B8432F;
   color: #fff;
 }
 
 .wizard-status {
   margin: 0 0 1rem;
-  color: #3d4a40;
+  color: #3E4641;
 }
 
 .wizard-panel {
   display: none;
   background: #fff;
-  border: 1px solid #d5e0c4;
+  border: 1px solid #DDD8CC;
   border-radius: 0.25rem;
   padding: 1.25rem 1.25rem 1.4rem;
 }
@@ -773,7 +773,7 @@ html {
   gap: 0.45rem;
   font-size: 1.35rem;
   margin-bottom: 0.85rem;
-  color: #005B27;
+  color: #1E4A38;
 }
 
 .wizard-chunk + .wizard-chunk {
@@ -817,10 +817,10 @@ html {
   height: 1.15rem;
   margin: 0;
   padding: 0;
-  border: 1.5px solid #005B27;
+  border: 1.5px solid #1E4A38;
   border-radius: 50%;
   background: #fff;
-  color: #005B27;
+  color: #1E4A38;
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 1;
@@ -829,13 +829,13 @@ html {
 }
 
 .hjelp[aria-expanded="true"] {
-  background: #005B27;
+  background: #1E4A38;
   color: #fff;
 }
 
 .hjelp-tekst {
   margin: 0.35rem 0 0.5rem;
-  color: #3d4a40;
+  color: #3E4641;
   font-size: 0.875rem;
 }
 
@@ -906,8 +906,8 @@ html {
 }
 
 .wizard-choice:has(input:checked) {
-  background: #CCE193;
-  color: #1A4404;
+  background: #E3D7B8;
+  color: #12241C;
 }
 
 .wizard-choice-dot {
@@ -925,7 +925,7 @@ html {
   position: sticky;
   bottom: 0;
   z-index: 2;
-  background: #DCECAC;
+  background: #EFECE4;
   padding: 0.75rem 0 0.25rem;
 }
 
@@ -957,7 +957,7 @@ html {
   flex: 0 0 11rem;
   margin: 0;
   font-weight: 700;
-  color: #005B27;
+  color: #1E4A38;
 }
 
 .wizard-summary-row dd {
@@ -971,7 +971,7 @@ html {
 
 .wizard-summary-row.is-missing dt,
 .wizard-summary-row.is-missing dd {
-  color: #DA4527;
+  color: #B8432F;
 }
 
 .wizard .field-validation-error {
@@ -988,29 +988,29 @@ html {
   display: none !important;
 }
 
-/* Tabellene bruker sidens grønne bakgrunn, ikke den hvite fra Bootstrap. */
+/* Tabellene bruker sidens bakgrunn, ikke den hvite fra Bootstrap. */
 .table-responsive {
   background: rgba(255, 255, 255, 0.22);
-  border: 1px solid rgba(26, 68, 4, 0.14);
+  border: 1px solid rgba(18, 36, 28, 0.14);
   border-radius: 16px;
 }
 
 .table {
-  --bs-table-color: #17251B;
+  --bs-table-color: #1A1916;
   --bs-table-bg: transparent;
-  --bs-table-border-color: rgba(26, 68, 4, 0.12);
-  --bs-table-striped-color: #17251B;
-  --bs-table-striped-bg: rgba(26, 68, 4, 0.055);
-  --bs-table-hover-color: #17251B;
-  --bs-table-hover-bg: rgba(0, 91, 39, 0.1);
-  --bs-table-active-color: #17251B;
-  --bs-table-active-bg: rgba(0, 91, 39, 0.14);
+  --bs-table-border-color: rgba(18, 36, 28, 0.12);
+  --bs-table-striped-color: #1A1916;
+  --bs-table-striped-bg: rgba(18, 36, 28, 0.055);
+  --bs-table-hover-color: #1A1916;
+  --bs-table-hover-bg: rgba(30, 74, 56, 0.1);
+  --bs-table-active-color: #1A1916;
+  --bs-table-active-bg: rgba(30, 74, 56, 0.14);
   margin-bottom: 0;
 }
 
 .table > thead {
-  --bs-table-bg: rgba(0, 91, 39, 0.1);
-  --bs-table-color: #1A4404;
+  --bs-table-bg: rgba(30, 74, 56, 0.1);
+  --bs-table-color: #12241C;
 }
 
 .table > :not(caption) > * > * {
@@ -1045,7 +1045,7 @@ html {
 }
 
 .tabell-sort:hover {
-  color: #005B27;
+  color: #1E4A38;
 }
 
 .tabell-sort-pil {
@@ -1072,34 +1072,34 @@ th.er-stigende .tabell-sort-pil {
 }
 
 .table a {
-  color: #005B27;
+  color: #1E4A38;
   font-weight: 600;
   text-decoration: none;
 }
 
 .table a:hover {
-  color: #1A4404;
+  color: #12241C;
   text-decoration: underline;
 }
 
 .table .btn-outline-danger,
 .table .btn-danger {
-  --bs-btn-color: #9a3412;
-  --bs-btn-border-color: rgba(218, 69, 39, 0.4);
+  --bs-btn-color: #8C3220;
+  --bs-btn-border-color: rgba(184, 67, 47, 0.4);
   --bs-btn-bg: transparent;
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #DA4527;
-  --bs-btn-hover-border-color: #DA4527;
+  --bs-btn-hover-bg: #B8432F;
+  --bs-btn-hover-border-color: #B8432F;
   --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #b42318;
-  --bs-btn-active-border-color: #b42318;
+  --bs-btn-active-bg: #7C2A1C;
+  --bs-btn-active-border-color: #7C2A1C;
   border-radius: 8px;
   margin-left: 0.45rem;
   vertical-align: baseline;
 }
 
 /* Utskrift (f.eks. Ressurser per fylke): menyen øverst skrives ikke ut.
-   Tabellen skrives uten det grønne kortet. */
+   Tabellen skrives uten kortet rundt. */
 @media print {
   header {
     display: none;
@@ -1217,21 +1217,21 @@ th.er-stigende .tabell-sort-pil {
   gap: 0.6rem;
   width: 100%;
   padding: 0.55rem 0.8rem;
-  border: 1px solid #D7E3D5;
+  border: 1px solid #D5D8D2;
   border-radius: 10px;
   background: #fff;
-  color: #17251B;
+  color: #1A1916;
   text-align: left;
 }
 
 .sokvalg-knapp:hover,
 .sokvalg.er-apen .sokvalg-knapp {
-  border-color: #005B27;
+  border-color: #1E4A38;
 }
 
 .sokvalg-knapp:focus-visible {
   outline: none;
-  border-color: #005B27;
+  border-color: #1E4A38;
 }
 
 .sokvalg-verdi {
@@ -1243,7 +1243,7 @@ th.er-stigende .tabell-sort-pil {
 }
 
 .sokvalg-verdi.er-tom {
-  color: #64748B;
+  color: #5E615C;
 }
 
 .sokvalg-hint {
@@ -1251,7 +1251,7 @@ th.er-stigende .tabell-sort-pil {
   align-items: center;
   gap: 0.3rem;
   flex-shrink: 0;
-  color: #005B27;
+  color: #1E4A38;
   font-size: 0.85rem;
   font-weight: 700;
 }
@@ -1259,7 +1259,7 @@ th.er-stigende .tabell-sort-pil {
 .sokvalg-pil {
   display: inline-flex;
   flex-shrink: 0;
-  color: #005B27;
+  color: #1E4A38;
 }
 
 .sokvalg-hint svg,
@@ -1276,9 +1276,9 @@ th.er-stigende .tabell-sort-pil {
   left: 0;
   right: 0;
   background: #fff;
-  border: 1px solid #d5e0c4;
+  border: 1px solid #DDD8CC;
   border-radius: 12px;
-  box-shadow: 0 12px 30px rgba(26, 68, 4, 0.13);
+  box-shadow: 0 12px 30px rgba(18, 36, 28, 0.13);
 }
 
 .sokvalg-sok {
@@ -1287,10 +1287,10 @@ th.er-stigende .tabell-sort-pil {
   gap: 0.45rem;
   margin: 0.5rem;
   padding: 0.5rem 0.7rem;
-  border: 1px solid #005B27;
+  border: 1px solid #1E4A38;
   border-radius: 8px;
-  background: #F4F8EA;
-  color: #005B27;
+  background: #E7EFE8;
+  color: #1E4A38;
 }
 
 .sokvalg-sok input {
@@ -1299,7 +1299,7 @@ th.er-stigende .tabell-sort-pil {
   border: 0;
   padding: 0;
   background: transparent;
-  color: #17251B;
+  color: #1A1916;
   font-weight: 600;
 }
 
@@ -1308,7 +1308,7 @@ th.er-stigende .tabell-sort-pil {
 }
 
 .sokvalg-sok input::placeholder {
-  color: #005B27;
+  color: #1E4A38;
   font-weight: 700;
   opacity: 1;
 }
@@ -1328,22 +1328,22 @@ th.er-stigende .tabell-sort-pil {
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: #17251B;
+  color: #1A1916;
   text-align: left;
 }
 
 .sokvalg-liste li.is-aktiv .sokvalg-valg,
 .sokvalg-valg:hover {
-  background: #E8F3CE;
+  background: #E7EFE8;
 }
 
 .sokvalg-valg[aria-selected="true"] {
-  color: #005B27;
+  color: #1E4A38;
   font-weight: 700;
 }
 
 .sokvalg-tom {
   margin: 0;
   padding: 0.4rem 0.9rem 0.8rem;
-  color: #64748B;
+  color: #5E615C;
 }
