@@ -70,11 +70,10 @@
 
     @if (innloggetBruker == null)
     {
-        <!-- Innloggingsknapp: går til innloggingskortet på forsiden -->
+        <!-- Innloggingsknapp: går til innloggingssiden -->
         <a id="kk-navbar-login"
-           asp-controller="Home"
-           asp-action="Index"
-           asp-fragment="innlogging"
+           asp-controller="Account"
+           asp-action="Login"
            class="btn kk-login-button">
             Logg inn
         </a>
@@ -83,12 +82,15 @@
     {
         <!-- Profilmeny for den som er logget inn -->
         <div id="kk-navbar-profile" class="dropdown">
-            <button class="btn kk-login-button dropdown-toggle d-flex align-items-center gap-2"
+            <!-- På vanlig skjerm vises knappen som et menyikon (☰) som åpner profilmenyen.
+                 På mobil skjules knappen, og profilvalgene vises rett i den sammenslåtte menyen (se site.css). -->
+            <button class="btn kk-login-button kk-profil-knapp dropdown-toggle d-none d-lg-flex align-items-center gap-2"
                     type="button"
                     data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                <span aria-hidden="true">&#9679;</span>
-                Min profil
+                    aria-expanded="false"
+                    aria-label="Min profil"
+                    title="Min profil">
+                <span class="navbar-toggler-icon" aria-hidden="true"></span>
             </button>
 
             <ul class="dropdown-menu dropdown-menu-end kk-profile-menu">

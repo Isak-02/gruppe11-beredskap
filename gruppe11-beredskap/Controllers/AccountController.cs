@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace gruppe11_beredskap.Controllers;
 
 // Innlogging, utlogging, registrering og glemt passord (fra Identity-labben).
-// "Logg inn" og "Opprett bruker" bruker det samme kortet som på forsiden (Views/Shared/_Innlogging.cshtml).
+// "Logg inn" og "Opprett bruker" bruker det samme kortet (Views/Shared/_Innlogging.cshtml).
 public class AccountController : Controller
 {
     private readonly UserManager<Bruker> _userManager;
