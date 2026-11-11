@@ -203,9 +203,6 @@ namespace gruppe11_beredskap.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<DateTime>("Tidspunkt")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("TypeBehov")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -370,9 +367,6 @@ namespace gruppe11_beredskap.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
-
-                    b.Property<DateTime>("Tidspunkt")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("TypeRessurs")
                         .IsRequired()

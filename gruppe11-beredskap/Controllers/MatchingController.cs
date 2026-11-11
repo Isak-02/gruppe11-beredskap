@@ -112,7 +112,7 @@ public class MatchingController : Controller
                 Beskrivelse = b.Beskrivelse,
                 Prioritet = b.Prioritet,
                 GeografiskOmrade = b.GeografiskOmrade,
-                Tidspunkt = b.Tidspunkt,
+                OpprettetTidspunkt = b.OpprettetTidspunkt,
                 Kontaktpunkt = b.Kontaktpunkt,
                 Latitude = b.Latitude,
                 Longitude = b.Longitude
@@ -130,7 +130,7 @@ public class MatchingController : Controller
                 Drivstofftype = r.Drivstofftype,
                 Lastekapasitet = r.Lastekapasitet,
                 GeografiskOmrade = r.GeografiskOmrade,
-                Tidspunkt = r.Tidspunkt,
+                OpprettetTidspunkt = r.OpprettetTidspunkt,
                 Kontaktpunkt = r.Kontaktpunkt,
                 Latitude = r.Latitude,
                 Longitude = r.Longitude

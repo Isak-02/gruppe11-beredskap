@@ -27,8 +27,6 @@ public class Ressurs
     [MaxLength(200)]
     public string? GeografiskOmrade { get; set; }
 
-    public DateTime Tidspunkt { get; set; }
-
     [Required]
     [MaxLength(500)]
     public string Kontaktpunkt { get; set; } = string.Empty;

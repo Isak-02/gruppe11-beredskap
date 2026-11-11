@@ -104,25 +104,7 @@
         </div>
 
         <div class="wizard-chunk">
-            <div class="wizard-split">
-                <div class="wizard-field">
-                    <label class="form-label" for="dato">Dato</label>
-                    <input id="dato" class="form-control" type="date" data-dato
-                           data-summary="Dato"
-                           data-step-required="true"
-                           data-step-message="Du må velge dato." />
-                </div>
-                <div class="wizard-field">
-                    <label class="form-label" for="tid">Tid</label>
-                    <input id="tid" class="form-control" type="time" step="900" data-tid @(endrer ? "data-tid-noyaktig" : null)
-                           data-summary="Tid"
-                           data-step-required="true"
-                           data-step-message="Du må velge klokkeslett." />
-                </div>
-            </div>
-            <input type="hidden" asp-for="Tidspunkt" asp-format="{0:yyyy-MM-ddTHH:mm}" data-tidspunkt />
-            <span asp-validation-for="Tidspunkt" class="text-danger"></span>
-            <div class="wizard-field wizard-felt-under">
+            <div class="wizard-field">
                 <label asp-for="Kontaktpunkt" class="form-label"></label>
                 <input asp-for="Kontaktpunkt" class="form-control" placeholder="Navn og telefon"
                        data-summary="Kontaktpunkt"

@@ -24,7 +24,7 @@ else
             <th>Drivstofftype</th>
             <th>Lastekapasitet</th>
             <th>Område</th>
-            <th>Tidspunkt</th>
+            <th>Opprettet</th>
             <th>Kontaktpunkt</th>
             <th>Status</th>
             <th></th>
@@ -40,7 +40,7 @@ else
                 <td>@(ressurs.Drivstofftype ?? "-")</td>
                 <td>@(ressurs.Lastekapasitet.HasValue ? $"{ressurs.Lastekapasitet} tonn" : "-")</td>
                 <td>@ressurs.GeografiskOmrade</td>
-                <td>@ressurs.Tidspunkt.ToString("g")</td>
+                <td class="text-nowrap" data-sort="@ressurs.OpprettetTidspunkt.Ticks" title="@RelativTid.Absolutt(ressurs.OpprettetTidspunkt)">@RelativTid.Tekst(ressurs.OpprettetTidspunkt)</td>
                 <td>@ressurs.Kontaktpunkt</td>
                 <td>@ressurs.Status</td>
                 <!-- Pause og Gjenoppta er skjema med POST, som Slett. Knappen som vises avhenger av status. -->

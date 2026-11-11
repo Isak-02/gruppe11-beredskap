@@ -56,7 +56,6 @@ public class MatchingControllerTests
         TypeBehov = "Transport",
         Beskrivelse = "Trenger transport av utstyr",
         Prioritet = "Høy",
-        Tidspunkt = DateTime.Now,
         Kontaktpunkt = "Testperson",
         Latitude = 58.14,
         Longitude = 7.99
@@ -67,7 +66,6 @@ public class MatchingControllerTests
         Id = id,
         TypeRessurs = "Traktor",
         Beskrivelse = "Kan brukes hele døgnet",
-        Tidspunkt = DateTime.Now,
         Kontaktpunkt = "Testperson",
         Latitude = 58.20,
         Longitude = 8.10

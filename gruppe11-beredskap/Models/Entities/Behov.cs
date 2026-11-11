@@ -19,8 +19,6 @@ public class Behov
     [MaxLength(200)]
     public string? GeografiskOmrade { get; set; }
 
-    public DateTime Tidspunkt { get; set; }
-
     [Required]
     [MaxLength(50)]
     public string Prioritet { get; set; } = string.Empty;

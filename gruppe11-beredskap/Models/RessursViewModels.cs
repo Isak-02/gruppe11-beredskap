@@ -29,9 +29,9 @@ public class RessursViewModel
 
     [Display(Name = "Geografisk område")] public string? GeografiskOmrade { get; set; }
 
-    [Required(ErrorMessage = "Du må velge tidspunkt/frist")]
-    [Display(Name = "Tidspunkt/frist")]
-    public DateTime Tidspunkt { get; set; }
+    // Settes automatisk når ressursen lagres. Vises i tabellen, fylles ikke inn i skjemaet.
+    [Display(Name = "Opprettet")]
+    public DateTime OpprettetTidspunkt { get; set; }
 
     [Required(ErrorMessage = "Du må skrive inn et kontaktpunkt")]
     [Display(Name = "Kontaktpunkt")]
