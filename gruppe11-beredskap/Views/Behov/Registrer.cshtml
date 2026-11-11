@@ -89,6 +89,16 @@
             <button type="button" class="hjelp" aria-expanded="false" aria-controls="hjelp-kart" aria-label="Hjelp om kartet">?</button>
         </h2>
         <p class="hjelp-tekst" id="hjelp-kart" hidden>Klikk for markør, eller tegn en sirkel.</p>
+        <!-- Adressesøk: søker i Kartverkets adresseregister og setter markøren på valgt adresse -->
+        <div class="mb-2">
+            <div class="input-group">
+                <input type="search" id="adresseSok" class="form-control"
+                       placeholder="Søk etter adresse, f.eks. Storgata 1 Kristiansand" aria-label="Søk etter adresse" />
+                <button type="button" id="adresseSokKnapp" class="btn btn-outline-primary">Søk</button>
+            </div>
+            <p id="adresseMelding" class="small text-muted mt-1 mb-0" hidden></p>
+            <div id="adresseTreff" class="list-group mt-1" hidden></div>
+        </div>
         <div id="map"></div>
         <input type="hidden" asp-for="Latitude" id="latitude" data-wizard-lat />
         <input type="hidden" asp-for="Longitude" id="longitude" />
@@ -241,6 +251,103 @@
             // Figuren er slettet med slett-verktøyet
             kart.on('draw:deleted', function () {
                 tomPosisjon();
+            });
+
+            // ---------- Adressesøk ----------
+            // Samme kode som på Registrer ressurs (Views/Ressurs/Registrer.cshtml). Endres den her, må den endres der også.
+            // Søker i Kartverkets åpne adresse-API og setter markøren på adressen brukeren velger.
+            var adresseSok = document.getElementById('adresseSok');
+            var adresseMelding = document.getElementById('adresseMelding');
+            var adresseTreff = document.getElementById('adresseTreff');
+
+            function visAdresseMelding(tekst) {
+                adresseMelding.textContent = tekst;
+                adresseMelding.hidden = tekst === '';
+            }
+
+            // Setter markøren på adressen, fyller skjemafeltene og zoomer inn.
+            // Geografisk område får adressen i stedet for koordinatene, så oversiktene blir lettere å lese.
+            // Flyttes markøren etterpå, settes koordinatene inn igjen (oppdaterPosisjon).
+            function velgAdresse(adresse) {
+                var punkt = adresse.representasjonspunkt;
+                var markor = L.marker([punkt.lat, punkt.lon]);
+
+                tegnedeFigurer.clearLayers();
+                tegnedeFigurer.addLayer(markor);
+                oppdaterPosisjon(markor);
+
+                var adressetekst = adresse.adressetekst + ', ' + adresse.postnummer + ' ' + adresse.poststed;
+                document.getElementById('geografiskOmrade').value = adressetekst;
+                document.getElementById('valgtStedTekst').textContent = 'Valgt posisjon: ' + adressetekst;
+
+                kart.setView([punkt.lat, punkt.lon], 16);
+
+                adresseTreff.hidden = true;
+                visAdresseMelding('');
+            }
+
+            // Viser treffene som en liste. textContent gjør at teksten vises som tekst, ikke som HTML.
+            function visAdresseTreff(adresser) {
+                adresseTreff.replaceChildren();
+
+                if (adresser.length === 0) {
+                    adresseTreff.hidden = true;
+                    visAdresseMelding('Fant ingen adresser. Prøv med gatenavn, nummer og sted.');
+                    return;
+                }
+
+                adresser.forEach(function (adresse) {
+                    if (!adresse.representasjonspunkt) {
+                        return;
+                    }
+                    var valg = document.createElement('button');
+                    valg.type = 'button';
+                    valg.className = 'list-group-item list-group-item-action';
+                    valg.textContent = adresse.adressetekst + ', ' + adresse.postnummer + ' ' + adresse.poststed;
+                    valg.addEventListener('click', function () {
+                        velgAdresse(adresse);
+                    });
+                    adresseTreff.appendChild(valg);
+                });
+
+                adresseTreff.hidden = false;
+                visAdresseMelding('Velg riktig adresse:');
+            }
+
+            function sokAdresse() {
+                var tekst = adresseSok.value.trim();
+                if (tekst.length < 3) {
+                    visAdresseMelding('Skriv minst tre tegn.');
+                    return;
+                }
+
+                visAdresseMelding('Søker …');
+                fetch('https://ws.geonorge.no/adresser/v1/sok?sok=' + encodeURIComponent(tekst) +
+                      '&treffPerSide=5&utkoordsys=4258')
+                    .then(function (svar) {
+                        if (!svar.ok) {
+                            throw new Error('Adressesøket svarte med feil');
+                        }
+                        return svar.json();
+                    })
+                    .then(function (data) {
+                        visAdresseTreff(data.adresser || []);
+                    })
+                    .catch(function () {
+                        adresseTreff.hidden = true;
+                        visAdresseMelding('Fikk ikke kontakt med adressesøket. Prøv igjen, eller sett markøren i kartet.');
+                    });
+            }
+
+            document.getElementById('adresseSokKnapp').addEventListener('click', sokAdresse);
+
+            // Enter i søkefeltet søker, i stedet for å gå til neste steg i veiviseren
+            adresseSok.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    sokAdresse();
+                }
             });
 
             // Ved valideringsfeil kommer siden tilbake med posisjonen i de skjulte feltene.
