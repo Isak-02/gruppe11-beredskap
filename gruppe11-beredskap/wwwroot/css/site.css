@@ -109,6 +109,36 @@ body {
   background-color: #ffc107;
 }
 
+/* Klynge når flere behov og ressurser ligger oppå hverandre. Tallet er antallet. */
+.leaflet-marker-icon.kart-klynge {
+  background: transparent;
+  border: none;
+}
+
+.kart-klynge span,
+.kart-klynge-forklaring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #1E4A38;
+  color: #fff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.kart-klynge-forklaring {
+  width: 26px;
+  height: 26px;
+  font-size: 12px;
+}
+
 /* Tegnforklaring på koblingssiden: info-knapp over kartet, listen vises ved hover eller klikk. */
 .kart-ramme {
   position: relative;

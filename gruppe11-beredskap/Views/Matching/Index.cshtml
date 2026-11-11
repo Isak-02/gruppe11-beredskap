@@ -57,6 +57,7 @@
             <span><span class="behov-ikon behov-middels" aria-hidden="true"></span> Behov – middels prioritet</span>
             <span><span class="behov-ikon behov-lav" aria-hidden="true"></span> Behov – lav prioritet</span>
             <span><img src="https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png" alt="" /> Ressurs</span>
+            <span><span class="kart-klynge-forklaring" aria-hidden="true">3</span> Flere på samme sted</span>
         </div>
     </div>
 </div>
@@ -248,6 +249,7 @@ else
 </div>
 
 @section Scripts {
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script>
         var map = L.map('map').setView([65, 13], 4);
 
@@ -264,7 +266,21 @@ else
         var treffBehovId = null;
         var fylker = [];
         var fylkeLag = null;
-        var markorer = L.featureGroup().addTo(map);
+        var markorer = L.markerClusterGroup({
+            showCoverageOnHover: false,
+            spiderfyOnMaxZoom: true,
+            zoomToBoundsOnClick: true,
+            maxClusterRadius: 60,
+            iconCreateFunction: function (klynge) {
+                var antall = klynge.getChildCount();
+                var px = antall >= 100 ? 52 : antall >= 10 ? 44 : 36;
+                return L.divIcon({
+                    html: '<span title="' + antall + ' på samme sted">' + antall + '</span>',
+                    className: 'kart-klynge',
+                    iconSize: [px, px]
+                });
+            }
+        }).addTo(map);
 
         var vanligStil = { color: '#5E615C', weight: 1, fillColor: '#1E4A38', fillOpacity: 0.05 };
         var valgtStil = { color: '#12241C', weight: 3, fillColor: '#1E4A38', fillOpacity: 0.2 };
