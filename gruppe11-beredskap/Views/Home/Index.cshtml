@@ -48,8 +48,3 @@
     </div>
 </section>
 
-<!-- INNLOGGING: vises bare for den som ikke er logget inn. Selve kortet ligger i Views/Shared/_Innlogging.cshtml. -->
-@if (User.Identity?.IsAuthenticated != true)
-{
-    <partial name="_Innlogging" model="new InnloggingViewModel()" />
-}
