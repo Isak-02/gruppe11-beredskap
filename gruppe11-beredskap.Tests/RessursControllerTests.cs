@@ -60,7 +60,6 @@ public class RessursControllerTests
     {
         TypeRessurs = type,
         Beskrivelse = "Kan brukes hele døgnet",
-        Tidspunkt = DateTime.Now,
         Kontaktpunkt = "Testperson",
         Latitude = 58.14,
         Longitude = 7.99

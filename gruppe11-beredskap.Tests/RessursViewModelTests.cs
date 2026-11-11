@@ -11,7 +11,6 @@ public class RessursViewModelTests
     {
         TypeRessurs = "Lastebil",
         Beskrivelse = "Kan brukes hele døgnet",
-        Tidspunkt = DateTime.Now,
         Kontaktpunkt = "Testperson",
         Latitude = 58.14,
         Longitude = 7.99

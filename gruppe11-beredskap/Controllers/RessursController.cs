@@ -23,10 +23,7 @@ public class RessursController : Controller
     [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
     public IActionResult Registrer()
     {
-        return View(new RessursViewModel
-        {
-            Tidspunkt = DateTime.Now
-        });
+        return View(new RessursViewModel());
     }
 
     [HttpPost]
@@ -47,7 +44,6 @@ public class RessursController : Controller
             Drivstofftype = model.Drivstofftype,
             Lastekapasitet = model.Lastekapasitet,
             GeografiskOmrade = model.GeografiskOmrade,
-            Tidspunkt = model.Tidspunkt,
             Kontaktpunkt = model.Kontaktpunkt,
             Status = model.Status,
             Latitude = model.Latitude!.Value,
@@ -93,7 +89,6 @@ public class RessursController : Controller
         ressurs.Drivstofftype = model.Drivstofftype;
         ressurs.Lastekapasitet = model.Lastekapasitet;
         ressurs.GeografiskOmrade = model.GeografiskOmrade;
-        ressurs.Tidspunkt = model.Tidspunkt;
         ressurs.Kontaktpunkt = model.Kontaktpunkt;
         ressurs.Latitude = model.Latitude!.Value;
         ressurs.Longitude = model.Longitude!.Value;
@@ -195,7 +190,7 @@ public class RessursController : Controller
             Drivstofftype = r.Drivstofftype,
             Lastekapasitet = r.Lastekapasitet,
             GeografiskOmrade = r.GeografiskOmrade,
-            Tidspunkt = r.Tidspunkt,
+            OpprettetTidspunkt = r.OpprettetTidspunkt,
             Kontaktpunkt = r.Kontaktpunkt,
             Status = r.Status,
             Latitude = r.Latitude,

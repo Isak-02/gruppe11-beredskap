@@ -23,10 +23,7 @@ public class BehovController : Controller
     [Authorize(Roles = RoleNames.KanRegistrereBehov)]
     public IActionResult Registrer()
     {
-        return View(new BehovViewModel
-        {
-            Tidspunkt = DateTime.Now
-        });
+        return View(new BehovViewModel());
     }
 
     [HttpPost]
@@ -43,7 +40,6 @@ public class BehovController : Controller
             TypeBehov = model.TypeBehov,
             Beskrivelse = model.Beskrivelse,
             GeografiskOmrade = model.GeografiskOmrade,
-            Tidspunkt = model.Tidspunkt,
             Prioritet = model.Prioritet,
             Kontaktpunkt = model.Kontaktpunkt,
             Status = model.Status,
@@ -87,7 +83,7 @@ public class BehovController : Controller
             TypeBehov = b.TypeBehov,
             Beskrivelse = b.Beskrivelse,
             GeografiskOmrade = b.GeografiskOmrade,
-            Tidspunkt = b.Tidspunkt,
+            OpprettetTidspunkt = b.OpprettetTidspunkt,
             Prioritet = b.Prioritet,
             Kontaktpunkt = b.Kontaktpunkt,
             Status = b.Status,

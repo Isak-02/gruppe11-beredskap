@@ -20,9 +20,9 @@ public class BehovViewModel
     [Display(Name = "Geografisk område")]
     public string? GeografiskOmrade { get; set; }
 
-    [Required(ErrorMessage = "Du må velge tidspunkt/frist")]
-    [Display(Name = "Tidspunkt/frist")]
-    public DateTime Tidspunkt { get; set; }
+    // Settes automatisk når behovet lagres. Vises i tabellen, fylles ikke inn i skjemaet.
+    [Display(Name = "Opprettet")]
+    public DateTime OpprettetTidspunkt { get; set; }
 
     [Required(ErrorMessage = "Du må velge prioritet")]
     [Display(Name = "Prioritet")]

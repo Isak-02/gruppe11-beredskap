@@ -99,7 +99,7 @@
                                     {
                                         <span>@b.GeografiskOmrade</span>
                                     }
-                                    <span>@b.Tidspunkt.ToString("g")</span>
+                                    <span title="@RelativTid.Absolutt(b.OpprettetTidspunkt)">@RelativTid.Tekst(b.OpprettetTidspunkt)</span>
                                     <span>@b.Kontaktpunkt</span>
                                 </p>
                             </td>
@@ -145,7 +145,7 @@
                                     {
                                         <span>@r.GeografiskOmrade</span>
                                     }
-                                    <span>@r.Tidspunkt.ToString("g")</span>
+                                    <span title="@RelativTid.Absolutt(r.OpprettetTidspunkt)">@RelativTid.Tekst(r.OpprettetTidspunkt)</span>
                                     <span>@r.Kontaktpunkt</span>
                                 </p>
                             </td>

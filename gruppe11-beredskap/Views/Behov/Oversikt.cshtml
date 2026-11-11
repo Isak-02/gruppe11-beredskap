@@ -21,7 +21,7 @@ else
             <th>Type</th>
             <th>Beskrivelse</th>
             <th>Område</th>
-            <th>Tidspunkt</th>
+            <th>Opprettet</th>
             <th>Prioritet</th>
             <th>Kontaktpunkt</th>
             <th>Status</th>
@@ -34,7 +34,7 @@ else
                 <td>@behov.TypeBehov</td>
                 <td>@behov.Beskrivelse</td>
                 <td>@behov.GeografiskOmrade</td>
-                <td>@behov.Tidspunkt.ToString("g")</td>
+                <td class="text-nowrap" data-sort="@behov.OpprettetTidspunkt.Ticks" title="@RelativTid.Absolutt(behov.OpprettetTidspunkt)">@RelativTid.Tekst(behov.OpprettetTidspunkt)</td>
                 <td>@behov.Prioritet</td>
                 <td>@behov.Kontaktpunkt</td>
                 <td>@behov.Status</td>

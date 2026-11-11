@@ -356,46 +356,6 @@
     }
 })();
 
-/* Dato og tid er to felt. De skrives sammen til Tidspunkt før skjemaet sendes. */
-(function () {
-    document.querySelectorAll("[data-wizard]").forEach(kobleTid);
-
-    function kobleTid(form) {
-        var dato = form.querySelector("[data-dato]");
-        var tid = form.querySelector("[data-tid]");
-        var skjult = form.querySelector("[data-tidspunkt]");
-        if (!dato || !tid || !skjult) return;
-
-        function skriv() {
-            skjult.value = dato.value && tid.value ? dato.value + "T" + tid.value : "";
-        }
-
-        var delt = (skjult.value || "").trim().replace(" ", "T").split("T");
-        if (/^\d{4}-\d{2}-\d{2}/.test(delt[0] || "")) dato.value = delt[0].slice(0, 10);
-        if (delt[1]) {
-            var klokke = delt[1].slice(0, 5);
-            var minutt = Number(klokke.slice(3, 5));
-            if (!tid.hasAttribute("data-tid-noyaktig") && minutt % 15 !== 0) {
-                var totalt = Number(klokke.slice(0, 2)) * 60 + minutt;
-                var avrundet = Math.round(totalt / 15) * 15;
-                var timer = Math.floor(avrundet / 60) % 24;
-                var minutter = avrundet % 60;
-                klokke = String(timer).padStart(2, "0") + ":" + String(minutter).padStart(2, "0");
-            } else if (minutt % 15 !== 0) {
-                tid.step = "60";
-            }
-            tid.value = klokke;
-        }
-        skriv();
-
-        dato.addEventListener("input", skriv);
-        dato.addEventListener("change", skriv);
-        tid.addEventListener("input", skriv);
-        tid.addEventListener("change", skriv);
-        form.addEventListener("submit", skriv, true);
-    }
-})();
-
 /* Spørsmålstegn viser en kort forklaring. Ett om gangen. */
 (function () {
     document.querySelectorAll(".hjelp").forEach(function (knapp) {
@@ -758,7 +718,9 @@
 
     function celleTekst(rad, indeks) {
         var celle = rad.cells[indeks];
-        return celle ? celle.textContent : "";
+        if (!celle) return "";
+        if (celle.dataset.sort) return celle.dataset.sort;
+        return celle.textContent;
     }
 
     function lesVerdi(tekst) {
