@@ -106,11 +106,6 @@
             </button>
 
             <button type="button"
-                    data-panel="varsler" aria-pressed="false">
-                Varslinger
-            </button>
-
-            <button type="button"
                     data-panel="sikkerhet" aria-pressed="false">
                 Sikkerhet og personvern
             </button>
@@ -142,16 +137,6 @@
                 <label for="telefon">Telefonnummer</label>
                 <input id="telefon" value="@ViewBag.Telefon" readonly />
             </div>
-        </section>
-
-        <section id="varsler" class="settings-panel" hidden>
-            <h2>Varslinger</h2>
-            <p>Her kan du administrere varslinger.</p>
-
-            <label>
-                <input type="checkbox" disabled />
-                Motta varslinger om nye behov
-            </label>
         </section>
 
         <section id="sikkerhet" class="settings-panel" hidden>
