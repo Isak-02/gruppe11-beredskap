@@ -45,6 +45,8 @@ html {
 body {
   margin-bottom: 60px;
   background-color: #EFECE4;
+  /* Barlow Semi Condensed fra Google Fonts gir et mer strukturert og lesbart uttrykk. */
+  font-family: "Barlow Semi Condensed", sans-serif;
 }
 
 .form-floating > .form-control-plaintext::placeholder,
@@ -327,7 +329,7 @@ body {
 }
 
 .kk-intro {
-  max-width: 650px;
+  max-width: 800px;
   margin-bottom: 60px;
 }
 
@@ -346,7 +348,7 @@ body {
 }
 
 .kk-description {
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.7;
   max-width: 550px;
 }
@@ -556,6 +558,15 @@ body {
   color: #12241C;
 }
 
+/* Holder innloggingsknappen synlig og markerer fokus ved bruk av tastatur. */
+.btn.kk-login-button:focus-visible {
+  background-color: #EFECE4;
+  color: #12241C;
+  border-color: #EFECE4;
+  outline: 3px solid #B8432F;
+  outline-offset: 3px;
+}
+
 /* Profilknappen på vanlig skjerm: ser ut som menyknappen (☰) på mobil, med gjennomsiktig
    bakgrunn og lys kant. På mobil (under 992px) er knappen skjult. */
 @media (min-width: 992px) {
@@ -689,7 +700,7 @@ html {
 .kk-login-notice {
   text-align: center;
   color: #5E615C;
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 25px;
   margin-bottom: 0;
 }
@@ -740,7 +751,7 @@ html {
 
 .kk-profile-email {
   color: #5E615C;
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 4px;
 }
 
