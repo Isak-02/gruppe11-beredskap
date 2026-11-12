@@ -1,0 +1,29 @@
+name: Bygg og test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  bygg-og-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Hent koden
+        uses: actions/checkout@v4
+
+      - name: Installer .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Hent NuGet-pakker
+        run: dotnet restore gruppe11-beredskap.sln
+
+      - name: Bygg
+        run: dotnet build gruppe11-beredskap.sln --no-restore --configuration Release
+
+      - name: Kjør testene
+        run: dotnet test gruppe11-beredskap.sln --no-build --configuration Release --verbosity normal
