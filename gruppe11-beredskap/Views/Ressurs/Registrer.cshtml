@@ -226,6 +226,13 @@
             var map = L.map('map').setView([58.1467, 7.9956], 13);
             ressursKart = map;
 
+            var ressursIkon = L.icon({
+                iconUrl: '@Url.Content("~/images/ressurs-ikon.png")',
+                iconSize: [25, 40],
+                iconAnchor: [12, 40],
+                popupAnchor: [0, -36]
+            });
+            
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
@@ -261,7 +268,7 @@
                     rectangle: false,
                     circlemarker: false,
                     circle: false,
-                    marker: true
+                    marker: { icon: ressursIkon },
                 },
                 edit: {
                     featureGroup: tegnedeFigurer,
@@ -342,7 +349,7 @@
             // Flyttes markøren etterpå, settes koordinatene inn igjen (oppdaterPosisjon).
             function velgAdresse(adresse) {
                 var punkt = adresse.representasjonspunkt;
-                var markor = L.marker([punkt.lat, punkt.lon]);
+                var markor = L.marker([punkt.lat, punkt.lon], { icon: ressursIkon })  ;
 
                 tegnedeFigurer.clearLayers();
                 tegnedeFigurer.addLayer(markor);

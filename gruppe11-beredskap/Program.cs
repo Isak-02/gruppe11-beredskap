@@ -87,6 +87,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
 // Først finner vi ut hvem brukeren er (innlogging), så hva hen har lov til (roller)
