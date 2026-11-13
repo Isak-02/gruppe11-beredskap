@@ -42,17 +42,16 @@ public class BehovControllerTests
         TypeBehov = "Transport",
         Beskrivelse = "Trenger transport av utstyr",
         Prioritet = "Høy",
-        Kontaktpunkt = "Testperson",
         Latitude = 58.14,
         Longitude = 7.99
     };
 
     [Fact]
-    public void Registrer_Get_ReturnsViewResult()
+    public async Task Registrer_Get_ReturnsViewResult()
     {
-        var controller = new BehovController(new FakeBehovRepository());
+        var controller = new BehovController(new FakeBehovRepository(), new FakeKontaktinfoTjeneste());
 
-        var result = controller.Registrer();
+        var result = await controller.Registrer();
 
         Assert.IsType<ViewResult>(result);
     }
@@ -60,7 +59,7 @@ public class BehovControllerTests
     [Fact]
     public async Task Registrer_Post_WithValidModel_RedirectsToMine()
     {
-        var controller = new BehovController(new FakeBehovRepository());
+        var controller = new BehovController(new FakeBehovRepository(), new FakeKontaktinfoTjeneste());
 
         var result = await controller.Registrer(LagModel());
 
@@ -72,7 +71,7 @@ public class BehovControllerTests
     public async Task Registrer_Post_LagrerBehovIRepository()
     {
         var repo = new FakeBehovRepository();
-        var controller = new BehovController(repo);
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
 
         await controller.Registrer(LagModel());
 
@@ -87,7 +86,7 @@ public class BehovControllerTests
     public async Task Registrer_Post_UgyldigModell_ReturnsViewResultOgLagrerIkke()
     {
         var repo = new FakeBehovRepository();
-        var controller = new BehovController(repo);
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
         controller.ModelState.AddModelError("Latitude", "Du må tegne en markør eller sirkel på kartet for å velge sted");
 
         var result = await controller.Registrer(LagModel());
@@ -100,7 +99,7 @@ public class BehovControllerTests
     public async Task Oversikt_ReturnsViewResult_MedLagredeBehov()
     {
         var repo = new FakeBehovRepository();
-        var controller = new BehovController(repo);
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
         await controller.Registrer(LagModel());
 
         var result = await controller.Oversikt();
@@ -114,7 +113,7 @@ public class BehovControllerTests
     public async Task Registrer_Post_MedSirkel_LagrerRadius()
     {
         var repo = new FakeBehovRepository();
-        var controller = new BehovController(repo);
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
 
         var model = LagModel();
         model.Radius = 250;
@@ -129,7 +128,7 @@ public class BehovControllerTests
     public async Task Registrer_Post_MedMarkør_LagrerRadiusSomNull()
     {
         var repo = new FakeBehovRepository();
-        var controller = new BehovController(repo);
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
 
         await controller.Registrer(LagModel());
 
@@ -141,7 +140,7 @@ public class BehovControllerTests
     public async Task Oversikt_ViserRadiusFraLagretBehov()
     {
         var repo = new FakeBehovRepository();
-        var controller = new BehovController(repo);
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
 
         var model = LagModel();
         model.Radius = 250;
@@ -159,7 +158,7 @@ public class BehovControllerTests
     public async Task Registrer_Post_LagrerBeskrivelse()
     {
         var repo = new FakeBehovRepository();
-        var controller = new BehovController(repo);
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
 
         var model = LagModel();
         model.Beskrivelse = "Trenger aggregat til skolen";
@@ -174,7 +173,7 @@ public class BehovControllerTests
     public async Task Oversikt_ViserBeskrivelseFraLagretBehov()
     {
         var repo = new FakeBehovRepository();
-        var controller = new BehovController(repo);
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
         await controller.Registrer(LagModel());
 
         var result = await controller.Oversikt();
@@ -200,7 +199,7 @@ public class BehovControllerTests
     public async Task Registrer_Post_LagrerInnloggetBrukerSomOppretter()
     {
         var repo = new FakeBehovRepository();
-        var controller = new BehovController(repo);
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
         LoggInnSom(controller, "bruker-1");
 
         await controller.Registrer(LagModel());
@@ -213,7 +212,7 @@ public class BehovControllerTests
     public async Task Mine_ViserBareBehovSomBrukerenSelvHarRegistrert()
     {
         var repo = new FakeBehovRepository();
-        var controller = new BehovController(repo);
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
 
         LoggInnSom(controller, "bruker-1");
         await controller.Registrer(LagModel());
@@ -234,7 +233,7 @@ public class BehovControllerTests
     public async Task Mine_UtenInnloggetBruker_ViserIngenBehov()
     {
         var repo = new FakeBehovRepository();
-        var controller = new BehovController(repo);
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
         // Behov uten "opprettet av", slik som de som ble registrert før innlogging fantes
         await controller.Registrer(LagModel());
 
@@ -243,5 +242,43 @@ public class BehovControllerTests
         var view = Assert.IsType<ViewResult>(result);
         var liste = Assert.IsType<List<BehovViewModel>>(view.Model);
         Assert.Empty(liste);
+    }
+
+    [Fact]
+    public async Task Registrer_Get_FyllerUtKontaktpunktFraInnloggetBruker()
+    {
+        var controller = new BehovController(new FakeBehovRepository(), new FakeKontaktinfoTjeneste());
+
+        var result = await controller.Registrer();
+
+        var view = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsType<BehovViewModel>(view.Model);
+        Assert.Equal("Testperson, 12345678, test@eksempel.no", model.Kontaktpunkt);
+    }
+
+    [Fact]
+    public async Task Registrer_Post_LagrerKontaktpunktFraBrukerOgIkkeFraSkjemaet()
+    {
+        var repo = new FakeBehovRepository();
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste());
+
+        var model = LagModel();
+        model.Kontaktpunkt = "Noe annet som er sendt inn";
+        await controller.Registrer(model);
+
+        var lagret = Assert.Single(repo.Lagret);
+        Assert.Equal("Testperson, 12345678, test@eksempel.no", lagret.Kontaktpunkt);
+    }
+
+    [Fact]
+    public async Task Registrer_Post_UkjentBruker_GirChallengeOgLagrerIkke()
+    {
+        var repo = new FakeBehovRepository();
+        var controller = new BehovController(repo, new FakeKontaktinfoTjeneste { Kontakt = null });
+
+        var result = await controller.Registrer(LagModel());
+
+        Assert.IsType<ChallengeResult>(result);
+        Assert.Empty(repo.Lagret);
     }
 }

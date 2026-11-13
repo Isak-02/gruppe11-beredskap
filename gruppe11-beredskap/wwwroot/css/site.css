@@ -1021,6 +1021,12 @@ html {
   margin-left: auto;
 }
 
+/* Fast rad under oversikten (kontaktpunkt), med samme skillelinje som radene over */
+.wizard-summary-fast {
+  margin-top: 0.85rem;
+  border-top: 1px solid #e4e4e0;
+}
+
 .wizard-summary-row.is-missing dt,
 .wizard-summary-row.is-missing dd {
   color: #B8432F;

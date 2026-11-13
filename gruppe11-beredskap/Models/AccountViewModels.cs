@@ -29,9 +29,11 @@ public class RegistrerBrukerViewModel
     [Display(Name = "E-postadresse")]
     public string Epost { get; set; } = string.Empty;
 
+    // Påkrevd, fordi telefonnummeret brukes som kontaktpunkt på behov og ressurser
+    [Required(ErrorMessage = "Du må skrive inn telefonnummeret ditt")]
     [Phone(ErrorMessage = "Telefonnummeret er ikke gyldig")]
     [Display(Name = "Telefonnummer")]
-    public string? Telefon { get; set; }
+    public string Telefon { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Du må velge et passord")]
     [DataType(DataType.Password)]
