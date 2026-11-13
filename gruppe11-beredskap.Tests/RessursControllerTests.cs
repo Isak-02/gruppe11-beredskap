@@ -5,6 +5,7 @@ using gruppe11_beredskap.Controllers;
 using gruppe11_beredskap.DataAccess.Repositories;
 using gruppe11_beredskap.Models;
 using gruppe11_beredskap.Models.Entities;
+using gruppe11_beredskap.Services;
 
 namespace gruppe11_beredskap.Tests;
 
@@ -60,17 +61,16 @@ public class RessursControllerTests
     {
         TypeRessurs = type,
         Beskrivelse = "Kan brukes hele døgnet",
-        Kontaktpunkt = "Testperson",
         Latitude = 58.14,
         Longitude = 7.99
     };
 
     [Fact]
-    public void Registrer_Get_ReturnsViewResult()
+    public async Task Registrer_Get_ReturnsViewResult()
     {
-        var controller = new RessursController(new FakeRessursRepository());
+        var controller = new RessursController(new FakeRessursRepository(), new FakeKontaktinfoTjeneste());
 
-        var result = controller.Registrer();
+        var result = await controller.Registrer();
 
         Assert.IsType<ViewResult>(result);
     }
@@ -78,7 +78,7 @@ public class RessursControllerTests
     [Fact]
     public async Task Registrer_Post_WithValidModel_RedirectsToMine()
     {
-        var controller = new RessursController(new FakeRessursRepository());
+        var controller = new RessursController(new FakeRessursRepository(), new FakeKontaktinfoTjeneste());
 
         var result = await controller.Registrer(LagModel("Mat"));
 
@@ -90,7 +90,7 @@ public class RessursControllerTests
     public async Task Registrer_Post_LagrerRessursIRepository()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
 
         var model = LagModel("Gravemaskin");
         model.Drivstofftype = "Diesel";
@@ -108,7 +108,7 @@ public class RessursControllerTests
     public async Task Registrer_Post_KjøretøyUtenDrivstoff_ReturnsViewResult()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
 
         var result = await controller.Registrer(LagModel("Lastebil"));
 
@@ -120,7 +120,7 @@ public class RessursControllerTests
     public async Task Registrer_Post_LastebilUtenLastekapasitet_ReturnsViewResult()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
 
         var model = LagModel("Lastebil");
         model.Drivstofftype = "Diesel";
@@ -135,7 +135,7 @@ public class RessursControllerTests
     public async Task Oversikt_ReturnsViewResult_MedLagredeRessurser()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
         await controller.Registrer(LagModel("Mat"));
 
         var result = await controller.Oversikt();
@@ -160,7 +160,7 @@ public class RessursControllerTests
     public async Task Registrer_Post_LagrerInnloggetBrukerSomOppretter()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
         LoggInnSom(controller, "bruker-1");
 
         await controller.Registrer(LagModel("Mat"));
@@ -173,7 +173,7 @@ public class RessursControllerTests
     public async Task Mine_ViserBareRessurserSomBrukerenSelvHarRegistrert()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
 
         LoggInnSom(controller, "bruker-1");
         await controller.Registrer(LagModel("Mat"));
@@ -194,7 +194,7 @@ public class RessursControllerTests
     public async Task Endre_Post_BytterType()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
         LoggInnSom(controller, "bruker-1");
         await controller.Registrer(LagModel("Mat"));
 
@@ -209,7 +209,7 @@ public class RessursControllerTests
     public async Task Slett_FjernerRaden()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
         LoggInnSom(controller, "bruker-1");
         await controller.Registrer(LagModel("Mat"));
 
@@ -222,7 +222,7 @@ public class RessursControllerTests
     public async Task Pause_SetterTilgjengeligRessursPåPause()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
         LoggInnSom(controller, "bruker-1");
         await controller.Registrer(LagModel("Mat"));
 
@@ -235,7 +235,7 @@ public class RessursControllerTests
     public async Task Gjenoppta_GjørPausetRessursTilgjengeligIgjen()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
         LoggInnSom(controller, "bruker-1");
         await controller.Registrer(LagModel("Mat"));
         await controller.Pause(1);
@@ -249,7 +249,7 @@ public class RessursControllerTests
     public async Task Pause_TildeltRessurs_EndresIkke()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
         LoggInnSom(controller, "bruker-1");
         await controller.Registrer(LagModel("Mat"));
         repo.Lagret[0].Status = RessursStatus.Tildelt;
@@ -263,7 +263,7 @@ public class RessursControllerTests
     public async Task Pause_AnnenBrukersRessurs_GirForbid()
     {
         var repo = new FakeRessursRepository();
-        var controller = new RessursController(repo);
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
         LoggInnSom(controller, "bruker-1");
         await controller.Registrer(LagModel("Mat"));
         LoggInnSom(controller, "bruker-2");
@@ -277,12 +277,57 @@ public class RessursControllerTests
     [Fact]
     public void PerFylke_SenderVidereTilKobling()
     {
-        var controller = new RessursController(new FakeRessursRepository());
+        var controller = new RessursController(new FakeRessursRepository(), new FakeKontaktinfoTjeneste());
 
         var result = controller.PerFylke();
 
         var redirect = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Index", redirect.ActionName);
         Assert.Equal("Matching", redirect.ControllerName);
+    }
+
+    [Fact]
+    public async Task Registrer_Post_LagrerKontaktpunktFraInnloggetBruker()
+    {
+        var repo = new FakeRessursRepository();
+        var controller = new RessursController(repo, new FakeKontaktinfoTjeneste());
+
+        var model = LagModel("Mat");
+        model.Kontaktpunkt = "Noe annet som er sendt inn";
+        await controller.Registrer(model);
+
+        var lagret = Assert.Single(repo.Lagret);
+        Assert.Equal("Testperson, 12345678, test@eksempel.no", lagret.Kontaktpunkt);
+    }
+
+    [Fact]
+    public async Task Registrer_Post_BrukerUtenTelefon_HopperOverTelefon()
+    {
+        var repo = new FakeRessursRepository();
+        var kontaktinfo = new FakeKontaktinfoTjeneste { Kontakt = new Kontaktinfo("Kari", null, "kari@eksempel.no") };
+        var controller = new RessursController(repo, kontaktinfo);
+
+        await controller.Registrer(LagModel("Mat"));
+
+        Assert.Equal("Kari, kari@eksempel.no", Assert.Single(repo.Lagret).Kontaktpunkt);
+    }
+
+    [Fact]
+    public async Task Endre_Post_BeholderOpprinneligKontaktpunkt()
+    {
+        var repo = new FakeRessursRepository();
+        var kontaktinfo = new FakeKontaktinfoTjeneste();
+        var controller = new RessursController(repo, kontaktinfo);
+        LoggInnSom(controller, "bruker-1");
+        await controller.Registrer(LagModel("Mat"));
+
+        // En annen kontaktinfo (f.eks. en koordinator) skal ikke overskrive eierens kontaktpunkt
+        kontaktinfo.Kontakt = new Kontaktinfo("Koordinator", "99999999", "koord@eksempel.no");
+        var model = LagModel("Lokaler");
+        model.Id = 1;
+        model.Kontaktpunkt = "Noe annet som er sendt inn";
+        await controller.Endre(model);
+
+        Assert.Equal("Testperson, 12345678, test@eksempel.no", repo.Lagret[0].Kontaktpunkt);
     }
 }

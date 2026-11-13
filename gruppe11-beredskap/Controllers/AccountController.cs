@@ -103,7 +103,7 @@ public class AccountController : Controller
             Email = model.Epost,
             EmailConfirmed = true,
             Navn = model.Navn,
-            PhoneNumber = string.IsNullOrWhiteSpace(model.Telefon) ? null : model.Telefon
+            PhoneNumber = model.Telefon.Trim()
         };
 
         var resultat = await _userManager.CreateAsync(bruker, model.Passord);

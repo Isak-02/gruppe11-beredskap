@@ -12,7 +12,6 @@ public class BehovViewModelTests
         TypeBehov = "Transport",
         Beskrivelse = "Trenger transport av utstyr",
         Prioritet = "Høy",
-        Kontaktpunkt = "Testperson",
         Latitude = 58.14,
         Longitude = 7.99
     };

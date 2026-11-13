@@ -40,6 +40,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IRessursRepository, RessursRepository>();
 builder.Services.AddScoped<IBehovRepository, BehovRepository>();
 builder.Services.AddScoped<IMatchingRepository, MatchingRepository>();
+builder.Services.AddScoped<IKontaktinfoTjeneste, KontaktinfoTjeneste>();
 
 // Innlogging med ASP.NET Core Identity. Brukere og roller lagres i MariaDB via ApplicationDbContext.
 builder.Services.AddSingleton<IEmailSender, ConsoleEmailSender>();

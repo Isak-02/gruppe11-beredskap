@@ -28,9 +28,10 @@ public class BehovViewModel
     [Display(Name = "Prioritet")]
     public string Prioritet { get; set; }
 
-    [Required(ErrorMessage = "Du må skrive inn et kontaktpunkt")]
+    // Fylles ut automatisk med navn, telefon og e-post til brukeren som er logget inn.
+    // Skrives ikke inn i skjemaet, så det valideres ikke her.
     [Display(Name = "Kontaktpunkt")]
-    public string Kontaktpunkt { get; set; }
+    public string? Kontaktpunkt { get; set; }
 
     public string Status { get; set; } = "Ny";
 

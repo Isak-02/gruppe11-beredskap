@@ -5,6 +5,7 @@ using gruppe11_beredskap.DataAccess.Repositories;
 using gruppe11_beredskap.Models;
 using gruppe11_beredskap.Models.Authorization;
 using gruppe11_beredskap.Models.Entities;
+using gruppe11_beredskap.Services;
 
 namespace gruppe11_beredskap.Controllers;
 
@@ -13,17 +14,23 @@ namespace gruppe11_beredskap.Controllers;
 public class RessursController : Controller
 {
     private readonly IRessursRepository _repo;
+    private readonly IKontaktinfoTjeneste _kontaktinfo;
 
-    public RessursController(IRessursRepository repo)
+    public RessursController(IRessursRepository repo, IKontaktinfoTjeneste kontaktinfo)
     {
         _repo = repo;
+        _kontaktinfo = kontaktinfo;
     }
 
     [HttpGet]
     [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
-    public IActionResult Registrer()
+    public async Task<IActionResult> Registrer()
     {
-        return View(new RessursViewModel());
+        var kontakt = await _kontaktinfo.HentAsync(User);
+        if (kontakt == null)
+            return Challenge();
+
+        return View(new RessursViewModel { Kontaktpunkt = kontakt.SomTekst() });
     }
 
     [HttpPost]
@@ -31,6 +38,12 @@ public class RessursController : Controller
     [Authorize(Roles = RoleNames.KanRegistrereRessurs)]
     public async Task<IActionResult> Registrer(RessursViewModel model)
     {
+        // Kontaktpunktet hentes alltid fra den innloggede brukeren, aldri fra skjemaet
+        var kontakt = await _kontaktinfo.HentAsync(User);
+        if (kontakt == null)
+            return Challenge();
+        model.Kontaktpunkt = kontakt.SomTekst();
+
         LeggTilFeltfeil(model);
         if (!ModelState.IsValid)
             return View(model);
@@ -79,6 +92,10 @@ public class RessursController : Controller
         if (!EierEllerKoordinator(ressurs))
             return Forbid();
 
+        // Kontaktpunktet endres ikke. Det tilhører den som registrerte ressursen,
+        // også når en koordinator endrer den.
+        model.Kontaktpunkt = ressurs.Kontaktpunkt;
+
         LeggTilFeltfeil(model);
         if (!ModelState.IsValid)
             return View("Registrer", model);
@@ -89,7 +106,6 @@ public class RessursController : Controller
         ressurs.Drivstofftype = model.Drivstofftype;
         ressurs.Lastekapasitet = model.Lastekapasitet;
         ressurs.GeografiskOmrade = model.GeografiskOmrade;
-        ressurs.Kontaktpunkt = model.Kontaktpunkt;
         ressurs.Latitude = model.Latitude!.Value;
         ressurs.Longitude = model.Longitude!.Value;
 

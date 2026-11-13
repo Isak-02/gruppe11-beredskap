@@ -28,13 +28,13 @@ public static class IdentitySeeder
     // (Testbrukere:Passord), så det ikke ligger i koden.
     public static async Task SeedTestbrukereAsync(UserManager<Bruker> userManager, string passord)
     {
-        await LagBrukerAsync(userManager, KoordinatorEpost, "Test Koordinator", RoleNames.Koordinator, passord);
-        await LagBrukerAsync(userManager, KriseInnmelderEpost, "Test Krise-innmelder", RoleNames.KriseInnmelder, passord);
-        await LagBrukerAsync(userManager, RessursInnmelderEpost, "Test Ressurs-innmelder", RoleNames.RessursInnmelder, passord);
+        await LagBrukerAsync(userManager, KoordinatorEpost, "Test Koordinator", "11111111", RoleNames.Koordinator, passord);
+        await LagBrukerAsync(userManager, KriseInnmelderEpost, "Test Krise-innmelder", "22222222", RoleNames.KriseInnmelder, passord);
+        await LagBrukerAsync(userManager, RessursInnmelderEpost, "Test Ressurs-innmelder", "33333333", RoleNames.RessursInnmelder, passord);
     }
 
     private static async Task LagBrukerAsync(
-        UserManager<Bruker> userManager, string epost, string navn, string rolle, string passord)
+        UserManager<Bruker> userManager, string epost, string navn, string telefon, string rolle, string passord)
     {
         var bruker = await userManager.FindByEmailAsync(epost);
         if (bruker == null)
@@ -44,10 +44,17 @@ public static class IdentitySeeder
                 UserName = epost,
                 Email = epost,
                 EmailConfirmed = true,
-                Navn = navn
+                Navn = navn,
+                PhoneNumber = telefon
             };
 
             SjekkResultat(await userManager.CreateAsync(bruker, passord), $"Kunne ikke opprette testbrukeren {epost}.");
+        }
+        else if (string.IsNullOrWhiteSpace(bruker.PhoneNumber))
+        {
+            // Testbrukere som ble laget før telefon ble påkrevd, får et nummer nå
+            bruker.PhoneNumber = telefon;
+            SjekkResultat(await userManager.UpdateAsync(bruker), $"Kunne ikke oppdatere testbrukeren {epost}.");
         }
 
         if (!await userManager.IsInRoleAsync(bruker, rolle))
