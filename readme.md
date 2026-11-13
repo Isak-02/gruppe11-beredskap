@@ -18,6 +18,9 @@ KartKrise er en webløsning for kriseberedskap i Totalforsvaret. Offentlige akt�
 
 **Behov og ressurser**
 - Registrering av behov og ressurser i et skjema med flere steg (veiviser), med oppsummering før lagring
+- Nedtrekkslistene kan søkes i, og tabellene kan sorteres ved å klikke på kolonnetittelen
+- Listene viser når behovet eller ressursen ble opprettet. Tidsfrist er tatt bort
+- Grense på lastekapasitet, radius og feltet for annen type
 - Endring og sletting av egne ressurser
 - *Mine behov* og *Mine ressurser* viser det brukeren selv har registrert
 - *Alle behov* og *Alle ressurser* for koordinator
@@ -28,6 +31,8 @@ KartKrise er en webløsning for kriseberedskap i Totalforsvaret. Offentlige akt�
 - Posisjon settes med markør i kartet (Leaflet.Draw), og for behov også med sirkel (radius)
 - Norske tekster i verktøylinjen
 - *Ressurser per fylke* (bare koordinator): velg fylke i lista eller ved å klikke i kartet. Bare tilgjengelige ressurser vises, og lista kan skrives ut
+- Zoom med musehjulet krever Ctrl eller Cmd, så siden ikke zoomer når hensikten er å bla ned
+- Markører som ligger på samme sted samles i en klynge med antall.
 
 **Kobling (`/Kobling`)**
 - Kart og lister over åpne behov og ledige ressurser
@@ -278,10 +283,11 @@ KI ble brukt som hjelp fra idé til koding. All kode er lest og tilpasset av gru
 - Hjelp med Git (grener, konflikter, commits og pull requests)
 - Hjelp med dokumentasjon
 - Finne mangler i prosjektet og få tilbakemeldinger
+- Hjelp med å samle markører som ligger oppå hverandre i klynger
 
 ### Verktøy
 
-- JetBrains Rider med AI Assistant, Claude, ChatGPT, Copilot.
+- JetBrains Rider med AI Assistant, Cursor med AI Assistant, Claude, ChatGPT, Copilot.
 
 ### Eksempler på prompt-kommandoer
 
@@ -289,6 +295,7 @@ KI ble brukt som hjelp fra idé til koding. All kode er lest og tilpasset av gru
 - «Hvorfor får jeg ikke til å pushe til branch? Her er feilmeldingene: X»
 - «Gi en tilbakemelding på filstruktur, og kom med forslag til hvordan den kan forbedres.»
 - «Vurder prosjektet vårt opp mot oppgavebeskrivelsen på innleveringen.»
+- «Markører som ligger på samme sted på koblingskartet dekker hverandre. Hvordan kan de samles i klynger som viser antallet?»
 
 ## Kjente begrensninger
 
