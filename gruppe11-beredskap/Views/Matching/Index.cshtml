@@ -56,7 +56,10 @@
             <span><span class="behov-ikon behov-hoy" aria-hidden="true"></span> Behov – høy prioritet</span>
             <span><span class="behov-ikon behov-middels" aria-hidden="true"></span> Behov – middels prioritet</span>
             <span><span class="behov-ikon behov-lav" aria-hidden="true"></span> Behov – lav prioritet</span>
-            <span><img src="https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png" alt="" /> Ressurs</span>
+            <span>
+                <img src="/images/ressurs-ikon.png" alt="Ressurs" />
+                Ressurs
+            </span>
             <span><span class="kart-klynge-forklaring" aria-hidden="true">3</span> Flere på samme sted</span>
         </div>
     </div>
@@ -327,6 +330,13 @@ else
             });
         }
 
+        var ressursIkon = L.icon({
+            iconUrl: '@Url.Content("~/images/ressurs-ikon.png")',
+            iconSize: [25, 40],
+            iconAnchor: [12, 40],
+            popupAnchor: [0, -36]
+        });
+        
         function lagPopup(overskrift, linjer, knapp) {
             var innhold = document.createElement('div');
             var tittel = document.createElement('strong');
@@ -560,7 +570,7 @@ else
                 if (!visRessurser || !harGyldigPosisjon(ressurs.latitude, ressurs.longitude)) return;
                 var type = ressursNavn(ressurs);
                 if (ressurs.typeRessurs === 'Annet') type = 'Annet: ' + type;
-                L.marker([ressurs.latitude, ressurs.longitude])
+                L.marker([ressurs.latitude, ressurs.longitude], { icon: ressursIkon })
                     .bindPopup(lagPopup('Ressurs #' + ressurs.id + ': ' + type, [
                         ressurs.beskrivelse,
                         'Kontakt: ' + ressurs.kontaktpunkt
